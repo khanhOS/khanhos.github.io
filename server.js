@@ -5,13 +5,16 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: "1mb" }));
 
-app.use(cors({
-  origin: process.env.FRONTEND_ORIGIN || true
-}));
+app.use(
+  cors({
+    origin: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"]
+  })
+);
 
 const aiLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -21,6 +24,13 @@ const aiLimiter = rateLimit({
   message: {
     error: "Bạn gửi quá nhiều yêu cầu. Hãy thử lại sau."
   }
+});
+
+app.get("/", (req, res) => {
+  res.json({
+    name: "KhanhOS AI",
+    status: "online"
+  });
 });
 
 app.post("/api/chat", aiLimiter, async (req, res) => {
@@ -33,17 +43,15 @@ app.post("/api/chat", aiLimiter, async (req, res) => {
       });
     }
 
-    // Chỉ cho phép các provider server đã định nghĩa
-    if (provider !== "openai" && provider !== "claude") {
-      return res.status(400).json({
-        error: "Provider không hợp lệ."
-      });
-    }
-
-    // Giới hạn dữ liệu gửi lên
     if (messages.length > 50) {
       return res.status(400).json({
         error: "Cuộc trò chuyện quá dài."
+      });
+    }
+
+    if (provider !== "openai" && provider !== "claude") {
+      return res.status(400).json({
+        error: "Provider không hợp lệ."
       });
     }
 
@@ -52,22 +60,19 @@ app.post("/api/chat", aiLimiter, async (req, res) => {
     }
 
     return await callClaude(model, messages, res);
-
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       error: "KhanhOS AI gặp lỗi khi xử lý yêu cầu."
     });
   }
 });
 
-
 async function callOpenAI(model, messages, res) {
-
   if (!process.env.OPENAI_API_KEY) {
     return res.status(500).json({
-      error: "Chưa cấu hình OPENAI_API_KEY."
+      error: "Chưa cấu hình OPENAI_API_KEY trên Vercel."
     });
   }
 
@@ -76,31 +81,25 @@ async function callOpenAI(model, messages, res) {
     "gpt-5-mini"
   ];
 
-  const selectedModel =
-    allowedModels.includes(model)
-      ? model
-      : "gpt-5-mini";
+  const selectedModel = allowedModels.includes(model)
+    ? model
+    : "gpt-5-mini";
 
   const response = await fetch(
     "https://api.openai.com/v1/responses",
     {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
-        "Authorization":
-          `Bearer ${process.env.OPENAI_API_KEY}`
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
-
       body: JSON.stringify({
         model: selectedModel,
-
-        input: messages.map(message => ({
+        input: messages.map((message) => ({
           role:
             message.role === "assistant"
               ? "assistant"
               : "user",
-
           content: message.content
         }))
       })
@@ -113,15 +112,15 @@ async function callOpenAI(model, messages, res) {
     console.error("OpenAI:", data);
 
     return res.status(response.status).json({
-      error: "OpenAI API lỗi."
+      error: data?.error?.message || "OpenAI API lỗi."
     });
   }
 
   const text =
     data.output_text ||
     data.output
-      ?.flatMap(item => item.content || [])
-      ?.map(item => item.text || "")
+      ?.flatMap((item) => item.content || [])
+      ?.map((item) => item.text || "")
       ?.join("") ||
     "";
 
@@ -132,12 +131,10 @@ async function callOpenAI(model, messages, res) {
   });
 }
 
-
 async function callClaude(model, messages, res) {
-
   if (!process.env.ANTHROPIC_API_KEY) {
     return res.status(500).json({
-      error: "Chưa cấu hình ANTHROPIC_API_KEY."
+      error: "Chưa cấu hình ANTHROPIC_API_KEY trên Vercel."
     });
   }
 
@@ -146,37 +143,27 @@ async function callClaude(model, messages, res) {
     "claude-haiku-4-5"
   ];
 
-  const selectedModel =
-    allowedModels.includes(model)
-      ? model
-      : "claude-sonnet-4-5";
+  const selectedModel = allowedModels.includes(model)
+    ? model
+    : "claude-sonnet-4-5";
 
   const response = await fetch(
     "https://api.anthropic.com/v1/messages",
     {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
-
-        "x-api-key":
-          process.env.ANTHROPIC_API_KEY,
-
-        "anthropic-version":
-          "2023-06-01"
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01"
       },
-
       body: JSON.stringify({
         model: selectedModel,
-
         max_tokens: 4096,
-
-        messages: messages.map(message => ({
+        messages: messages.map((message) => ({
           role:
             message.role === "assistant"
               ? "assistant"
               : "user",
-
           content: message.content
         }))
       })
@@ -189,14 +176,14 @@ async function callClaude(model, messages, res) {
     console.error("Claude:", data);
 
     return res.status(response.status).json({
-      error: "Claude API lỗi."
+      error: data?.error?.message || "Claude API lỗi."
     });
   }
 
   const text =
     data.content
-      ?.filter(item => item.type === "text")
-      ?.map(item => item.text)
+      ?.filter((item) => item.type === "text")
+      ?.map((item) => item.text)
       ?.join("") || "";
 
   return res.json({
@@ -206,9 +193,4 @@ async function callClaude(model, messages, res) {
   });
 }
 
-
-app.listen(PORT, () => {
-  console.log(
-    `KhanhOS AI server đang chạy tại http://localhost:${PORT}`
-  );
-});
+module.exports = app;
