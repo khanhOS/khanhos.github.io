@@ -23,11 +23,7 @@ const state = {
 
 const defaultSettings = {
   username: "Khanh",
-  theme: "dark",
-  notifications: true,
-  personalization: "friendly",
-  voice: false,
-  memory: true
+  theme: "dark"
 };
 
 
@@ -50,8 +46,8 @@ const elements = {
   newChatBtn: $("#newChatBtn"),
   searchBtn: $("#searchBtn"),
   settingsBtn: $("#settingsBtn"),
-
   chatHistory: $("#chatHistory"),
+
   chatArea: $("#chatArea"),
   messages: $("#messages"),
   welcome: $("#welcome"),
@@ -77,14 +73,13 @@ const elements = {
   accountBtn: $("#accountBtn"),
   headerAccountBtn: $("#headerAccountBtn"),
   accountMenu: $("#accountMenu"),
+  menuSettingsBtn: $("#menuSettingsBtn"),
 
   mobileMenuBtn: $("#mobileMenuBtn"),
 
   themeToggle: $("#themeToggle"),
   changeNameBtn: $("#changeNameBtn"),
   clearHistoryBtn: $("#clearHistoryBtn"),
-
-  menuSettingsBtn: $("#menuSettingsBtn"),
 
   sidebarUsername: $("#sidebarUsername"),
   menuUsername: $("#menuUsername"),
@@ -99,11 +94,11 @@ const elements = {
 
 
 /* =========================================================
-   SAFE ELEMENT HELPER
+   SAFETY DOM CHECK
 ========================================================= */
 
 function exists(element) {
-  return !!element;
+  return element !== null && element !== undefined;
 }
 
 
@@ -119,9 +114,7 @@ function getSettings() {
       localStorage.getItem(SETTINGS_KEY);
 
     if (!saved) {
-      return {
-        ...defaultSettings
-      };
+      return { ...defaultSettings };
     }
 
     const parsed =
@@ -129,7 +122,7 @@ function getSettings() {
 
     return {
       ...defaultSettings,
-      ...parsed
+      ...(parsed || {})
     };
 
   } catch (error) {
@@ -142,7 +135,9 @@ function getSettings() {
     return {
       ...defaultSettings
     };
+
   }
+
 }
 
 
@@ -163,11 +158,12 @@ function saveSettings(settings) {
     );
 
   }
+
 }
 
 
 /* =========================================================
-   USER UI
+   UPDATE USER UI
 ========================================================= */
 
 function updateUserUI() {
@@ -191,41 +187,36 @@ function updateUserUI() {
       username;
   }
 
-
   if (exists(elements.menuUsername)) {
     elements.menuUsername.textContent =
       username;
   }
-
 
   if (exists(elements.currentUsername)) {
     elements.currentUsername.textContent =
       username;
   }
 
-
   if (exists(elements.settingsAccountName)) {
     elements.settingsAccountName.textContent =
       username;
   }
-
 
   if (exists(elements.sidebarAvatar)) {
     elements.sidebarAvatar.textContent =
       firstLetter;
   }
 
-
   if (exists(elements.headerAccountBtn)) {
     elements.headerAccountBtn.textContent =
       firstLetter;
   }
 
-
   if (exists(elements.bigAvatar)) {
     elements.bigAvatar.textContent =
       firstLetter;
   }
+
 }
 
 
@@ -256,6 +247,7 @@ function applyTheme() {
         : `Tối <span>⌄</span>`;
 
   }
+
 }
 
 
@@ -277,19 +269,23 @@ function loadChats() {
         ? JSON.parse(saved)
         : [];
 
-
     if (!Array.isArray(state.chats)) {
       state.chats = [];
     }
 
-  } catch {
+  } catch (error) {
+
+    console.error(
+      "Không thể tải lịch sử:",
+      error
+    );
 
     state.chats = [];
 
   }
 
-
   renderHistory();
+
 }
 
 
@@ -305,16 +301,17 @@ function saveChats() {
   } catch (error) {
 
     console.error(
-      "Không thể lưu chat:",
+      "Không thể lưu lịch sử:",
       error
     );
 
   }
+
 }
 
 
 /* =========================================================
-   NEW CHAT
+   CHAT
 ========================================================= */
 
 function createChat() {
@@ -323,10 +320,14 @@ function createChat() {
 
   clearMessages();
 
-  elements.welcome.style.display =
-    "flex";
+  if (exists(elements.welcome)) {
+    elements.welcome.style.display =
+      "flex";
+  }
 
-  elements.messageInput.value = "";
+  if (exists(elements.messageInput)) {
+    elements.messageInput.value = "";
+  }
 
   state.attachedFiles = [];
 
@@ -337,19 +338,16 @@ function createChat() {
   closeAllModals();
   closeMobileSidebar();
 
-  renderHistory();
-
   setTimeout(() => {
 
-    elements.messageInput.focus();
+    if (exists(elements.messageInput)) {
+      elements.messageInput.focus();
+    }
 
   }, 50);
+
 }
 
-
-/* =========================================================
-   CREATE REAL CHAT
-========================================================= */
 
 function createRealChat(firstMessage) {
 
@@ -392,12 +390,9 @@ function createRealChat(firstMessage) {
   saveChats();
 
   return chat;
+
 }
 
-
-/* =========================================================
-   TITLE
-========================================================= */
 
 function generateTitle(text) {
 
@@ -406,21 +401,14 @@ function generateTitle(text) {
       .replace(/\s+/g, " ")
       .trim();
 
-  if (!clean) {
-    return "Cuộc trò chuyện mới";
-  }
-
   if (clean.length <= 32) {
     return clean;
   }
 
   return clean.substring(0, 32) + "...";
+
 }
 
-
-/* =========================================================
-   CURRENT CHAT
-========================================================= */
 
 function getCurrentChat() {
 
@@ -459,12 +447,10 @@ function openChat(chatId) {
       chat.model;
   }
 
-
   if (chat.provider) {
     state.selectedProvider =
       chat.provider;
   }
-
 
   if (chat.apiModel) {
     state.selectedApiModel =
@@ -472,14 +458,19 @@ function openChat(chatId) {
   }
 
 
-  elements.currentModel.textContent =
-    state.selectedModel;
+  if (exists(elements.currentModel)) {
+    elements.currentModel.textContent =
+      state.selectedModel;
+  }
 
 
   clearMessages();
 
-  elements.welcome.style.display =
-    "none";
+
+  if (exists(elements.welcome)) {
+    elements.welcome.style.display =
+      "none";
+  }
 
 
   (chat.messages || [])
@@ -500,9 +491,20 @@ function openChat(chatId) {
   closeAllModals();
   closeMobileSidebar();
 
-  scrollToBottom();
+  requestAnimationFrame(() => {
 
-  elements.messageInput.focus();
+    if (exists(elements.chatArea)) {
+      elements.chatArea.scrollTop =
+        elements.chatArea.scrollHeight;
+    }
+
+  });
+
+
+  if (exists(elements.messageInput)) {
+    elements.messageInput.focus();
+  }
+
 }
 
 
@@ -512,15 +514,14 @@ function openChat(chatId) {
 
 function clearMessages() {
 
-  elements.messages.innerHTML = "";
+  if (exists(elements.messages)) {
+    elements.messages.innerHTML = "";
+  }
 
 }
 
 
-function renderMessage(
-  role,
-  content
-) {
+function renderMessage(role, content) {
 
   const wrapper =
     document.createElement("div");
@@ -555,18 +556,17 @@ function renderMessage(
 
   wrapper.appendChild(message);
 
-  elements.messages.appendChild(
-    wrapper
-  );
+  elements.messages.appendChild(wrapper);
 
   scrollToBottom();
 
   return wrapper;
+
 }
 
 
 /* =========================================================
-   FORMAT AI
+   FORMAT AI MESSAGE
 ========================================================= */
 
 function formatAIMessage(text) {
@@ -609,6 +609,7 @@ function formatAIMessage(text) {
 
 
   return escaped;
+
 }
 
 
@@ -626,10 +627,15 @@ function escapeHTML(text) {
 
 
 /* =========================================================
-   SEND
+   SEND MESSAGE
 ========================================================= */
 
 async function sendMessage() {
+
+  if (!exists(elements.messageInput)) {
+    return;
+  }
+
 
   const text =
     elements.messageInput.value.trim();
@@ -653,8 +659,10 @@ async function sendMessage() {
   }
 
 
-  elements.welcome.style.display =
-    "none";
+  if (exists(elements.welcome)) {
+    elements.welcome.style.display =
+      "none";
+  }
 
 
   chat.messages.push({
@@ -679,8 +687,7 @@ async function sendMessage() {
   );
 
 
-  elements.messageInput.value =
-    "";
+  elements.messageInput.value = "";
 
   autoResizeTextarea();
   updateSendButton();
@@ -747,6 +754,7 @@ async function sendMessage() {
     saveChats();
     renderHistory();
 
+
   } catch (error) {
 
     loading.remove();
@@ -759,12 +767,15 @@ async function sendMessage() {
       "Không thể kết nối tới KhanhOS API.";
 
 
+    const message =
+      `⚠️ ${errorText}`;
+
+
     chat.messages.push({
 
       role: "assistant",
 
-      content:
-        `⚠️ ${errorText}`,
+      content: message,
 
       timestamp:
         Date.now()
@@ -774,7 +785,7 @@ async function sendMessage() {
 
     renderMessage(
       "assistant",
-      `⚠️ ${errorText}`
+      message
     );
 
 
@@ -790,6 +801,7 @@ async function sendMessage() {
     elements.messageInput.focus();
 
   }
+
 }
 
 
@@ -820,6 +832,7 @@ async function callChatAPI(
             model,
             messages
           })
+
       }
     );
 
@@ -853,6 +866,7 @@ async function callChatAPI(
 
 
   return data;
+
 }
 
 
@@ -885,14 +899,12 @@ function createLoadingMessage() {
 
   wrapper.appendChild(message);
 
-  elements.messages.appendChild(
-    wrapper
-  );
-
+  elements.messages.appendChild(wrapper);
 
   scrollToBottom();
 
   return wrapper;
+
 }
 
 
@@ -901,6 +913,11 @@ function createLoadingMessage() {
 ========================================================= */
 
 function renderHistory() {
+
+  if (!exists(elements.chatHistory)) {
+    return;
+  }
+
 
   if (!state.chats.length) {
 
@@ -911,6 +928,7 @@ function renderHistory() {
     `;
 
     return;
+
   }
 
 
@@ -928,6 +946,7 @@ function renderHistory() {
       const item =
         document.createElement("div");
 
+
       item.className =
         "history-item";
 
@@ -937,9 +956,7 @@ function renderHistory() {
         state.currentChatId
       ) {
 
-        item.classList.add(
-          "active"
-        );
+        item.classList.add("active");
 
       }
 
@@ -967,6 +984,7 @@ function renderHistory() {
         <button
           class="history-more"
           type="button"
+          title="Tùy chọn"
         >
           ⋯
         </button>
@@ -988,6 +1006,7 @@ function renderHistory() {
           </button>
 
         </div>
+
       `;
 
 
@@ -996,10 +1015,12 @@ function renderHistory() {
           ".history-main"
         );
 
+
       const moreButton =
         item.querySelector(
           ".history-more"
         );
+
 
       const menu =
         item.querySelector(
@@ -1024,7 +1045,8 @@ function renderHistory() {
             .forEach(openMenu => {
 
               if (
-                openMenu !== menu
+                openMenu !==
+                menu
               ) {
 
                 openMenu
@@ -1036,9 +1058,7 @@ function renderHistory() {
             });
 
 
-          menu.classList.toggle(
-            "open"
-          );
+          menu.classList.toggle("open");
 
         }
       );
@@ -1056,9 +1076,7 @@ function renderHistory() {
             action === "rename"
           ) {
 
-            renameChat(
-              chat.id
-            );
+            renameChat(chat.id);
 
           }
 
@@ -1067,9 +1085,7 @@ function renderHistory() {
             action === "delete"
           ) {
 
-            deleteChat(
-              chat.id
-            );
+            deleteChat(chat.id);
 
           }
 
@@ -1086,7 +1102,7 @@ function renderHistory() {
 
 
 /* =========================================================
-   RENAME
+   RENAME / DELETE CHAT
 ========================================================= */
 
 function renameChat(chatId) {
@@ -1128,12 +1144,9 @@ function renameChat(chatId) {
   showToast(
     "Đã đổi tên cuộc trò chuyện"
   );
+
 }
 
-
-/* =========================================================
-   DELETE CHAT
-========================================================= */
 
 function deleteChat(chatId) {
 
@@ -1182,6 +1195,7 @@ function deleteChat(chatId) {
   showToast(
     "Đã xóa cuộc trò chuyện"
   );
+
 }
 
 
@@ -1194,27 +1208,36 @@ function openSearch() {
   closeAllMenus();
 
 
+  if (!exists(elements.searchModal)) {
+    return;
+  }
+
+
   elements.searchModal
     .classList
     .add("open");
 
 
-  elements.searchInput.value =
-    "";
-
+  elements.searchInput.value = "";
 
   renderSearchResults("");
 
 
-  setTimeout(
-    () =>
-      elements.searchInput.focus(),
-    100
-  );
+  setTimeout(() => {
+
+    elements.searchInput.focus();
+
+  }, 100);
+
 }
 
 
 function renderSearchResults(query) {
+
+  if (!exists(elements.searchResults)) {
+    return;
+  }
+
 
   const clean =
     query
@@ -1274,8 +1297,7 @@ function renderSearchResults(query) {
   }
 
 
-  elements.searchResults.innerHTML =
-    "";
+  elements.searchResults.innerHTML = "";
 
 
   results.forEach(chat => {
@@ -1283,8 +1305,8 @@ function renderSearchResults(query) {
     const item =
       document.createElement("button");
 
-    item.type =
-      "button";
+
+    item.type = "button";
 
     item.className =
       "search-result";
@@ -1309,6 +1331,7 @@ function renderSearchResults(query) {
         </small>
 
       </div>
+
     `;
 
 
@@ -1335,61 +1358,73 @@ function renderSearchResults(query) {
 
 
 /* =========================================================
-   SETTINGS OPEN
+   SETTINGS - OPEN
 ========================================================= */
 
 function openSettings() {
 
+  /* Đóng toàn bộ menu trước */
   closeAllMenus();
 
-  closeMobileSidebar();
+  /* Đóng search */
+  if (exists(elements.searchModal)) {
+
+    elements.searchModal
+      .classList
+      .remove("open");
+
+  }
 
 
-  elements.settingsModal
-    .classList
-    .add("open");
+  /* MỞ SETTINGS */
+  if (exists(elements.settingsModal)) {
+
+    elements.settingsModal
+      .classList
+      .add("open");
+
+  }
 
 
-  updateUserUI();
-  applyTheme();
-
-
-  /* Luôn mở trang Chung khi mở Settings */
+  /* Luôn mở trang Chung khi vào Settings */
   switchSettingsPage("general");
 
 
-  setTimeout(() => {
+  /* Reset tìm kiếm Settings */
+  if (exists(elements.settingsSearch)) {
 
-    if (
-      elements.settingsSearch
-    ) {
-
-      elements.settingsSearch.value =
-        "";
-
-    }
+    elements.settingsSearch.value = "";
 
     searchSettings("");
 
-  }, 50);
+  }
+
+
+  /* Đóng sidebar mobile */
+  closeMobileSidebar();
+
 }
 
 
 /* =========================================================
-   SETTINGS CLOSE
+   SETTINGS - CLOSE
 ========================================================= */
 
 function closeSettings() {
 
-  elements.settingsModal
-    .classList
-    .remove("open");
+  if (exists(elements.settingsModal)) {
+
+    elements.settingsModal
+      .classList
+      .remove("open");
+
+  }
 
 }
 
 
 /* =========================================================
-   SETTINGS - CHANGE USERNAME
+   SETTINGS - USERNAME
 ========================================================= */
 
 function changeUsername() {
@@ -1422,6 +1457,7 @@ function changeUsername() {
   showToast(
     "Đã cập nhật tên tài khoản"
   );
+
 }
 
 
@@ -1451,6 +1487,7 @@ function toggleTheme() {
       ? "Đã chuyển sang giao diện tối"
       : "Đã chuyển sang giao diện sáng"
   );
+
 }
 
 
@@ -1483,8 +1520,7 @@ function clearAllHistory() {
 
   state.chats = [];
 
-  state.currentChatId =
-    null;
+  state.currentChatId = null;
 
 
   saveChats();
@@ -1497,68 +1533,42 @@ function clearAllHistory() {
   showToast(
     "Đã xóa toàn bộ lịch sử"
   );
+
 }
 
 
 /* =========================================================
-   SETTINGS NAVIGATION
+   SETTINGS - NAVIGATION
 ========================================================= */
 
 function switchSettingsPage(page) {
 
-  const navItems =
-    $$(".settings-nav-item");
+  $$(".settings-nav-item")
+    .forEach(button => {
 
-
-  const pages =
-    $$(".settings-page");
-
-
-  navItems.forEach(button => {
-
-    button.classList.toggle(
-      "active",
-      button.dataset.settingPage === page
-    );
-
-  });
-
-
-  pages.forEach(section => {
-
-    section.classList.toggle(
-      "active",
-      section.dataset.page === page
-    );
-
-  });
-
-
-  /* Cuộn nội dung Settings lên đầu */
-  const activePage =
-    document.querySelector(
-      `.settings-page[data-page="${page}"]`
-    );
-
-
-  if (activePage) {
-
-    const scroll =
-      activePage.querySelector(
-        ".settings-scroll"
+      button.classList.toggle(
+        "active",
+        button.dataset.settingPage === page
       );
 
+    });
 
-    if (scroll) {
-      scroll.scrollTop = 0;
-    }
 
-  }
+  $$(".settings-page")
+    .forEach(section => {
+
+      section.classList.toggle(
+        "active",
+        section.dataset.page === page
+      );
+
+    });
+
 }
 
 
 /* =========================================================
-   SETTINGS SEARCH
+   SETTINGS - SEARCH
 ========================================================= */
 
 function searchSettings(query) {
@@ -1585,410 +1595,6 @@ function searchSettings(query) {
 
     });
 
-
-  /* Nếu xóa ô tìm kiếm thì hiện lại tất cả */
-  if (!clean) {
-
-    $$(".settings-nav-item")
-      .forEach(item => {
-
-        item.style.display =
-          "flex";
-
-      });
-
-  }
-}
-
-
-/* =========================================================
-   SETTINGS EXTRA ACTIONS
-========================================================= */
-
-function setupExtraSettings() {
-
-  const settings =
-    getSettings();
-
-
-  /*
-   * Thông báo
-   */
-  const notificationPage =
-    document.querySelector(
-      '[data-page="notifications"]'
-    );
-
-
-  if (notificationPage) {
-
-    const placeholder =
-      notificationPage.querySelector(
-        ".settings-placeholder"
-      );
-
-
-    if (placeholder) {
-
-      placeholder.innerHTML = `
-        <span>♧</span>
-        <h3>Thông báo</h3>
-        <p>Quản lý thông báo của KhanhOS.</p>
-
-        <button
-          type="button"
-          class="setting-button"
-          id="notificationToggle"
-        >
-          ${
-            settings.notifications
-              ? "Đang bật"
-              : "Đang tắt"
-          }
-        </button>
-      `;
-
-
-      const toggle =
-        placeholder.querySelector(
-          "#notificationToggle"
-        );
-
-
-      if (toggle) {
-
-        toggle.addEventListener(
-          "click",
-          () => {
-
-            const current =
-              getSettings();
-
-            current.notifications =
-              !current.notifications;
-
-            saveSettings(current);
-
-            toggle.textContent =
-              current.notifications
-                ? "Đang bật"
-                : "Đang tắt";
-
-            showToast(
-              current.notifications
-                ? "Đã bật thông báo"
-                : "Đã tắt thông báo"
-            );
-
-          }
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /*
-   * Cá nhân hóa
-   */
-  const personalizationPage =
-    document.querySelector(
-      '[data-page="personalization"]'
-    );
-
-
-  if (personalizationPage) {
-
-    const placeholder =
-      personalizationPage.querySelector(
-        ".settings-placeholder"
-      );
-
-
-    if (placeholder) {
-
-      placeholder.innerHTML = `
-        <span>◉</span>
-        <h3>Cá nhân hóa KhanhOS</h3>
-        <p>
-          Điều chỉnh cách KhanhOS phản hồi với bạn.
-        </p>
-
-        <button
-          type="button"
-          class="setting-button"
-          id="personalizationButton"
-        >
-          ${
-            settings.personalization === "friendly"
-              ? "Thân thiện"
-              : "Mặc định"
-          }
-        </button>
-      `;
-
-
-      const button =
-        placeholder.querySelector(
-          "#personalizationButton"
-        );
-
-
-      if (button) {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const current =
-              getSettings();
-
-            current.personalization =
-              current.personalization === "friendly"
-                ? "default"
-                : "friendly";
-
-            saveSettings(current);
-
-            button.textContent =
-              current.personalization === "friendly"
-                ? "Thân thiện"
-                : "Mặc định";
-
-            showToast(
-              "Đã cập nhật cá nhân hóa"
-            );
-
-          }
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /*
-   * Voice
-   */
-  const voicePage =
-    document.querySelector(
-      '[data-page="voice"]'
-    );
-
-
-  if (voicePage) {
-
-    const placeholder =
-      voicePage.querySelector(
-        ".settings-placeholder"
-      );
-
-
-    if (placeholder) {
-
-      placeholder.innerHTML = `
-        <span>▥</span>
-        <h3>Giọng nói</h3>
-        <p>
-          Bật hoặc tắt các tính năng liên quan đến giọng nói.
-        </p>
-
-        <button
-          type="button"
-          class="setting-button"
-          id="voiceToggle"
-        >
-          ${
-            settings.voice
-              ? "Đang bật"
-              : "Đang tắt"
-          }
-        </button>
-      `;
-
-
-      const button =
-        placeholder.querySelector(
-          "#voiceToggle"
-        );
-
-
-      if (button) {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const current =
-              getSettings();
-
-            current.voice =
-              !current.voice;
-
-            saveSettings(current);
-
-            button.textContent =
-              current.voice
-                ? "Đang bật"
-                : "Đang tắt";
-
-            showToast(
-              current.voice
-                ? "Đã bật giọng nói"
-                : "Đã tắt giọng nói"
-            );
-
-          }
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /*
-   * Memory
-   */
-  const memoryPage =
-    document.querySelector(
-      '[data-page="memory"]'
-    );
-
-
-  if (memoryPage) {
-
-    const placeholder =
-      memoryPage.querySelector(
-        ".settings-placeholder"
-      );
-
-
-    if (placeholder) {
-
-      placeholder.innerHTML = `
-        <span>▣</span>
-        <h3>Bộ nhớ KhanhOS</h3>
-        <p>
-          KhanhOS có thể lưu một số cài đặt trên trình duyệt này.
-        </p>
-
-        <button
-          type="button"
-          class="setting-button"
-          id="memoryClearButton"
-        >
-          Xóa dữ liệu bộ nhớ
-        </button>
-      `;
-
-
-      const button =
-        placeholder.querySelector(
-          "#memoryClearButton"
-        );
-
-
-      if (button) {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const confirmed =
-              confirm(
-                "Xóa dữ liệu Settings đã lưu trên trình duyệt?"
-              );
-
-
-            if (!confirmed) {
-              return;
-            }
-
-
-            localStorage.removeItem(
-              SETTINGS_KEY
-            );
-
-
-            updateUserUI();
-            applyTheme();
-
-
-            showToast(
-              "Đã xóa dữ liệu Settings"
-            );
-
-          }
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /*
-   * Data
-   */
-  const dataPage =
-    document.querySelector(
-      '[data-page="data"]'
-    );
-
-
-  if (dataPage) {
-
-    const placeholder =
-      dataPage.querySelector(
-        ".settings-placeholder"
-      );
-
-
-    if (placeholder) {
-
-      placeholder.innerHTML = `
-        <span>▱</span>
-        <h3>Kiểm soát dữ liệu</h3>
-        <p>
-          Dữ liệu cuộc trò chuyện hiện được lưu trong trình duyệt của bạn.
-        </p>
-
-        <button
-          type="button"
-          class="setting-button danger"
-          id="dataClearButton"
-        >
-          Xóa dữ liệu trò chuyện
-        </button>
-      `;
-
-
-      const button =
-        placeholder.querySelector(
-          "#dataClearButton"
-        );
-
-
-      if (button) {
-
-        button.addEventListener(
-          "click",
-          clearAllHistory
-        );
-
-      }
-
-    }
-
-  }
-
 }
 
 
@@ -2006,6 +1612,7 @@ function toggleModelMenu() {
   elements.accountMenu
     .classList
     .remove("open");
+
 }
 
 
@@ -2120,9 +1727,7 @@ function handleFiles(files) {
     Array.from(files);
 
 
-  if (
-    !state.attachedFiles.length
-  ) {
+  if (!state.attachedFiles.length) {
     return;
   }
 
@@ -2130,6 +1735,7 @@ function handleFiles(files) {
   showToast(
     `${state.attachedFiles.length} file đã được chọn`
   );
+
 }
 
 
@@ -2138,6 +1744,11 @@ function handleFiles(files) {
 ========================================================= */
 
 function autoResizeTextarea() {
+
+  if (!exists(elements.messageInput)) {
+    return;
+  }
+
 
   const input =
     elements.messageInput;
@@ -2152,10 +1763,16 @@ function autoResizeTextarea() {
       input.scrollHeight,
       180
     ) + "px";
+
 }
 
 
 function updateSendButton() {
+
+  if (!exists(elements.sendBtn)) {
+    return;
+  }
+
 
   const hasText =
     elements.messageInput.value
@@ -2166,6 +1783,7 @@ function updateSendButton() {
   elements.sendBtn.disabled =
     !hasText ||
     state.isGenerating;
+
 }
 
 
@@ -2177,27 +1795,41 @@ function scrollToBottom() {
 
   requestAnimationFrame(() => {
 
-    elements.chatArea.scrollTop =
-      elements.chatArea.scrollHeight;
+    if (exists(elements.chatArea)) {
+
+      elements.chatArea.scrollTop =
+        elements.chatArea.scrollHeight;
+
+    }
 
   });
+
 }
 
 
 function closeAccountMenu() {
 
-  elements.accountMenu
-    .classList
-    .remove("open");
+  if (exists(elements.accountMenu)) {
+
+    elements.accountMenu
+      .classList
+      .remove("open");
+
+  }
 
 }
 
 
 function closeAllMenus() {
 
-  elements.modelMenu
-    .classList
-    .remove("open");
+  if (exists(elements.modelMenu)) {
+
+    elements.modelMenu
+      .classList
+      .remove("open");
+
+  }
+
 
   closeAccountMenu();
 
@@ -2206,23 +1838,38 @@ function closeAllMenus() {
     .forEach(menu =>
       menu.classList.remove("open")
     );
+
 }
 
 
 function closeAllModals() {
 
-  elements.searchModal
-    .classList
-    .remove("open");
+  if (exists(elements.searchModal)) {
+
+    elements.searchModal
+      .classList
+      .remove("open");
+
+  }
 
 
-  elements.settingsModal
-    .classList
-    .remove("open");
+  if (exists(elements.settingsModal)) {
+
+    elements.settingsModal
+      .classList
+      .remove("open");
+
+  }
+
 }
 
 
 function showToast(message) {
+
+  if (!exists(elements.toast)) {
+    return;
+  }
+
 
   elements.toast.textContent =
     message;
@@ -2249,6 +1896,7 @@ function showToast(message) {
       },
       2200
     );
+
 }
 
 
@@ -2266,6 +1914,7 @@ function toggleAccountMenu() {
   elements.modelMenu
     .classList
     .remove("open");
+
 }
 
 
@@ -2277,9 +1926,7 @@ function toggleSidebar() {
 
   elements.sidebar
     .classList
-    .toggle(
-      "mobile-open"
-    );
+    .toggle("mobile-open");
 
 
   elements.mobileOverlay
@@ -2288,10 +1935,9 @@ function toggleSidebar() {
       "open",
       elements.sidebar
         .classList
-        .contains(
-          "mobile-open"
-        )
+        .contains("mobile-open")
     );
+
 }
 
 
@@ -2299,16 +1945,13 @@ function closeMobileSidebar() {
 
   elements.sidebar
     .classList
-    .remove(
-      "mobile-open"
-    );
+    .remove("mobile-open");
 
 
   elements.mobileOverlay
     .classList
-    .remove(
-      "open"
-    );
+    .remove("open");
+
 }
 
 
@@ -2316,42 +1959,69 @@ function closeMobileSidebar() {
    EVENTS
 ========================================================= */
 
-elements.brandButton.addEventListener(
-  "click",
-  createChat
-);
+/* BRAND */
+
+if (exists(elements.brandButton)) {
+
+  elements.brandButton.addEventListener(
+    "click",
+    createChat
+  );
+
+}
 
 
-elements.newChatBtn.addEventListener(
-  "click",
-  createChat
-);
+/* NEW CHAT */
+
+if (exists(elements.newChatBtn)) {
+
+  elements.newChatBtn.addEventListener(
+    "click",
+    createChat
+  );
+
+}
 
 
-elements.searchBtn.addEventListener(
-  "click",
-  openSearch
-);
+/* SEARCH */
 
+if (exists(elements.searchBtn)) {
 
-elements.settingsBtn.addEventListener(
-  "click",
-  openSettings
-);
-
-
-$("#headerSearchBtn")
-  .addEventListener(
+  elements.searchBtn.addEventListener(
     "click",
     openSearch
   );
 
+}
 
-elements.menuSettingsBtn
-  .addEventListener(
+
+const headerSearchBtn =
+  $("#headerSearchBtn");
+
+
+if (exists(headerSearchBtn)) {
+
+  headerSearchBtn.addEventListener(
+    "click",
+    openSearch
+  );
+
+}
+
+
+/* =========================================================
+   SETTINGS BUTTONS
+========================================================= */
+
+/* Sidebar Settings */
+
+if (exists(elements.settingsBtn)) {
+
+  elements.settingsBtn.addEventListener(
     "click",
     event => {
 
+      event.preventDefault();
       event.stopPropagation();
 
       openSettings();
@@ -2359,9 +2029,35 @@ elements.menuSettingsBtn
     }
   );
 
+}
 
-elements.modelSelector
-  .addEventListener(
+
+/* Account menu Settings */
+
+if (exists(elements.menuSettingsBtn)) {
+
+  elements.menuSettingsBtn.addEventListener(
+    "click",
+    event => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      openSettings();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MODEL
+========================================================= */
+
+if (exists(elements.modelSelector)) {
+
+  elements.modelSelector.addEventListener(
     "click",
     event => {
 
@@ -2372,31 +2068,42 @@ elements.modelSelector
     }
   );
 
-
-elements.modelMenu
-  .querySelectorAll(
-    "button[data-model]"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        selectModel(
-          button.dataset.model,
-          button.dataset.provider,
-          button.dataset.apiModel
-        );
-
-      }
-    );
-
-  });
+}
 
 
-elements.accountBtn
-  .addEventListener(
+if (exists(elements.modelMenu)) {
+
+  elements.modelMenu
+    .querySelectorAll(
+      "button[data-model]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          selectModel(
+            button.dataset.model,
+            button.dataset.provider,
+            button.dataset.apiModel
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+if (exists(elements.accountBtn)) {
+
+  elements.accountBtn.addEventListener(
     "click",
     event => {
 
@@ -2407,9 +2114,12 @@ elements.accountBtn
     }
   );
 
+}
 
-elements.headerAccountBtn
-  .addEventListener(
+
+if (exists(elements.headerAccountBtn)) {
+
+  elements.headerAccountBtn.addEventListener(
     "click",
     event => {
 
@@ -2420,9 +2130,16 @@ elements.headerAccountBtn
     }
   );
 
+}
 
-elements.mobileMenuBtn
-  .addEventListener(
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+if (exists(elements.mobileMenuBtn)) {
+
+  elements.mobileMenuBtn.addEventListener(
     "click",
     event => {
 
@@ -2433,23 +2150,36 @@ elements.mobileMenuBtn
     }
   );
 
+}
 
-elements.mobileOverlay
-  .addEventListener(
+
+if (exists(elements.mobileOverlay)) {
+
+  elements.mobileOverlay.addEventListener(
     "click",
     closeMobileSidebar
   );
 
+}
 
-elements.attachBtn
-  .addEventListener(
+
+/* =========================================================
+   FILE
+========================================================= */
+
+if (exists(elements.attachBtn)) {
+
+  elements.attachBtn.addEventListener(
     "click",
     openFilePicker
   );
 
+}
 
-elements.fileInput
-  .addEventListener(
+
+if (exists(elements.fileInput)) {
+
+  elements.fileInput.addEventListener(
     "change",
     event =>
       handleFiles(
@@ -2457,22 +2187,27 @@ elements.fileInput
       )
   );
 
+}
 
-elements.messageInput
-  .addEventListener(
+
+/* =========================================================
+   MESSAGE INPUT
+========================================================= */
+
+if (exists(elements.messageInput)) {
+
+  elements.messageInput.addEventListener(
     "input",
     () => {
 
       autoResizeTextarea();
-
       updateSendButton();
 
     }
   );
 
 
-elements.messageInput
-  .addEventListener(
+  elements.messageInput.addEventListener(
     "keydown",
     event => {
 
@@ -2490,9 +2225,16 @@ elements.messageInput
     }
   );
 
+}
 
-elements.composer
-  .addEventListener(
+
+/* =========================================================
+   COMPOSER
+========================================================= */
+
+if (exists(elements.composer)) {
+
+  elements.composer.addEventListener(
     "submit",
     event => {
 
@@ -2503,9 +2245,16 @@ elements.composer
     }
   );
 
+}
 
-elements.searchInput
-  .addEventListener(
+
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
+
+if (exists(elements.searchInput)) {
+
+  elements.searchInput.addEventListener(
     "input",
     event =>
       renderSearchResults(
@@ -2513,26 +2262,68 @@ elements.searchInput
       )
   );
 
+}
 
-elements.themeToggle
-  .addEventListener(
+
+/* =========================================================
+   THEME
+========================================================= */
+
+if (exists(elements.themeToggle)) {
+
+  elements.themeToggle.addEventListener(
     "click",
-    toggleTheme
+    event => {
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      toggleTheme();
+
+    }
   );
 
+}
 
-elements.changeNameBtn
-  .addEventListener(
+
+/* =========================================================
+   CHANGE NAME
+========================================================= */
+
+if (exists(elements.changeNameBtn)) {
+
+  elements.changeNameBtn.addEventListener(
     "click",
-    changeUsername
+    event => {
+
+      event.preventDefault();
+
+      changeUsername();
+
+    }
   );
 
+}
 
-elements.clearHistoryBtn
-  .addEventListener(
+
+/* =========================================================
+   CLEAR HISTORY
+========================================================= */
+
+if (exists(elements.clearHistoryBtn)) {
+
+  elements.clearHistoryBtn.addEventListener(
     "click",
-    clearAllHistory
+    event => {
+
+      event.preventDefault();
+
+      clearAllHistory();
+
+    }
   );
+
+}
 
 
 /* =========================================================
@@ -2549,14 +2340,9 @@ $$(".settings-nav-item")
         event.preventDefault();
         event.stopPropagation();
 
-        const page =
-          button.dataset.settingPage;
-
-        if (!page) {
-          return;
-        }
-
-        switchSettingsPage(page);
+        switchSettingsPage(
+          button.dataset.settingPage
+        );
 
       }
     );
@@ -2564,7 +2350,11 @@ $$(".settings-nav-item")
   });
 
 
-if (elements.settingsSearch) {
+/* =========================================================
+   SETTINGS SEARCH
+========================================================= */
+
+if (exists(elements.settingsSearch)) {
 
   elements.settingsSearch
     .addEventListener(
@@ -2592,12 +2382,16 @@ $$(".suggestion")
       "click",
       () => {
 
+        if (!exists(elements.messageInput)) {
+          return;
+        }
+
+
         elements.messageInput.value =
-          button.dataset.prompt ||
-          "";
+          button.dataset.prompt || "";
+
 
         autoResizeTextarea();
-
         updateSendButton();
 
         elements.messageInput.focus();
@@ -2620,6 +2414,8 @@ $$("[data-close]")
       event => {
 
         event.preventDefault();
+        event.stopPropagation();
+
 
         const target =
           document.getElementById(
@@ -2627,11 +2423,22 @@ $$("[data-close]")
           );
 
 
-        if (target) {
+        if (!target) {
+          return;
+        }
 
-          target.classList.remove(
-            "open"
-          );
+
+        target.classList.remove(
+          "open"
+        );
+
+
+        if (
+          button.dataset.close ===
+          "settingsModal"
+        ) {
+
+          closeSettings();
 
         }
 
@@ -2649,13 +2456,13 @@ document.addEventListener(
   "click",
   event => {
 
+    /* MODEL MENU */
+
     if (
-      !elements.modelMenu.contains(
-        event.target
-      ) &&
-      !elements.modelSelector.contains(
-        event.target
-      )
+      exists(elements.modelMenu) &&
+      exists(elements.modelSelector) &&
+      !elements.modelMenu.contains(event.target) &&
+      !elements.modelSelector.contains(event.target)
     ) {
 
       elements.modelMenu
@@ -2665,16 +2472,15 @@ document.addEventListener(
     }
 
 
+    /* ACCOUNT MENU */
+
     if (
-      !elements.accountMenu.contains(
-        event.target
-      ) &&
-      !elements.accountBtn.contains(
-        event.target
-      ) &&
-      !elements.headerAccountBtn.contains(
-        event.target
-      )
+      exists(elements.accountMenu) &&
+      exists(elements.accountBtn) &&
+      exists(elements.headerAccountBtn) &&
+      !elements.accountMenu.contains(event.target) &&
+      !elements.accountBtn.contains(event.target) &&
+      !elements.headerAccountBtn.contains(event.target)
     ) {
 
       closeAccountMenu();
@@ -2686,11 +2492,12 @@ document.addEventListener(
 
 
 /* =========================================================
-   MODAL BACKDROP
+   SEARCH MODAL BACKDROP
 ========================================================= */
 
-elements.searchModal
-  .addEventListener(
+if (exists(elements.searchModal)) {
+
+  elements.searchModal.addEventListener(
     "click",
     event => {
 
@@ -2708,9 +2515,16 @@ elements.searchModal
     }
   );
 
+}
 
-elements.settingsModal
-  .addEventListener(
+
+/* =========================================================
+   SETTINGS MODAL BACKDROP
+========================================================= */
+
+if (exists(elements.settingsModal)) {
+
+  elements.settingsModal.addEventListener(
     "click",
     event => {
 
@@ -2725,6 +2539,8 @@ elements.settingsModal
 
     }
   );
+
+}
 
 
 /* =========================================================
@@ -2779,17 +2595,15 @@ function init() {
   clearMessages();
 
 
-  elements.welcome.style.display =
-    "flex";
+  if (exists(elements.welcome)) {
+
+    elements.welcome.style.display =
+      "flex";
+
+  }
 
 
   autoResizeTextarea();
-
-
-  /*
-   * Kích hoạt các Settings nâng cao
-   */
-  setupExtraSettings();
 
 }
 
