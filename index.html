@@ -72,33 +72,20 @@
       margin-bottom: 25px;
     }
 
-    /* LOGO TẠM THỜI - KHÔNG CẦN FILE */
-
     .brand-logo {
       width: 44px;
       height: 44px;
       flex-shrink: 0;
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
+
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
 
       border-radius: 11px;
 
-      background: linear-gradient(
-        135deg,
-        #171717,
-        #292929
-      );
-
+      background: #181818;
       border: 1px solid #383838;
-
-      color: #fff;
-
-      font-size: 22px;
-      font-weight: 800;
-
-      letter-spacing: -1px;
 
       box-shadow:
         0 0 25px rgba(255,255,255,0.05);
@@ -283,34 +270,22 @@
       text-align: center;
     }
 
-    /* LOGO LỚN TẠM THỜI */
-
     .welcome-logo {
       width: 90px;
       height: 90px;
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
 
       margin: 0 auto 20px;
 
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+
       border-radius: 21px;
 
-      background: linear-gradient(
-        135deg,
-        #151515,
-        #292929
-      );
+      background: #151515;
 
       border: 1px solid #383838;
-
-      color: #fff;
-
-      font-size: 43px;
-      font-weight: 800;
-
-      letter-spacing: -3px;
 
       box-shadow:
         0 0 40px rgba(255,255,255,0.06);
@@ -595,10 +570,7 @@
       .welcome-logo {
         width: 78px;
         height: 78px;
-
         border-radius: 18px;
-
-        font-size: 38px;
       }
 
       .welcome h1 {
@@ -635,10 +607,11 @@
 
       <div class="brand">
 
-        <!-- LOGO TẠM THỜI -->
-        <div class="brand-logo">
-          K
-        </div>
+        <img
+          class="brand-logo"
+          src="./logo.jpn"
+          alt="KhanhOS Logo"
+        >
 
         <div class="brand-name">
           KhanhOS
@@ -651,11 +624,13 @@
         class="new-chat"
         onclick="newChat()"
       >
+
         <span>＋</span>
 
         <span>
           Cuộc trò chuyện mới
         </span>
+
       </button>
 
 
@@ -671,11 +646,13 @@
           class="sidebar-button"
           onclick="openSettings()"
         >
+
           <span>⚙️</span>
 
           <span>
             Cài đặt
           </span>
+
         </button>
 
       </div>
@@ -712,10 +689,11 @@
           id="welcome"
         >
 
-          <!-- LOGO TẠM THỜI -->
-          <div class="welcome-logo">
-            K
-          </div>
+          <img
+            class="welcome-logo"
+            src="./logo.jpn"
+            alt="KhanhOS Logo"
+          >
 
 
           <h1>
@@ -882,9 +860,11 @@
           const item =
             document.createElement("div");
 
-          item.className = "chat-item";
+          item.className =
+            "chat-item";
 
-          item.textContent = chat.text;
+          item.textContent =
+            chat.text;
 
           chatList.appendChild(item);
 
@@ -918,7 +898,10 @@
        ADD MESSAGE
     ========================= */
 
-    function addMessage(text, type) {
+    function addMessage(
+      text,
+      type
+    ) {
 
       const message =
         document.createElement("div");
@@ -926,7 +909,8 @@
       message.className =
         "message " + type;
 
-      message.textContent = text;
+      message.textContent =
+        text;
 
       messages.appendChild(message);
 
@@ -971,13 +955,6 @@
 
       saveChat(text);
 
-
-      /*
-        DEMO RESPONSE
-
-        Đây chỉ là giao diện demo.
-        Sau này có thể kết nối API AI.
-      */
 
       setTimeout(() => {
 
@@ -1047,9 +1024,11 @@
           id="welcome"
         >
 
-          <div class="welcome-logo">
-            K
-          </div>
+          <img
+            class="welcome-logo"
+            src="./logo.jpn"
+            alt="KhanhOS Logo"
+          >
 
           <h1>
             Cuộc trò chuyện mới 👋
