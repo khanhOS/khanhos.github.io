@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0b0b">
   <title>KhanhOS</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -10,10 +11,14 @@
 <body>
   <div id="app">
 
+    <!-- MOBILE OVERLAY -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
 
       <div class="sidebar-top">
+
         <button class="brand" id="brandButton">
           <div class="brand-logo">K</div>
           <span>KhanhOS</span>
@@ -28,16 +33,21 @@
           <span class="icon">⌕</span>
           <span>Tìm kiếm</span>
         </button>
+
       </div>
 
       <div class="history-section">
-        <div class="history-title">Lịch sử</div>
+
+        <div class="history-title">
+          Lịch sử
+        </div>
 
         <div id="chatHistory" class="chat-history">
           <div class="empty-history">
             Chưa có cuộc trò chuyện
           </div>
         </div>
+
       </div>
 
       <div class="sidebar-bottom">
@@ -48,18 +58,29 @@
         </button>
 
         <button class="account-btn" id="accountBtn">
-          <div class="avatar" id="sidebarAvatar">K</div>
+
+          <div class="avatar" id="sidebarAvatar">
+            K
+          </div>
 
           <div class="account-info">
-            <strong id="sidebarUsername">Khanh</strong>
+            <strong id="sidebarUsername">
+              Khanh
+            </strong>
+
             <span>Free</span>
           </div>
 
-          <span class="account-more">•••</span>
+          <span class="account-more">
+            •••
+          </span>
+
         </button>
 
       </div>
+
     </aside>
+
 
     <!-- MAIN -->
     <main class="main">
@@ -68,82 +89,167 @@
       <header class="header">
 
         <div class="header-left">
-          <button class="mobile-menu" id="mobileMenuBtn">
+
+          <button
+            class="mobile-menu"
+            id="mobileMenuBtn"
+            aria-label="Mở menu"
+          >
             ☰
           </button>
 
-          <button class="model-selector" id="modelSelector">
-            <span id="currentModel">KhanhOS</span>
-            <span class="chevron">⌄</span>
+          <button
+            class="model-selector"
+            id="modelSelector"
+          >
+            <span id="currentModel">
+              KhanhOS
+            </span>
+
+            <span class="chevron">
+              ⌄
+            </span>
           </button>
+
         </div>
 
+
         <div class="header-right">
-          <button class="header-btn" id="headerSearchBtn">
+
+          <button
+            class="header-btn"
+            id="headerSearchBtn"
+            title="Tìm kiếm"
+          >
             ⌕
           </button>
 
-          <button class="header-avatar" id="headerAccountBtn">
+          <button
+            class="header-avatar"
+            id="headerAccountBtn"
+          >
             K
           </button>
+
         </div>
 
       </header>
 
+
       <!-- MODEL MENU -->
       <div class="model-menu" id="modelMenu">
 
-        <button data-model="KhanhOS">
+        <div class="model-menu-label">
+          Chọn mô hình
+        </div>
+
+        <button
+          data-model="KhanhOS"
+          data-provider="openai"
+          data-api-model="gpt-5-mini"
+        >
           <div>
             <strong>KhanhOS</strong>
             <small>Mô hình mặc định</small>
           </div>
+
           <span>✓</span>
         </button>
 
-        <button data-model="KhanhOS Fast">
+        <button
+          data-model="KhanhOS Fast"
+          data-provider="openai"
+          data-api-model="gpt-5-mini"
+        >
           <div>
             <strong>KhanhOS Fast</strong>
             <small>Phản hồi nhanh</small>
           </div>
+
+          <span></span>
         </button>
 
-        <button data-model="KhanhOS Pro">
+        <button
+          data-model="KhanhOS Pro"
+          data-provider="openai"
+          data-api-model="gpt-5"
+        >
           <div>
             <strong>KhanhOS Pro</strong>
             <small>Suy luận nâng cao</small>
           </div>
+
+          <span></span>
         </button>
 
       </div>
 
+
       <!-- CHAT -->
       <section class="chat-area" id="chatArea">
 
-        <!-- WELCOME -->
-        <div class="welcome" id="welcome">
+        <div class="chat-container">
 
-          <div class="welcome-logo">
-            K
+          <!-- WELCOME -->
+          <div class="welcome" id="welcome">
+
+            <div class="welcome-logo">
+              K
+            </div>
+
+            <h1>
+              KhanhOS
+            </h1>
+
+            <p>
+              Tao có thể giúp gì cho mày hôm nay?
+            </p>
+
+            <div class="suggestions">
+
+              <button class="suggestion" data-prompt="Giúp tao viết một đoạn code">
+                <span>⌘</span>
+                <span>Giúp tao viết code</span>
+              </button>
+
+              <button class="suggestion" data-prompt="Giải thích cho tao một vấn đề">
+                <span>?</span>
+                <span>Giải thích một vấn đề</span>
+              </button>
+
+              <button class="suggestion" data-prompt="Cho tao một ý tưởng hay">
+                <span>✦</span>
+                <span>Cho tao một ý tưởng</span>
+              </button>
+
+              <button class="suggestion" data-prompt="Giúp tao tìm lỗi trong code">
+                <span>⌕</span>
+                <span>Tìm lỗi trong code</span>
+              </button>
+
+            </div>
+
           </div>
 
-          <h1>KhanhOS</h1>
 
-          <p>
-            Tao có thể giúp gì cho mày hôm nay?
-          </p>
+          <!-- MESSAGES -->
+          <div
+            class="messages"
+            id="messages"
+          ></div>
 
         </div>
 
-        <!-- MESSAGES -->
-        <div class="messages" id="messages"></div>
-
       </section>
 
-      <!-- INPUT -->
+
+      <!-- COMPOSER -->
       <div class="composer-wrapper">
 
-        <form class="composer" id="composer">
+        <form
+          class="composer"
+          id="composer"
+        >
 
           <button
             type="button"
@@ -173,6 +279,7 @@
             class="send-btn"
             id="sendBtn"
             disabled
+            title="Gửi"
           >
             ↑
           </button>
@@ -187,26 +294,41 @@
 
     </main>
 
+
     <!-- SEARCH MODAL -->
-    <div class="modal-overlay" id="searchModal">
+    <div
+      class="modal-overlay"
+      id="searchModal"
+    >
 
       <div class="search-modal">
 
         <div class="modal-header">
-          <h2>Tìm kiếm</h2>
 
-          <button class="close-btn" data-close="searchModal">
+          <h2>
+            Tìm kiếm
+          </h2>
+
+          <button
+            class="close-btn"
+            data-close="searchModal"
+          >
             ×
           </button>
+
         </div>
 
         <input
           id="searchInput"
           class="search-input"
           placeholder="Tìm trong lịch sử trò chuyện..."
+          autocomplete="off"
         >
 
-        <div id="searchResults" class="search-results">
+        <div
+          id="searchResults"
+          class="search-results"
+        >
           <div class="search-empty">
             Nhập từ khóa để tìm kiếm
           </div>
@@ -216,25 +338,42 @@
 
     </div>
 
+
     <!-- SETTINGS MODAL -->
-    <div class="modal-overlay" id="settingsModal">
+    <div
+      class="modal-overlay"
+      id="settingsModal"
+    >
 
       <div class="settings-modal">
 
         <div class="modal-header">
-          <h2>Cài đặt</h2>
 
-          <button class="close-btn" data-close="settingsModal">
+          <h2>
+            Cài đặt
+          </h2>
+
+          <button
+            class="close-btn"
+            data-close="settingsModal"
+          >
             ×
           </button>
+
         </div>
 
         <div class="settings-list">
 
           <div class="setting-item">
+
             <div>
-              <strong>Giao diện</strong>
-              <small>Chuyển giữa sáng và tối</small>
+              <strong>
+                Giao diện
+              </strong>
+
+              <small>
+                Chuyển giữa sáng và tối
+              </small>
             </div>
 
             <button
@@ -243,12 +382,20 @@
             >
               Tối
             </button>
+
           </div>
 
+
           <div class="setting-item">
+
             <div>
-              <strong>Tên tài khoản</strong>
-              <small id="currentUsername">Khanh</small>
+              <strong>
+                Tên tài khoản
+              </strong>
+
+              <small id="currentUsername">
+                Khanh
+              </small>
             </div>
 
             <button
@@ -257,12 +404,20 @@
             >
               Đổi tên
             </button>
+
           </div>
 
+
           <div class="setting-item">
+
             <div>
-              <strong>Xóa lịch sử</strong>
-              <small>Xóa toàn bộ cuộc trò chuyện đã lưu</small>
+              <strong>
+                Xóa lịch sử
+              </strong>
+
+              <small>
+                Xóa toàn bộ cuộc trò chuyện đã lưu
+              </small>
             </div>
 
             <button
@@ -271,6 +426,7 @@
             >
               Xóa
             </button>
+
           </div>
 
         </div>
@@ -279,16 +435,32 @@
 
     </div>
 
+
     <!-- ACCOUNT MENU -->
-    <div class="account-menu" id="accountMenu">
+    <div
+      class="account-menu"
+      id="accountMenu"
+    >
 
       <div class="account-menu-header">
-        <div class="big-avatar">K</div>
+
+        <div
+          class="big-avatar"
+          id="bigAvatar"
+        >
+          K
+        </div>
 
         <div>
-          <strong id="menuUsername">Khanh</strong>
-          <small>Tài khoản Free</small>
+          <strong id="menuUsername">
+            Khanh
+          </strong>
+
+          <small>
+            Tài khoản Free
+          </small>
         </div>
+
       </div>
 
       <button id="menuSettingsBtn">
@@ -301,8 +473,12 @@
 
     </div>
 
+
     <!-- TOAST -->
-    <div class="toast" id="toast"></div>
+    <div
+      class="toast"
+      id="toast"
+    ></div>
 
   </div>
 
