@@ -1,224 +1,113 @@
-/* =========================================================
-   KHANHOS AI - FRONTEND
-========================================================= */
-
-const input = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
-
-const welcome = document.getElementById("welcome");
-const messages = document.getElementById("messages");
-const chatArea = document.getElementById("chatArea");
-
-const newChatBtn = document.getElementById("newChatBtn");
-const searchChatBtn = document.getElementById("searchChatBtn");
-
-const sidebarSearch = document.getElementById("sidebarSearch");
-const chatSearchInput = document.getElementById("chatSearchInput");
-const closeSearchBtn = document.getElementById("closeSearchBtn");
-
-const chatList = document.getElementById("chatList");
-const emptyChats = document.getElementById("emptyChats");
-
-const mobileMenu = document.getElementById("mobileMenu");
-const sidebar = document.getElementById("sidebar");
-
-const profileButton = document.getElementById("profileButton");
-const accountMenu = document.getElementById("accountMenu");
-
-const settingsBtn = document.getElementById("settingsBtn");
-const clearHistoryBtn = document.getElementById("clearHistoryBtn");
-const helpBtn = document.getElementById("helpBtn");
-
-const settingsOverlay = document.getElementById("settingsOverlay");
-const settingsClose = document.getElementById("settingsClose");
-
-const settingsPageTitle =
-  document.getElementById("settingsPageTitle");
-
-const settingsPage =
-  document.getElementById("settingsPage");
-
-const themeSelect =
-  document.getElementById("themeSelect");
-
-const enterSendToggle =
-  document.getElementById("enterSendToggle");
-
-const historyToggle =
-  document.getElementById("historyToggle");
-
-const modelSelector =
-  document.getElementById("modelSelector");
-
-const modelMenu =
-  document.getElementById("modelMenu");
-
-const modelName =
-  document.getElementById("modelName");
-
-const fileButton =
-  document.getElementById("fileButton");
-
-const fileInput =
-  document.getElementById("fileInput");
-
-const contextMenu =
-  document.getElementById("contextMenu");
-
-const renameChatBtn =
-  document.getElementById("renameChatBtn");
-
-const deleteChatBtn =
-  document.getElementById("deleteChatBtn");
-
-
-/* =========================================================
-   API CONFIG
-========================================================= */
+"use strict";
 
 /*
-  Nếu frontend và backend chạy cùng domain:
-
-      /api/chat
-
-  Nếu backend nằm ở domain khác, đổi thành:
-
-      https://YOUR-BACKEND-DOMAIN/api/chat
-
-  KHÔNG đặt API KEY ở đây.
+|--------------------------------------------------------------------------
+| KhanhOS Frontend
+|--------------------------------------------------------------------------
 */
 
-const API_URL =
-  localStorage.getItem("khanhos-api-url") ||
-  "/api/chat";
+const STORAGE_KEY = "khanhos_chats";
+const SETTINGS_KEY = "khanhos_settings";
+
+const state = {
+  chats: [],
+  currentChatId: null,
+  selectedModel: "KhanhOS",
+  isGenerating: false,
+  attachedFiles: []
+};
+
+const defaultSettings = {
+  username: "Khanh",
+  theme: "dark"
+};
 
 
-/* =========================================================
-   MODEL
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| DOM
+|--------------------------------------------------------------------------
+*/
 
-let selectedProvider =
-  localStorage.getItem("khanhos-provider") ||
-  "openai";
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
 
-let selectedModel =
-  localStorage.getItem("khanhos-model") ||
-  "gpt-5-mini";
+const elements = {
+  sidebar: $("#sidebar"),
+
+  newChatBtn: $("#newChatBtn"),
+  searchBtn: $("#searchBtn"),
+  settingsBtn: $("#settingsBtn"),
+
+  chatHistory: $("#chatHistory"),
+
+  messages: $("#messages"),
+  welcome: $("#welcome"),
+
+  composer: $("#composer"),
+  messageInput: $("#messageInput"),
+  sendBtn: $("#sendBtn"),
+
+  attachBtn: $("#attachBtn"),
+  fileInput: $("#fileInput"),
+
+  modelSelector: $("#modelSelector"),
+  modelMenu: $("#modelMenu"),
+  currentModel: $("#currentModel"),
+
+  searchModal: $("#searchModal"),
+  searchInput: $("#searchInput"),
+  searchResults: $("#searchResults"),
+
+  settingsModal: $("#settingsModal"),
+
+  accountBtn: $("#accountBtn"),
+  headerAccountBtn: $("#headerAccountBtn"),
+  accountMenu: $("#accountMenu"),
+
+  mobileMenuBtn: $("#mobileMenuBtn"),
+
+  themeToggle: $("#themeToggle"),
+  changeNameBtn: $("#changeNameBtn"),
+  clearHistoryBtn: $("#clearHistoryBtn"),
+
+  menuSettingsBtn: $("#menuSettingsBtn"),
+  menuNewChatBtn: $("#menuNewChatBtn"),
+
+  sidebarUsername: $("#sidebarUsername"),
+  menuUsername: $("#menuUsername"),
+  currentUsername: $("#currentUsername"),
+
+  toast: $("#toast")
+};
 
 
-/* =========================================================
-   STORAGE
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| SETTINGS
+|--------------------------------------------------------------------------
+*/
 
-const STORAGE_KEY =
-  "khanhos-chats-v2";
-
-const SETTINGS_KEY =
-  "khanhos-settings";
-
-let chats = loadChats();
-
-let currentChatId = null;
-
-let aiGenerating = false;
-
-let contextChatId = null;
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function generateId() {
-
-  if (
-    window.crypto &&
-    typeof window.crypto.randomUUID === "function"
-  ) {
-    return window.crypto.randomUUID();
-  }
-
-  return (
-    Date.now().toString(36) +
-    Math.random().toString(36).slice(2)
-  );
-}
-
-
-function loadChats() {
-
+function getSettings() {
   try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
 
-    const data =
-      JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
-
-    return Array.isArray(data)
-      ? data
-      : [];
-
-  } catch {
-
-    return [];
-  }
-}
-
-
-function saveChats() {
-
-  try {
-
-    const settings =
-      loadSettings();
-
-    if (
-      settings.history === false
-    ) {
-      return;
+    if (!saved) {
+      return { ...defaultSettings };
     }
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(chats)
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Không thể lưu lịch sử:",
-      error
-    );
-  }
-}
-
-
-function loadSettings() {
-
-  try {
-
     return {
-      history: true,
-      enterSend: true,
-      theme: "dark",
-      ...JSON.parse(
-        localStorage.getItem(SETTINGS_KEY) || "{}"
-      )
+      ...defaultSettings,
+      ...JSON.parse(saved)
     };
 
   } catch {
-
-    return {
-      history: true,
-      enterSend: true,
-      theme: "dark"
-    };
+    return { ...defaultSettings };
   }
 }
 
 
 function saveSettings(settings) {
-
   localStorage.setItem(
     SETTINGS_KEY,
     JSON.stringify(settings)
@@ -226,487 +115,972 @@ function saveSettings(settings) {
 }
 
 
-function makeChatTitle(text) {
+function updateUserUI() {
+  const settings = getSettings();
 
-  const clean =
-    text
-      .replace(/\s+/g, " ")
-      .trim();
+  elements.sidebarUsername.textContent =
+    settings.username;
 
-  if (!clean) {
-    return "Cuộc chat mới";
-  }
+  elements.menuUsername.textContent =
+    settings.username;
 
-  return clean.length <= 38
-    ? clean
-    : clean.slice(0, 38) + "...";
+  elements.currentUsername.textContent =
+    settings.username;
+
+  const firstLetter =
+    settings.username.trim().charAt(0).toUpperCase() || "K";
+
+  $("#sidebarAvatar").textContent = firstLetter;
+  elements.headerAccountBtn.textContent = firstLetter;
+  $(".big-avatar").textContent = firstLetter;
 }
 
 
-/* =========================================================
-   CHAT
-========================================================= */
+function applyTheme() {
+  const settings = getSettings();
+
+  document.documentElement.dataset.theme =
+    settings.theme;
+
+  elements.themeToggle.textContent =
+    settings.theme === "dark"
+      ? "Tối"
+      : "Sáng";
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHAT STORAGE
+|--------------------------------------------------------------------------
+*/
+
+function loadChats() {
+  try {
+    const saved =
+      localStorage.getItem(STORAGE_KEY);
+
+    state.chats =
+      saved ? JSON.parse(saved) : [];
+
+  } catch {
+    state.chats = [];
+  }
+
+  renderHistory();
+}
+
+
+function saveChats() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(state.chats)
+  );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHAT CREATION
+|--------------------------------------------------------------------------
+*/
 
 function createChat() {
 
+  /*
+   * Không tạo lịch sử ngay khi bấm "Chat mới".
+   * Chỉ tạo chat thật khi user gửi tin đầu tiên.
+   */
+
+  state.currentChatId = null;
+
+  clearMessages();
+
+  elements.welcome.style.display = "flex";
+
+  elements.messageInput.value = "";
+
+  updateSendButton();
+
+  closeAllMenus();
+
+  elements.messageInput.focus();
+}
+
+
+function createRealChat(firstMessage) {
+
   const chat = {
+    id: crypto.randomUUID
+      ? crypto.randomUUID()
+      : Date.now().toString(),
 
-    id: generateId(),
+    title: generateTitle(firstMessage),
 
-    title: "Cuộc chat mới",
-
-    messages: [],
+    model: state.selectedModel,
 
     createdAt: Date.now(),
 
-    updatedAt: Date.now()
+    updatedAt: Date.now(),
 
+    messages: []
   };
 
-  chats.unshift(chat);
+  state.chats.unshift(chat);
 
-  currentChatId =
-    chat.id;
+  state.currentChatId = chat.id;
 
   saveChats();
-
-  renderChatList();
 
   return chat;
 }
 
 
+function generateTitle(text) {
+
+  const clean = text
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (clean.length <= 32) {
+    return clean;
+  }
+
+  return clean.substring(0, 32) + "...";
+}
+
+
 function getCurrentChat() {
 
-  return chats.find(
-    chat =>
-      chat.id === currentChatId
-  ) || null;
+  return state.chats.find(
+    chat => chat.id === state.currentChatId
+  );
 }
 
 
-function startNewChat() {
+/*
+|--------------------------------------------------------------------------
+| LOAD CHAT
+|--------------------------------------------------------------------------
+*/
 
-  currentChatId = null;
-
-  messages.innerHTML = "";
-
-  welcome.style.display = "flex";
-
-  input.value = "";
-
-  input.style.height = "auto";
-
-  updateInputState();
-
-  closeContextMenu();
-
-  renderChatList();
-
-  input.focus();
-
-  if (
-    window.innerWidth <= 800
-  ) {
-    sidebar.classList.remove("open");
-  }
-}
-
-
-function openChat(id) {
+function openChat(chatId) {
 
   const chat =
-    chats.find(
-      item => item.id === id
+    state.chats.find(
+      chat => chat.id === chatId
     );
 
-  if (!chat) {
-    return;
-  }
+  if (!chat) return;
 
-  currentChatId =
-    chat.id;
+  state.currentChatId = chat.id;
 
-  messages.innerHTML = "";
+  clearMessages();
 
-  if (
-    chat.messages.length === 0
-  ) {
+  elements.welcome.style.display = "none";
 
-    welcome.style.display =
-      "flex";
+  chat.messages.forEach(message => {
+    renderMessage(
+      message.role,
+      message.content
+    );
+  });
+
+  renderHistory();
+
+  closeAllMenus();
+
+  elements.messageInput.focus();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MESSAGE RENDER
+|--------------------------------------------------------------------------
+*/
+
+function clearMessages() {
+  elements.messages.innerHTML = "";
+}
+
+
+function renderMessage(role, content) {
+
+  const wrapper =
+    document.createElement("div");
+
+  wrapper.className =
+    `message-row ${role}`;
+
+  const message =
+    document.createElement("div");
+
+  message.className = "message";
+
+  if (role === "user") {
+
+    message.textContent = content;
 
   } else {
 
-    welcome.style.display =
-      "none";
-
-    chat.messages.forEach(
-      message => {
-
-        renderMessage(
-          message.text,
-          message.role
-        );
-
-      }
-    );
+    message.innerHTML =
+      formatAIMessage(content);
   }
 
-  renderChatList();
+  wrapper.appendChild(message);
 
-  requestAnimationFrame(
-    () => {
+  elements.messages.appendChild(wrapper);
 
-      chatArea.scrollTop =
-        chatArea.scrollHeight;
+  scrollToBottom();
 
-    }
-  );
-
-  if (
-    window.innerWidth <= 800
-  ) {
-    sidebar.classList.remove("open");
-  }
+  return wrapper;
 }
 
 
-/* =========================================================
-   DATE GROUP
-========================================================= */
+function formatAIMessage(text) {
 
-function getDateLabel(timestamp) {
+  if (!text) return "";
 
-  const date =
-    new Date(timestamp);
+  let escaped = escapeHTML(text);
 
-  const today =
-    new Date();
+  /*
+   * Code blocks
+   */
 
-  const yesterday =
-    new Date();
-
-  yesterday.setDate(
-    yesterday.getDate() - 1
+  escaped = escaped.replace(
+    /```([\s\S]*?)```/g,
+    "<pre><code>$1</code></pre>"
   );
 
-  if (
-    date.toDateString() ===
-    today.toDateString()
-  ) {
-    return "Hôm nay";
-  }
+  /*
+   * Inline code
+   */
 
-  if (
-    date.toDateString() ===
-    yesterday.toDateString()
-  ) {
-    return "Hôm qua";
-  }
-
-  return date.toLocaleDateString(
-    "vi-VN",
-    {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric"
-    }
+  escaped = escaped.replace(
+    /`([^`]+)`/g,
+    "<code>$1</code>"
   );
+
+  /*
+   * Bold
+   */
+
+  escaped = escaped.replace(
+    /\*\*(.*?)\*\*/g,
+    "<strong>$1</strong>"
+  );
+
+  /*
+   * Line breaks
+   */
+
+  escaped = escaped.replace(
+    /\n/g,
+    "<br>"
+  );
+
+  return escaped;
 }
 
 
-/* =========================================================
-   RENDER SIDEBAR
-========================================================= */
+function escapeHTML(text) {
 
-function renderChatList() {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
-  chatList.innerHTML = "";
 
-  const search =
-    chatSearchInput
-      .value
-      .trim()
-      .toLowerCase();
+/*
+|--------------------------------------------------------------------------
+| SEND MESSAGE
+|--------------------------------------------------------------------------
+*/
 
-  const filtered =
-    chats.filter(chat => {
+async function sendMessage() {
 
-      if (!search) {
-        return true;
-      }
+  const text =
+    elements.messageInput.value.trim();
 
-      return (
-        chat.title
-          .toLowerCase()
-          .includes(search)
+  if (!text || state.isGenerating) {
+    return;
+  }
+
+  /*
+   * Nếu chưa có chat thật thì tạo ở đây.
+   */
+
+  let chat = getCurrentChat();
+
+  if (!chat) {
+    chat = createRealChat(text);
+  }
+
+  elements.welcome.style.display = "none";
+
+  /*
+   * User message
+   */
+
+  chat.messages.push({
+    role: "user",
+    content: text,
+    timestamp: Date.now()
+  });
+
+  chat.updatedAt = Date.now();
+
+  renderMessage("user", text);
+
+  elements.messageInput.value = "";
+
+  autoResizeTextarea();
+
+  updateSendButton();
+
+  renderHistory();
+
+  saveChats();
+
+  /*
+   * AI loading
+   */
+
+  state.isGenerating = true;
+
+  const loading =
+    createLoadingMessage();
+
+  try {
+
+    const response =
+      await callChatAPI(
+        chat.messages,
+        chat.model
       );
 
+    loading.remove();
+
+    const aiText =
+      response.message ||
+      response.content ||
+      response.reply ||
+      "KhanhOS không nhận được phản hồi.";
+
+    chat.messages.push({
+      role: "assistant",
+      content: aiText,
+      timestamp: Date.now()
     });
 
-  emptyChats.style.display =
-    filtered.length === 0
-      ? "block"
-      : "none";
+    chat.updatedAt = Date.now();
 
-  let lastDate = "";
+    renderMessage(
+      "assistant",
+      aiText
+    );
 
-  filtered.forEach(chat => {
+    saveChats();
 
-    const dateLabel =
-      getDateLabel(
-        chat.updatedAt
-      );
+    renderHistory();
 
-    if (
-      dateLabel !== lastDate
-    ) {
+  } catch (error) {
 
-      const heading =
+    loading.remove();
+
+    console.error(error);
+
+    const errorText =
+      "Không thể kết nối tới KhanhOS API. Kiểm tra server.js và endpoint `/api/chat`.";
+
+    chat.messages.push({
+      role: "assistant",
+      content: errorText,
+      timestamp: Date.now()
+    });
+
+    renderMessage(
+      "assistant",
+      errorText
+    );
+
+    saveChats();
+
+  } finally {
+
+    state.isGenerating = false;
+
+    updateSendButton();
+
+    elements.messageInput.focus();
+  }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| API
+|--------------------------------------------------------------------------
+*/
+
+async function callChatAPI(messages, model) {
+
+  const response =
+    await fetch("/api/chat", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        model,
+        messages
+      })
+    });
+
+  if (!response.ok) {
+
+    let errorMessage =
+      `API error ${response.status}`;
+
+    try {
+
+      const error =
+        await response.json();
+
+      if (error.message) {
+        errorMessage = error.message;
+      }
+
+    } catch {}
+
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LOADING MESSAGE
+|--------------------------------------------------------------------------
+*/
+
+function createLoadingMessage() {
+
+  const wrapper =
+    document.createElement("div");
+
+  wrapper.className =
+    "message-row assistant";
+
+  const message =
+    document.createElement("div");
+
+  message.className =
+    "message loading-message";
+
+  message.innerHTML = `
+    <span class="loading-dot"></span>
+    <span class="loading-dot"></span>
+    <span class="loading-dot"></span>
+  `;
+
+  wrapper.appendChild(message);
+
+  elements.messages.appendChild(wrapper);
+
+  scrollToBottom();
+
+  return wrapper;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| HISTORY
+|--------------------------------------------------------------------------
+*/
+
+function renderHistory() {
+
+  if (!state.chats.length) {
+
+    elements.chatHistory.innerHTML = `
+      <div class="empty-history">
+        Chưa có cuộc trò chuyện
+      </div>
+    `;
+
+    return;
+  }
+
+  elements.chatHistory.innerHTML = "";
+
+  state.chats
+    .sort((a, b) =>
+      b.updatedAt - a.updatedAt
+    )
+    .forEach(chat => {
+
+      const item =
         document.createElement("div");
 
-      heading.className =
-        "recent-title";
+      item.className =
+        "history-item";
 
-      heading.textContent =
-        dateLabel;
+      if (chat.id === state.currentChatId) {
+        item.classList.add("active");
+      }
 
-      chatList.appendChild(
-        heading
+      item.innerHTML = `
+        <button class="history-main">
+          <span class="history-icon">💬</span>
+          <span class="history-title-text">
+            ${escapeHTML(chat.title)}
+          </span>
+        </button>
+
+        <button class="history-more">
+          ⋯
+        </button>
+
+        <div class="history-menu">
+          <button data-action="rename">
+            ✏️ Đổi tên
+          </button>
+
+          <button data-action="delete">
+            🗑️ Xóa
+          </button>
+        </div>
+      `;
+
+      const mainButton =
+        item.querySelector(".history-main");
+
+      const moreButton =
+        item.querySelector(".history-more");
+
+      const menu =
+        item.querySelector(".history-menu");
+
+      mainButton.addEventListener(
+        "click",
+        () => openChat(chat.id)
       );
 
-      lastDate =
-        dateLabel;
-    }
+      moreButton.addEventListener(
+        "click",
+        event => {
 
+          event.stopPropagation();
+
+          document
+            .querySelectorAll(".history-menu.open")
+            .forEach(m => {
+              if (m !== menu) {
+                m.classList.remove("open");
+              }
+            });
+
+          menu.classList.toggle("open");
+        }
+      );
+
+      menu.addEventListener(
+        "click",
+        event => {
+
+          const action =
+            event.target.dataset.action;
+
+          if (action === "rename") {
+            renameChat(chat.id);
+          }
+
+          if (action === "delete") {
+            deleteChat(chat.id);
+          }
+
+        }
+      );
+
+      elements.chatHistory.appendChild(item);
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| RENAME CHAT
+|--------------------------------------------------------------------------
+*/
+
+function renameChat(chatId) {
+
+  const chat =
+    state.chats.find(
+      c => c.id === chatId
+    );
+
+  if (!chat) return;
+
+  const name =
+    prompt(
+      "Tên mới của cuộc trò chuyện:",
+      chat.title
+    );
+
+  if (!name || !name.trim()) {
+    return;
+  }
+
+  chat.title =
+    name.trim();
+
+  chat.updatedAt =
+    Date.now();
+
+  saveChats();
+
+  renderHistory();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE CHAT
+|--------------------------------------------------------------------------
+*/
+
+function deleteChat(chatId) {
+
+  const chat =
+    state.chats.find(
+      c => c.id === chatId
+    );
+
+  if (!chat) return;
+
+  const confirmed =
+    confirm(
+      `Xóa cuộc trò chuyện "${chat.title}"?`
+    );
+
+  if (!confirmed) return;
+
+  state.chats =
+    state.chats.filter(
+      c => c.id !== chatId
+    );
+
+  if (state.currentChatId === chatId) {
+    createChat();
+  }
+
+  saveChats();
+
+  renderHistory();
+
+  showToast("Đã xóa cuộc trò chuyện");
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SEARCH
+|--------------------------------------------------------------------------
+*/
+
+function openSearch() {
+
+  elements.searchModal.classList.add("open");
+
+  elements.searchInput.value = "";
+
+  renderSearchResults("");
+
+  setTimeout(
+    () => elements.searchInput.focus(),
+    100
+  );
+}
+
+
+function renderSearchResults(query) {
+
+  const clean =
+    query.trim().toLowerCase();
+
+  if (!clean) {
+
+    elements.searchResults.innerHTML = `
+      <div class="search-empty">
+        Nhập từ khóa để tìm kiếm
+      </div>
+    `;
+
+    return;
+  }
+
+  const results =
+    state.chats.filter(chat => {
+
+      const titleMatch =
+        chat.title
+          .toLowerCase()
+          .includes(clean);
+
+      const messageMatch =
+        chat.messages.some(message =>
+          message.content
+            .toLowerCase()
+            .includes(clean)
+        );
+
+      return titleMatch || messageMatch;
+    });
+
+  if (!results.length) {
+
+    elements.searchResults.innerHTML = `
+      <div class="search-empty">
+        Không tìm thấy cuộc trò chuyện
+      </div>
+    `;
+
+    return;
+  }
+
+  elements.searchResults.innerHTML = "";
+
+  results.forEach(chat => {
 
     const item =
-      document.createElement("div");
-
-    item.className =
-      "chat-item";
-
-    if (
-      chat.id === currentChatId
-    ) {
-      item.classList.add("active");
-    }
-
-
-    const icon =
-      document.createElement("span");
-
-    icon.className =
-      "chat-icon";
-
-    icon.textContent =
-      "💬";
-
-
-    const name =
-      document.createElement("span");
-
-    name.className =
-      "chat-name";
-
-    name.textContent =
-      chat.title;
-
-
-    const more =
       document.createElement("button");
 
-    more.className =
-      "chat-more";
+    item.className =
+      "search-result";
 
-    more.textContent =
-      "⋯";
+    item.innerHTML = `
+      <span>💬</span>
+      <div>
+        <strong>
+          ${escapeHTML(chat.title)}
+        </strong>
 
-    more.title =
-      "Tùy chọn";
-
-
-    item.appendChild(icon);
-
-    item.appendChild(name);
-
-    item.appendChild(more);
-
-    chatList.appendChild(item);
-
+        <small>
+          ${chat.messages.length} tin nhắn
+        </small>
+      </div>
+    `;
 
     item.addEventListener(
       "click",
-      event => {
-
-        if (
-          event.target === more
-        ) {
-          return;
-        }
+      () => {
 
         openChat(chat.id);
 
+        elements.searchModal
+          .classList.remove("open");
       }
     );
 
-
-    more.addEventListener(
-      "click",
-      event => {
-
-        event.stopPropagation();
-
-        openContextMenu(
-          chat.id,
-          more
-        );
-
-      }
-    );
-
+    elements.searchResults.appendChild(item);
   });
 }
 
 
-/* =========================================================
-   CONTEXT MENU
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| SETTINGS
+|--------------------------------------------------------------------------
+*/
 
-function openContextMenu(
-  chatId,
-  element
-) {
+function openSettings() {
 
-  contextChatId =
-    chatId;
+  elements.settingsModal
+    .classList.add("open");
 
-  const rect =
-    element.getBoundingClientRect();
-
-  contextMenu.style.left =
-    `${rect.right + 5}px`;
-
-  contextMenu.style.top =
-    `${rect.top}px`;
-
-  contextMenu.classList.add(
-    "open"
-  );
+  closeAccountMenu();
 }
 
 
-function closeContextMenu() {
+function changeUsername() {
 
-  contextMenu.classList.remove(
-    "open"
-  );
+  const settings =
+    getSettings();
 
-  contextChatId =
-    null;
-}
+  const name =
+    prompt(
+      "Nhập tên tài khoản:",
+      settings.username
+    );
 
-
-renameChatBtn.addEventListener(
-  "click",
-  () => {
-
-    if (!contextChatId) {
-      return;
-    }
-
-    const chat =
-      chats.find(
-        item =>
-          item.id === contextChatId
-      );
-
-    if (!chat) {
-      return;
-    }
-
-    const name =
-      prompt(
-        "Tên cuộc trò chuyện:",
-        chat.title
-      );
-
-    if (
-      name &&
-      name.trim()
-    ) {
-
-      chat.title =
-        name
-          .trim()
-          .slice(0, 80);
-
-      chat.updatedAt =
-        Date.now();
-
-      saveChats();
-
-      renderChatList();
-    }
-
-    closeContextMenu();
-
+  if (!name || !name.trim()) {
+    return;
   }
-);
+
+  settings.username =
+    name.trim();
+
+  saveSettings(settings);
+
+  updateUserUI();
+
+  showToast("Đã cập nhật tên");
+}
 
 
-deleteChatBtn.addEventListener(
-  "click",
-  () => {
+function toggleTheme() {
 
-    if (!contextChatId) {
-      return;
+  const settings =
+    getSettings();
+
+  settings.theme =
+    settings.theme === "dark"
+      ? "light"
+      : "dark";
+
+  saveSettings(settings);
+
+  applyTheme();
+}
+
+
+function clearAllHistory() {
+
+  if (!state.chats.length) {
+    showToast("Lịch sử đang trống");
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "Xóa toàn bộ lịch sử trò chuyện?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  state.chats = [];
+
+  state.currentChatId = null;
+
+  saveChats();
+
+  createChat();
+
+  renderHistory();
+
+  showToast("Đã xóa toàn bộ lịch sử");
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MODEL SELECTOR
+|--------------------------------------------------------------------------
+*/
+
+function toggleModelMenu() {
+
+  elements.modelMenu
+    .classList.toggle("open");
+}
+
+
+function selectModel(model) {
+
+  state.selectedModel = model;
+
+  elements.currentModel.textContent =
+    model;
+
+  elements.modelMenu
+    .classList.remove("open");
+
+  const buttons =
+    elements.modelMenu.querySelectorAll(
+      "button"
+    );
+
+  buttons.forEach(button => {
+
+    const selected =
+      button.dataset.model === model;
+
+    button.classList.toggle(
+      "selected",
+      selected
+    );
+
+    const check =
+      button.querySelector("span:last-child");
+
+    if (check) {
+      check.textContent =
+        selected ? "✓" : "";
     }
+  });
 
-    const id =
-      contextChatId;
+  const chat =
+    getCurrentChat();
 
-    chats =
-      chats.filter(
-        chat =>
-          chat.id !== id
-      );
-
-    if (
-      currentChatId === id
-    ) {
-
-      startNewChat();
-
-    }
-
+  if (chat) {
+    chat.model = model;
     saveChats();
-
-    renderChatList();
-
-    closeContextMenu();
-
   }
-);
-
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-function updateInputState() {
-
-  sendButton.disabled =
-    aiGenerating ||
-    input.value.trim() === "";
 }
 
 
-function resizeInput() {
+/*
+|--------------------------------------------------------------------------
+| FILE ATTACHMENT
+|--------------------------------------------------------------------------
+*/
 
-  input.style.height =
-    "auto";
+function openFilePicker() {
+  elements.fileInput.click();
+}
+
+
+function handleFiles(files) {
+
+  state.attachedFiles =
+    Array.from(files);
+
+  if (!state.attachedFiles.length) {
+    return;
+  }
+
+  showToast(
+    `${state.attachedFiles.length} file đã được chọn`
+  );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| TEXTAREA
+|--------------------------------------------------------------------------
+*/
+
+function autoResizeTextarea() {
+
+  const input =
+    elements.messageInput;
+
+  input.style.height = "auto";
 
   input.style.height =
     Math.min(
@@ -716,1135 +1090,402 @@ function resizeInput() {
 }
 
 
-input.addEventListener(
-  "input",
-  () => {
+function updateSendButton() {
 
-    resizeInput();
+  const hasText =
+    elements.messageInput.value.trim()
+      .length > 0;
 
-    updateInputState();
+  elements.sendBtn.disabled =
+    !hasText ||
+    state.isGenerating;
+}
 
+
+/*
+|--------------------------------------------------------------------------
+| UI
+|--------------------------------------------------------------------------
+*/
+
+function scrollToBottom() {
+
+  requestAnimationFrame(() => {
+
+    elements.messages.scrollTop =
+      elements.messages.scrollHeight;
+
+  });
+}
+
+
+function closeAccountMenu() {
+
+  elements.accountMenu
+    .classList.remove("open");
+}
+
+
+function closeAllMenus() {
+
+  elements.modelMenu
+    .classList.remove("open");
+
+  closeAccountMenu();
+
+  document
+    .querySelectorAll(".history-menu.open")
+    .forEach(menu =>
+      menu.classList.remove("open")
+    );
+}
+
+
+function showToast(message) {
+
+  elements.toast.textContent =
+    message;
+
+  elements.toast.classList.add("show");
+
+  clearTimeout(
+    showToast.timeout
+  );
+
+  showToast.timeout =
+    setTimeout(() => {
+
+      elements.toast.classList.remove(
+        "show"
+      );
+
+    }, 2200);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ACCOUNT
+|--------------------------------------------------------------------------
+*/
+
+function toggleAccountMenu() {
+
+  elements.accountMenu
+    .classList.toggle("open");
+
+  elements.modelMenu
+    .classList.remove("open");
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE SIDEBAR
+|--------------------------------------------------------------------------
+*/
+
+function toggleSidebar() {
+
+  elements.sidebar
+    .classList.toggle("mobile-open");
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| EVENTS
+|--------------------------------------------------------------------------
+*/
+
+elements.newChatBtn.addEventListener(
+  "click",
+  createChat
+);
+
+
+elements.menuNewChatBtn.addEventListener(
+  "click",
+  createChat
+);
+
+
+elements.searchBtn.addEventListener(
+  "click",
+  openSearch
+);
+
+
+$("#headerSearchBtn").addEventListener(
+  "click",
+  openSearch
+);
+
+
+elements.settingsBtn.addEventListener(
+  "click",
+  openSettings
+);
+
+
+elements.menuSettingsBtn.addEventListener(
+  "click",
+  openSettings
+);
+
+
+elements.modelSelector.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    toggleModelMenu();
   }
 );
 
 
-input.addEventListener(
+elements.modelMenu
+  .querySelectorAll("button[data-model]")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () =>
+        selectModel(
+          button.dataset.model
+        )
+    );
+
+  });
+
+
+elements.accountBtn.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    toggleAccountMenu();
+  }
+);
+
+
+elements.headerAccountBtn.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    toggleAccountMenu();
+  }
+);
+
+
+elements.mobileMenuBtn.addEventListener(
+  "click",
+  toggleSidebar
+);
+
+
+elements.attachBtn.addEventListener(
+  "click",
+  openFilePicker
+);
+
+
+elements.fileInput.addEventListener(
+  "change",
+  event =>
+    handleFiles(event.target.files)
+);
+
+
+elements.messageInput.addEventListener(
+  "input",
+  () => {
+
+    autoResizeTextarea();
+
+    updateSendButton();
+  }
+);
+
+
+elements.messageInput.addEventListener(
   "keydown",
   event => {
 
-    const settings =
-      loadSettings();
+    /*
+     * Enter = gửi
+     * Shift + Enter = xuống dòng
+     */
 
     if (
       event.key === "Enter" &&
-      !event.shiftKey &&
-      settings.enterSend
+      !event.shiftKey
     ) {
 
       event.preventDefault();
 
       sendMessage();
     }
-
   }
 );
 
 
-sendButton.addEventListener(
-  "click",
-  sendMessage
-);
+elements.composer.addEventListener(
+  "submit",
+  event => {
 
+    event.preventDefault();
 
-/* =========================================================
-   RENDER MESSAGE
-========================================================= */
-
-function renderMessage(
-  text,
-  role,
-  isError = false
-) {
-
-  const message =
-    document.createElement("div");
-
-  message.className =
-    `message ${role}`;
-
-
-  const avatar =
-    document.createElement("div");
-
-  avatar.className =
-    "message-avatar";
-
-  avatar.textContent =
-    role === "ai"
-      ? "K"
-      : "U";
-
-
-  const content =
-    document.createElement("div");
-
-  content.className =
-    "message-content";
-
-  if (isError) {
-    content.classList.add(
-      "error"
-    );
-  }
-
-  content.textContent =
-    text;
-
-
-  message.appendChild(
-    avatar
-  );
-
-  message.appendChild(
-    content
-  );
-
-  messages.appendChild(
-    message
-  );
-
-
-  requestAnimationFrame(
-    () => {
-
-      chatArea.scrollTop =
-        chatArea.scrollHeight;
-
-    }
-  );
-
-  return message;
-}
-
-
-/* =========================================================
-   THINKING
-========================================================= */
-
-function showThinking() {
-
-  const message =
-    document.createElement("div");
-
-  message.className =
-    "message ai";
-
-  message.dataset.thinking =
-    "true";
-
-
-  const avatar =
-    document.createElement("div");
-
-  avatar.className =
-    "message-avatar";
-
-  avatar.textContent =
-    "K";
-
-
-  const content =
-    document.createElement("div");
-
-  content.className =
-    "message-content";
-
-  content.innerHTML = `
-    KhanhOS AI đang suy nghĩ
-    <span class="thinking-dots">
-      <span></span>
-      <span></span>
-      <span></span>
-    </span>
-  `;
-
-
-  message.appendChild(
-    avatar
-  );
-
-  message.appendChild(
-    content
-  );
-
-  messages.appendChild(
-    message
-  );
-
-
-  requestAnimationFrame(
-    () => {
-
-      chatArea.scrollTop =
-        chatArea.scrollHeight;
-
-    }
-  );
-
-  return message;
-}
-
-
-/* =========================================================
-   AI REQUEST
-========================================================= */
-
-async function askKhanhOSAI(
-  chat
-) {
-
-  const history =
-    chat.messages
-      .filter(
-        message =>
-          message.role === "user" ||
-          message.role === "ai"
-      )
-      .map(
-        message => ({
-          role:
-            message.role === "ai"
-              ? "assistant"
-              : "user",
-
-          content:
-            message.text
-        })
-      );
-
-
-  const response =
-    await fetch(
-      API_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            provider:
-              selectedProvider,
-
-            model:
-              selectedModel,
-
-            messages:
-              history
-
-          })
-      }
-    );
-
-
-  let data;
-
-  const contentType =
-    response.headers.get(
-      "content-type"
-    ) || "";
-
-
-  if (
-    contentType.includes(
-      "application/json"
-    )
-  ) {
-
-    data =
-      await response.json();
-
-  } else {
-
-    const text =
-      await response.text();
-
-    throw new Error(
-      text ||
-      `HTTP ${response.status}`
-    );
-  }
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.error ||
-      `Server lỗi HTTP ${response.status}`
-    );
-  }
-
-
-  if (
-    typeof data.reply !==
-    "string"
-  ) {
-
-    throw new Error(
-      "Server không trả về trường reply hợp lệ."
-    );
-  }
-
-
-  return data.reply;
-}
-
-
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
-
-async function sendMessage() {
-
-  if (aiGenerating) {
-    return;
-  }
-
-
-  const text =
-    input.value.trim();
-
-  if (!text) {
-    return;
-  }
-
-
-  let chat =
-    getCurrentChat();
-
-
-  if (!chat) {
-
-    chat =
-      createChat();
-
-  }
-
-
-  if (
-    chat.messages.length === 0
-  ) {
-
-    chat.title =
-      makeChatTitle(text);
-  }
-
-
-  chat.messages.push({
-
-    role: "user",
-
-    text,
-
-    createdAt: Date.now()
-
-  });
-
-
-  chat.updatedAt =
-    Date.now();
-
-
-  saveChats();
-
-  renderChatList();
-
-
-  welcome.style.display =
-    "none";
-
-
-  renderMessage(
-    text,
-    "user"
-  );
-
-
-  input.value = "";
-
-  input.style.height =
-    "auto";
-
-
-  aiGenerating =
-    true;
-
-  updateInputState();
-
-
-  const thinking =
-    showThinking();
-
-
-  try {
-
-    const reply =
-      await askKhanhOSAI(
-        chat
-      );
-
-
-    const activeChat =
-      chats.find(
-        item =>
-          item.id === chat.id
-      );
-
-
-    if (!activeChat) {
-      return;
-    }
-
-
-    activeChat.messages.push({
-
-      role: "ai",
-
-      text: reply,
-
-      createdAt: Date.now()
-
-    });
-
-
-    activeChat.updatedAt =
-      Date.now();
-
-
-    saveChats();
-
-
-    thinking.remove();
-
-
-    if (
-      currentChatId ===
-      activeChat.id
-    ) {
-
-      renderMessage(
-        reply,
-        "ai"
-      );
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "KhanhOS AI:",
-      error
-    );
-
-
-    thinking.remove();
-
-
-    const errorText =
-      `❌ Không thể kết nối KhanhOS AI.\n\n${error.message}`;
-
-
-    const activeChat =
-      chats.find(
-        item =>
-          item.id === chat.id
-      );
-
-
-    if (activeChat) {
-
-      activeChat.messages.push({
-
-        role: "ai",
-
-        text: errorText,
-
-        createdAt: Date.now()
-
-      });
-
-      activeChat.updatedAt =
-        Date.now();
-
-      saveChats();
-
-    }
-
-
-    if (
-      currentChatId ===
-      chat.id
-    ) {
-
-      renderMessage(
-        errorText,
-        "ai",
-        true
-      );
-
-    }
-
-  } finally {
-
-    aiGenerating =
-      false;
-
-    updateInputState();
-
-    renderChatList();
-
-  }
-}
-
-
-/* =========================================================
-   NEW CHAT
-========================================================= */
-
-newChatBtn.addEventListener(
-  "click",
-  startNewChat
-);
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-searchChatBtn.addEventListener(
-  "click",
-  () => {
-
-    sidebarSearch.classList.add(
-      "open"
-    );
-
-    chatSearchInput.focus();
-
+    sendMessage();
   }
 );
 
 
-closeSearchBtn.addEventListener(
-  "click",
-  () => {
-
-    sidebarSearch.classList.remove(
-      "open"
-    );
-
-    chatSearchInput.value = "";
-
-    renderChatList();
-
-  }
-);
-
-
-chatSearchInput.addEventListener(
+elements.searchInput.addEventListener(
   "input",
-  renderChatList
+  event =>
+    renderSearchResults(
+      event.target.value
+    )
 );
 
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
-mobileMenu.addEventListener(
+elements.themeToggle.addEventListener(
   "click",
-  () => {
-
-    sidebar.classList.toggle(
-      "open"
-    );
-
-  }
+  toggleTheme
 );
 
 
-/* =========================================================
-   PROFILE
-========================================================= */
-
-profileButton.addEventListener(
+elements.changeNameBtn.addEventListener(
   "click",
-  event => {
-
-    event.stopPropagation();
-
-    accountMenu.classList.toggle(
-      "open"
-    );
-
-  }
+  changeUsername
 );
 
+
+elements.clearHistoryBtn.addEventListener(
+  "click",
+  clearAllHistory
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| CLOSE BUTTONS
+|--------------------------------------------------------------------------
+*/
+
+$$("[data-close]").forEach(button => {
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      const target =
+        document.getElementById(
+          button.dataset.close
+        );
+
+      if (target) {
+        target.classList.remove("open");
+      }
+    }
+  );
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| OUTSIDE CLICK
+|--------------------------------------------------------------------------
+*/
 
 document.addEventListener(
   "click",
   event => {
 
     if (
-      !accountMenu.contains(
-        event.target
-      ) &&
-      event.target !==
-        profileButton
+      !elements.modelMenu.contains(event.target) &&
+      !elements.modelSelector.contains(event.target)
     ) {
-
-      accountMenu.classList.remove(
-        "open"
-      );
-
+      elements.modelMenu
+        .classList.remove("open");
     }
 
     if (
-      !contextMenu.contains(
-        event.target
-      )
+      !elements.accountMenu.contains(event.target) &&
+      !elements.accountBtn.contains(event.target) &&
+      !elements.headerAccountBtn.contains(event.target)
     ) {
-
-      closeContextMenu();
-
+      closeAccountMenu();
     }
 
   }
 );
 
 
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-function openSettings() {
-
-  settingsOverlay.classList.add(
-    "open"
-  );
-
-  accountMenu.classList.remove(
-    "open"
-  );
-
-}
-
-
-function closeSettings() {
-
-  settingsOverlay.classList.remove(
-    "open"
-  );
-
-}
-
-
-settingsBtn.addEventListener(
-  "click",
-  openSettings
-);
-
-
-settingsClose.addEventListener(
-  "click",
-  closeSettings
-);
-
-
-settingsOverlay.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target ===
-      settingsOverlay
-    ) {
-
-      closeSettings();
-
-    }
-
-  }
-);
-
-
-/* SETTINGS PAGES */
-
-document
-  .querySelectorAll(
-    ".settings-nav-item"
-  )
-  .forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          document
-            .querySelectorAll(
-              ".settings-nav-item"
-            )
-            .forEach(
-              item =>
-                item.classList.remove(
-                  "active"
-                )
-            );
-
-          button.classList.add(
-            "active"
-          );
-
-
-          const page =
-            button.dataset.page;
-
-
-          const titles = {
-
-            general:
-              "Chung",
-
-            appearance:
-              "Giao diện",
-
-            notifications:
-              "Thông báo",
-
-            data:
-              "Dữ liệu",
-
-            security:
-              "Bảo mật"
-
-          };
-
-
-          settingsPageTitle.textContent =
-            titles[page] ||
-            "Cài đặt";
-
-
-          if (
-            page === "general"
-          ) {
-
-            settingsPage.innerHTML = `
-              <div class="upgrade-card">
-                <div>
-                  <strong>KhanhOS Free</strong>
-                  <p>Bạn đang sử dụng KhanhOS AI.</p>
-                </div>
-                <span class="free-badge">FREE</span>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-text">
-                  <strong>Giao diện</strong>
-                  <p>Chọn giao diện KhanhOS.</p>
-                </div>
-
-                <select id="themeSelect">
-                  <option value="dark">Tối</option>
-                  <option value="light">Sáng</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-text">
-                  <strong>Gửi bằng Enter</strong>
-                  <p>Enter để gửi, Shift + Enter để xuống dòng.</p>
-                </div>
-
-                <label class="switch">
-                  <input type="checkbox" id="enterSendToggle">
-                  <span></span>
-                </label>
-              </div>
-
-              <div class="setting-row">
-                <div class="setting-text">
-                  <strong>Lưu lịch sử</strong>
-                  <p>Lưu cuộc trò chuyện trên thiết bị.</p>
-                </div>
-
-                <label class="switch">
-                  <input type="checkbox" id="historyToggle">
-                  <span></span>
-                </label>
-              </div>
-            `;
-
-            bindSettings();
-
-          } else {
-
-            settingsPage.innerHTML = `
-              <div class="upgrade-card">
-                <div>
-                  <strong>${titles[page]}</strong>
-                  <p>
-                    Khu vực này đang được KhanhOS phát triển.
-                  </p>
-                </div>
-              </div>
-            `;
-
-          }
-
-        }
-
-      );
-
-    }
-  );
-
-
-function bindSettings() {
-
-  const settings =
-    loadSettings();
-
-
-  const theme =
-    document.getElementById(
-      "themeSelect"
-    );
-
-  const enter =
-    document.getElementById(
-      "enterSendToggle"
-    );
-
-  const history =
-    document.getElementById(
-      "historyToggle"
-    );
-
-
-  if (theme) {
-
-    theme.value =
-      settings.theme;
-
-    theme.addEventListener(
-      "change",
-      () => {
-
-        settings.theme =
-          theme.value;
-
-        saveSettings(
-          settings
-        );
-
-        applyTheme();
-
-      }
-    );
-
-  }
-
-
-  if (enter) {
-
-    enter.checked =
-      settings.enterSend;
-
-    enter.addEventListener(
-      "change",
-      () => {
-
-        settings.enterSend =
-          enter.checked;
-
-        saveSettings(
-          settings
-        );
-
-      }
-    );
-
-  }
-
-
-  if (history) {
-
-    history.checked =
-      settings.history;
-
-    history.addEventListener(
-      "change",
-      () => {
-
-        settings.history =
-          history.checked;
-
-        saveSettings(
-          settings
-        );
-
-      }
-    );
-
-  }
-}
-
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function applyTheme() {
-
-  const settings =
-    loadSettings();
-
-  document.body.classList.toggle(
-    "light",
-    settings.theme === "light"
-  );
-
-}
-
-
-applyTheme();
-
-bindSettings();
-
-
-/* =========================================================
-   MODEL SELECTOR
-========================================================= */
-
-modelSelector.addEventListener(
-  "click",
-  event => {
-
-    event.stopPropagation();
-
-    modelMenu.classList.toggle(
-      "open"
-    );
-
-  }
-);
-
-
-document
-  .querySelectorAll(
-    ".model-option"
-  )
-  .forEach(
-    option => {
-
-      option.addEventListener(
-        "click",
-        () => {
-
-          selectedProvider =
-            option.dataset.provider;
-
-          selectedModel =
-            option.dataset.model;
-
-          modelName.textContent =
-            option.dataset.name;
-
-
-          localStorage.setItem(
-            "khanhos-provider",
-            selectedProvider
-          );
-
-          localStorage.setItem(
-            "khanhos-model",
-            selectedModel
-          );
-
-
-          document
-            .querySelectorAll(
-              ".model-option"
-            )
-            .forEach(
-              item =>
-                item.classList.remove(
-                  "active"
-                )
-            );
-
-          option.classList.add(
-            "active"
-          );
-
-          modelMenu.classList.remove(
-            "open"
-          );
-
-        }
-      );
-
-    }
-  );
-
+/*
+|--------------------------------------------------------------------------
+| ESCAPE
+|--------------------------------------------------------------------------
+*/
 
 document.addEventListener(
-  "click",
-  () => {
+  "keydown",
+  event => {
 
-    modelMenu.classList.remove(
-      "open"
-    );
-
-  }
-);
-
-
-/* =========================================================
-   FILE
-========================================================= */
-
-fileButton.addEventListener(
-  "click",
-  () => {
-
-    fileInput.click();
-
-  }
-);
-
-
-fileInput.addEventListener(
-  "change",
-  () => {
-
-    if (
-      fileInput.files.length
-    ) {
-
-      const names =
-        Array.from(
-          fileInput.files
-        )
-        .map(
-          file => file.name
-        )
-        .join(", ");
-
-      input.value +=
-        input.value
-          ? `\n[File: ${names}]`
-          : `[File: ${names}]`;
-
-      updateInputState();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   CLEAR HISTORY
-========================================================= */
-
-clearHistoryBtn.addEventListener(
-  "click",
-  () => {
-
-    const ok =
-      confirm(
-        "Xóa toàn bộ lịch sử trò chuyện?"
-      );
-
-    if (!ok) {
+    if (event.key !== "Escape") {
       return;
     }
 
-    chats = [];
+    closeAllMenus();
 
-    localStorage.removeItem(
-      STORAGE_KEY
-    );
+    elements.searchModal
+      .classList.remove("open");
 
-    startNewChat();
-
-    accountMenu.classList.remove(
-      "open"
-    );
-
+    elements.settingsModal
+      .classList.remove("open");
   }
 );
 
 
-/* =========================================================
-   HELP
-========================================================= */
-
-helpBtn.addEventListener(
-  "click",
-  () => {
-
-    alert(
-      "KhanhOS AI\n\n" +
-      "• Chat mới: tạo cuộc trò chuyện\n" +
-      "• Tìm kiếm: tìm lịch sử chat\n" +
-      "• Model: chọn AI\n" +
-      "• Cài đặt: thay đổi giao diện và lịch sử"
-    );
-
-    accountMenu.classList.remove(
-      "open"
-    );
-
-  }
-);
-
-
-/* =========================================================
-   INIT
-========================================================= */
+/*
+|--------------------------------------------------------------------------
+| INIT
+|--------------------------------------------------------------------------
+*/
 
 function init() {
 
-  if (chats.length > 0) {
+  loadChats();
 
-    openChat(
-      chats[0].id
-    );
+  updateUserUI();
 
-  } else {
+  applyTheme();
 
-    startNewChat();
+  updateSendButton();
 
-  }
+  selectModel(
+    state.selectedModel
+  );
 
-  renderChatList();
+  /*
+   * Luôn bắt đầu ở trạng thái Chat mới.
+   * Chat cũ chỉ hiện trong sidebar.
+   */
 
-  modelName.textContent =
-    document
-      .querySelector(
-        `.model-option[data-model="${selectedModel}"]`
-      )
-      ?.dataset.name ||
-    "GPT-5 mini";
+  state.currentChatId = null;
 
+  clearMessages();
+
+  elements.welcome.style.display =
+    "flex";
+
+  elements.messageInput.focus();
 }
 
 
