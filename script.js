@@ -1,11 +1,12 @@
 "use strict";
 
 /* =========================================================
-   KHANHOS FRONTEND
+   KHANHOS
 ========================================================= */
 
 const STORAGE_KEY = "khanhos_chats";
 const SETTINGS_KEY = "khanhos_settings";
+
 
 const state = {
   chats: [],
@@ -19,6 +20,7 @@ const state = {
   attachedFiles: []
 };
 
+
 const defaultSettings = {
   username: "Khanh",
   theme: "dark"
@@ -29,63 +31,128 @@ const defaultSettings = {
    DOM
 ========================================================= */
 
-const $ = selector => document.querySelector(selector);
-const $$ = selector => document.querySelectorAll(selector);
+const $ = selector =>
+  document.querySelector(selector);
+
+const $$ = selector =>
+  document.querySelectorAll(selector);
+
 
 const elements = {
-  sidebar: $("#sidebar"),
-  mobileOverlay: $("#mobileOverlay"),
 
-  brandButton: $("#brandButton"),
+  sidebar:
+    $("#sidebar"),
 
-  newChatBtn: $("#newChatBtn"),
-  searchBtn: $("#searchBtn"),
-  settingsBtn: $("#settingsBtn"),
+  mobileOverlay:
+    $("#mobileOverlay"),
 
-  chatHistory: $("#chatHistory"),
+  brandButton:
+    $("#brandButton"),
 
-  chatArea: $("#chatArea"),
-  messages: $("#messages"),
-  welcome: $("#welcome"),
+  newChatBtn:
+    $("#newChatBtn"),
 
-  composer: $("#composer"),
-  messageInput: $("#messageInput"),
-  sendBtn: $("#sendBtn"),
+  searchBtn:
+    $("#searchBtn"),
 
-  attachBtn: $("#attachBtn"),
-  fileInput: $("#fileInput"),
+  settingsBtn:
+    $("#settingsBtn"),
 
-  modelSelector: $("#modelSelector"),
-  modelMenu: $("#modelMenu"),
-  currentModel: $("#currentModel"),
+  chatHistory:
+    $("#chatHistory"),
 
-  searchModal: $("#searchModal"),
-  searchInput: $("#searchInput"),
-  searchResults: $("#searchResults"),
+  chatArea:
+    $("#chatArea"),
 
-  settingsModal: $("#settingsModal"),
+  messages:
+    $("#messages"),
 
-  accountBtn: $("#accountBtn"),
-  headerAccountBtn: $("#headerAccountBtn"),
-  accountMenu: $("#accountMenu"),
+  welcome:
+    $("#welcome"),
 
-  mobileMenuBtn: $("#mobileMenuBtn"),
+  composer:
+    $("#composer"),
 
-  themeToggle: $("#themeToggle"),
-  changeNameBtn: $("#changeNameBtn"),
-  clearHistoryBtn: $("#clearHistoryBtn"),
+  messageInput:
+    $("#messageInput"),
 
-  menuSettingsBtn: $("#menuSettingsBtn"),
-  menuNewChatBtn: $("#menuNewChatBtn"),
+  sendBtn:
+    $("#sendBtn"),
 
-  sidebarUsername: $("#sidebarUsername"),
-  menuUsername: $("#menuUsername"),
-  currentUsername: $("#currentUsername"),
+  attachBtn:
+    $("#attachBtn"),
 
-  sidebarAvatar: $("#sidebarAvatar"),
-  bigAvatar: $("#bigAvatar"),
+  fileInput:
+    $("#fileInput"),
 
-  toast: $("#toast")
+  modelSelector:
+    $("#modelSelector"),
+
+  modelMenu:
+    $("#modelMenu"),
+
+  currentModel:
+    $("#currentModel"),
+
+  searchModal:
+    $("#searchModal"),
+
+  searchInput:
+    $("#searchInput"),
+
+  searchResults:
+    $("#searchResults"),
+
+  settingsModal:
+    $("#settingsModal"),
+
+  settingsSearch:
+    $("#settingsSearch"),
+
+  accountBtn:
+    $("#accountBtn"),
+
+  headerAccountBtn:
+    $("#headerAccountBtn"),
+
+  accountMenu:
+    $("#accountMenu"),
+
+  mobileMenuBtn:
+    $("#mobileMenuBtn"),
+
+  themeToggle:
+    $("#themeToggle"),
+
+  changeNameBtn:
+    $("#changeNameBtn"),
+
+  clearHistoryBtn:
+    $("#clearHistoryBtn"),
+
+  menuSettingsBtn:
+    $("#menuSettingsBtn"),
+
+  sidebarUsername:
+    $("#sidebarUsername"),
+
+  menuUsername:
+    $("#menuUsername"),
+
+  currentUsername:
+    $("#currentUsername"),
+
+  settingsAccountName:
+    $("#settingsAccountName"),
+
+  sidebarAvatar:
+    $("#sidebarAvatar"),
+
+  bigAvatar:
+    $("#bigAvatar"),
+
+  toast:
+    $("#toast")
 };
 
 
@@ -94,52 +161,89 @@ const elements = {
 ========================================================= */
 
 function getSettings() {
+
   try {
-    const saved = localStorage.getItem(SETTINGS_KEY);
+
+    const saved =
+      localStorage.getItem(
+        SETTINGS_KEY
+      );
 
     if (!saved) {
-      return { ...defaultSettings };
+      return {
+        ...defaultSettings
+      };
     }
 
     return {
       ...defaultSettings,
       ...JSON.parse(saved)
     };
+
   } catch {
-    return { ...defaultSettings };
+
+    return {
+      ...defaultSettings
+    };
+
   }
+
 }
 
 
 function saveSettings(settings) {
+
   localStorage.setItem(
     SETTINGS_KEY,
     JSON.stringify(settings)
   );
+
 }
 
 
 function updateUserUI() {
-  const settings = getSettings();
+
+  const settings =
+    getSettings();
 
   const username =
-    settings.username?.trim() || "Khanh";
+    settings.username?.trim() ||
+    "Khanh";
 
   const firstLetter =
-    username.charAt(0).toUpperCase();
+    username
+      .charAt(0)
+      .toUpperCase();
 
-  elements.sidebarUsername.textContent = username;
-  elements.menuUsername.textContent = username;
-  elements.currentUsername.textContent = username;
+  elements.sidebarUsername.textContent =
+    username;
 
-  elements.sidebarAvatar.textContent = firstLetter;
-  elements.headerAccountBtn.textContent = firstLetter;
-  elements.bigAvatar.textContent = firstLetter;
+  elements.menuUsername.textContent =
+    username;
+
+  elements.currentUsername.textContent =
+    username;
+
+  if (elements.settingsAccountName) {
+    elements.settingsAccountName.textContent =
+      username;
+  }
+
+  elements.sidebarAvatar.textContent =
+    firstLetter;
+
+  elements.headerAccountBtn.textContent =
+    firstLetter;
+
+  elements.bigAvatar.textContent =
+    firstLetter;
 }
 
 
 function applyTheme() {
-  const settings = getSettings();
+
+  const settings =
+    getSettings();
 
   document.body.classList.toggle(
     "light",
@@ -158,19 +262,27 @@ function applyTheme() {
 ========================================================= */
 
 function loadChats() {
+
   try {
+
     const saved =
-      localStorage.getItem(STORAGE_KEY);
+      localStorage.getItem(
+        STORAGE_KEY
+      );
 
     state.chats =
-      saved ? JSON.parse(saved) : [];
+      saved
+        ? JSON.parse(saved)
+        : [];
 
     if (!Array.isArray(state.chats)) {
       state.chats = [];
     }
 
   } catch {
+
     state.chats = [];
+
   }
 
   renderHistory();
@@ -178,10 +290,12 @@ function loadChats() {
 
 
 function saveChats() {
+
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(state.chats)
   );
+
 }
 
 
@@ -190,47 +304,68 @@ function saveChats() {
 ========================================================= */
 
 function createChat() {
+
   state.currentChatId = null;
 
   clearMessages();
 
-  elements.welcome.style.display = "flex";
+  elements.welcome.style.display =
+    "flex";
 
   elements.messageInput.value = "";
 
   autoResizeTextarea();
+
   updateSendButton();
 
   closeAllMenus();
+
+  closeAllModals();
+
   closeMobileSidebar();
 
-  elements.messageInput.focus();
+  setTimeout(() => {
+    elements.messageInput.focus();
+  }, 50);
 }
 
 
 function createRealChat(firstMessage) {
+
   const chat = {
+
     id:
       typeof crypto !== "undefined" &&
       crypto.randomUUID
         ? crypto.randomUUID()
         : Date.now().toString(),
 
-    title: generateTitle(firstMessage),
+    title:
+      generateTitle(firstMessage),
 
-    model: state.selectedModel,
-    provider: state.selectedProvider,
-    apiModel: state.selectedApiModel,
+    model:
+      state.selectedModel,
 
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    provider:
+      state.selectedProvider,
+
+    apiModel:
+      state.selectedApiModel,
+
+    createdAt:
+      Date.now(),
+
+    updatedAt:
+      Date.now(),
 
     messages: []
+
   };
 
   state.chats.unshift(chat);
 
-  state.currentChatId = chat.id;
+  state.currentChatId =
+    chat.id;
 
   saveChats();
 
@@ -239,6 +374,7 @@ function createRealChat(firstMessage) {
 
 
 function generateTitle(text) {
+
   const clean =
     text
       .replace(/\s+/g, " ")
@@ -253,9 +389,13 @@ function generateTitle(text) {
 
 
 function getCurrentChat() {
+
   return state.chats.find(
-    chat => chat.id === state.currentChatId
+    chat =>
+      chat.id ===
+      state.currentChatId
   );
+
 }
 
 
@@ -264,25 +404,33 @@ function getCurrentChat() {
 ========================================================= */
 
 function openChat(chatId) {
+
   const chat =
     state.chats.find(
-      chat => chat.id === chatId
+      chat =>
+        chat.id === chatId
     );
 
-  if (!chat) return;
+  if (!chat) {
+    return;
+  }
 
-  state.currentChatId = chat.id;
+  state.currentChatId =
+    chat.id;
 
   if (chat.model) {
-    state.selectedModel = chat.model;
+    state.selectedModel =
+      chat.model;
   }
 
   if (chat.provider) {
-    state.selectedProvider = chat.provider;
+    state.selectedProvider =
+      chat.provider;
   }
 
   if (chat.apiModel) {
-    state.selectedApiModel = chat.apiModel;
+    state.selectedApiModel =
+      chat.apiModel;
   }
 
   elements.currentModel.textContent =
@@ -290,23 +438,34 @@ function openChat(chatId) {
 
   clearMessages();
 
-  elements.welcome.style.display = "none";
+  elements.welcome.style.display =
+    "none";
 
-  chat.messages.forEach(message => {
-    renderMessage(
-      message.role,
-      message.content
-    );
-  });
+  (chat.messages || [])
+    .forEach(message => {
+
+      renderMessage(
+        message.role,
+        message.content
+      );
+
+    });
+
+  updateModelMenu();
 
   renderHistory();
 
   closeAllMenus();
+
+  closeAllModals();
+
   closeMobileSidebar();
 
   requestAnimationFrame(() => {
+
     elements.chatArea.scrollTop =
       elements.chatArea.scrollHeight;
+
   });
 
   elements.messageInput.focus();
@@ -318,27 +477,43 @@ function openChat(chatId) {
 ========================================================= */
 
 function clearMessages() {
+
   elements.messages.innerHTML = "";
+
 }
 
 
-function renderMessage(role, content) {
+function renderMessage(
+  role,
+  content
+) {
+
   const wrapper =
     document.createElement("div");
 
   wrapper.className =
-    `message-row ${role === "assistant" ? "assistant" : "user"}`;
+    `message-row ${
+      role === "assistant"
+        ? "assistant"
+        : "user"
+    }`;
 
   const message =
     document.createElement("div");
 
-  message.className = "message";
+  message.className =
+    "message";
 
   if (role === "user") {
-    message.textContent = content;
+
+    message.textContent =
+      content;
+
   } else {
+
     message.innerHTML =
       formatAIMessage(content);
+
   }
 
   wrapper.appendChild(message);
@@ -352,41 +527,71 @@ function renderMessage(role, content) {
 
 
 function formatAIMessage(text) {
-  if (!text) return "";
 
-  let escaped = escapeHTML(text);
+  if (!text) {
+    return "";
+  }
 
-  escaped = escaped.replace(
-    /```([\s\S]*?)```/g,
-    "<pre><code>$1</code></pre>"
-  );
+  let escaped =
+    escapeHTML(text);
 
-  escaped = escaped.replace(
-    /`([^`]+)`/g,
-    "<code>$1</code>"
-  );
+  escaped =
+    escaped.replace(
+      /```([\s\S]*?)```/g,
+      "<pre><code>$1</code></pre>"
+    );
 
-  escaped = escaped.replace(
-    /\*\*(.*?)\*\*/g,
-    "<strong>$1</strong>"
-  );
+  escaped =
+    escaped.replace(
+      /`([^`]+)`/g,
+      "<code>$1</code>"
+    );
 
-  escaped = escaped.replace(
-    /\n/g,
-    "<br>"
-  );
+  escaped =
+    escaped.replace(
+      /\*\*(.*?)\*\*/g,
+      "<strong>$1</strong>"
+    );
+
+  escaped =
+    escaped.replace(
+      /\n/g,
+      "<br>"
+    );
 
   return escaped;
 }
 
 
 function escapeHTML(text) {
+
   return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
 }
 
 
@@ -395,50 +600,75 @@ function escapeHTML(text) {
 ========================================================= */
 
 async function sendMessage() {
+
   const text =
     elements.messageInput.value.trim();
 
-  if (!text || state.isGenerating) {
+  if (
+    !text ||
+    state.isGenerating
+  ) {
     return;
   }
 
-  let chat = getCurrentChat();
+  let chat =
+    getCurrentChat();
 
   if (!chat) {
-    chat = createRealChat(text);
+    chat =
+      createRealChat(text);
   }
 
-  elements.welcome.style.display = "none";
+  elements.welcome.style.display =
+    "none";
 
   chat.messages.push({
+
     role: "user",
+
     content: text,
-    timestamp: Date.now()
+
+    timestamp:
+      Date.now()
+
   });
 
-  chat.updatedAt = Date.now();
+  chat.updatedAt =
+    Date.now();
 
-  renderMessage("user", text);
+  renderMessage(
+    "user",
+    text
+  );
 
-  elements.messageInput.value = "";
+  elements.messageInput.value =
+    "";
 
   autoResizeTextarea();
+
   updateSendButton();
 
   renderHistory();
+
   saveChats();
 
-  state.isGenerating = true;
+  state.isGenerating =
+    true;
+
+  updateSendButton();
 
   const loading =
     createLoadingMessage();
 
   try {
+
     const response =
       await callChatAPI(
         chat.messages,
-        chat.provider || state.selectedProvider,
-        chat.apiModel || state.selectedApiModel
+        chat.provider ||
+          state.selectedProvider,
+        chat.apiModel ||
+          state.selectedApiModel
       );
 
     loading.remove();
@@ -451,12 +681,18 @@ async function sendMessage() {
       "KhanhOS không nhận được phản hồi.";
 
     chat.messages.push({
+
       role: "assistant",
+
       content: aiText,
-      timestamp: Date.now()
+
+      timestamp:
+        Date.now()
+
     });
 
-    chat.updatedAt = Date.now();
+    chat.updatedAt =
+      Date.now();
 
     renderMessage(
       "assistant",
@@ -464,9 +700,11 @@ async function sendMessage() {
     );
 
     saveChats();
+
     renderHistory();
 
   } catch (error) {
+
     loading.remove();
 
     console.error(error);
@@ -476,10 +714,15 @@ async function sendMessage() {
       "Không thể kết nối tới KhanhOS API.";
 
     chat.messages.push({
+
       role: "assistant",
+
       content:
         `⚠️ ${errorText}`,
-      timestamp: Date.now()
+
+      timestamp:
+        Date.now()
+
     });
 
     renderMessage(
@@ -490,12 +733,16 @@ async function sendMessage() {
     saveChats();
 
   } finally {
-    state.isGenerating = false;
+
+    state.isGenerating =
+      false;
 
     updateSendButton();
 
     elements.messageInput.focus();
+
   }
+
 }
 
 
@@ -508,37 +755,50 @@ async function callChatAPI(
   provider,
   model
 ) {
+
   const response =
-    await fetch("/api/chat", {
-      method: "POST",
+    await fetch(
+      "/api/chat",
+      {
+        method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
 
-      body: JSON.stringify({
-        provider,
-        model,
-        messages
-      })
-    });
+        body:
+          JSON.stringify({
+            provider,
+            model,
+            messages
+          })
+      }
+    );
 
   let data = {};
 
   try {
-    data = await response.json();
+
+    data =
+      await response.json();
+
   } catch {
+
     throw new Error(
       `API trả về dữ liệu không hợp lệ (${response.status}).`
     );
+
   }
 
   if (!response.ok) {
+
     throw new Error(
       data.error ||
       data.message ||
       `API error ${response.status}`
     );
+
   }
 
   return data;
@@ -550,6 +810,7 @@ async function callChatAPI(
 ========================================================= */
 
 function createLoadingMessage() {
+
   const wrapper =
     document.createElement("div");
 
@@ -583,7 +844,9 @@ function createLoadingMessage() {
 ========================================================= */
 
 function renderHistory() {
+
   if (!state.chats.length) {
+
     elements.chatHistory.innerHTML = `
       <div class="empty-history">
         Chưa có cuộc trò chuyện
@@ -593,7 +856,8 @@ function renderHistory() {
     return;
   }
 
-  elements.chatHistory.innerHTML = "";
+  elements.chatHistory.innerHTML =
+    "";
 
   state.chats
     .sort(
@@ -602,6 +866,7 @@ function renderHistory() {
         (a.updatedAt || 0)
     )
     .forEach(chat => {
+
       const item =
         document.createElement("div");
 
@@ -612,23 +877,29 @@ function renderHistory() {
         chat.id ===
         state.currentChatId
       ) {
-        item.classList.add("active");
+        item.classList.add(
+          "active"
+        );
       }
 
       item.innerHTML = `
+
         <button
           class="history-main"
           type="button"
         >
+
           <span class="history-icon">
             💬
           </span>
 
           <span class="history-title-text">
             ${escapeHTML(
-              chat.title || "Cuộc trò chuyện"
+              chat.title ||
+              "Cuộc trò chuyện"
             )}
           </span>
+
         </button>
 
         <button
@@ -658,6 +929,7 @@ function renderHistory() {
         </div>
       `;
 
+
       const mainButton =
         item.querySelector(
           ".history-main"
@@ -673,45 +945,82 @@ function renderHistory() {
           ".history-menu"
         );
 
+
       mainButton.addEventListener(
         "click",
-        () => openChat(chat.id)
+        () =>
+          openChat(chat.id)
       );
+
 
       moreButton.addEventListener(
         "click",
         event => {
+
           event.stopPropagation();
 
           $$(".history-menu.open")
             .forEach(openMenu => {
-              if (openMenu !== menu) {
-                openMenu.classList.remove("open");
+
+              if (
+                openMenu !==
+                menu
+              ) {
+
+                openMenu
+                  .classList
+                  .remove("open");
+
               }
+
             });
 
-          menu.classList.toggle("open");
+          menu.classList.toggle(
+            "open"
+          );
+
         }
       );
+
 
       menu.addEventListener(
         "click",
         event => {
+
           const action =
             event.target.dataset.action;
 
-          if (action === "rename") {
-            renameChat(chat.id);
+          if (
+            action ===
+            "rename"
+          ) {
+
+            renameChat(
+              chat.id
+            );
+
           }
 
-          if (action === "delete") {
-            deleteChat(chat.id);
+          if (
+            action ===
+            "delete"
+          ) {
+
+            deleteChat(
+              chat.id
+            );
+
           }
+
         }
       );
 
-      elements.chatHistory.appendChild(item);
+
+      elements.chatHistory
+        .appendChild(item);
+
     });
+
 }
 
 
@@ -720,12 +1029,16 @@ function renderHistory() {
 ========================================================= */
 
 function renameChat(chatId) {
+
   const chat =
     state.chats.find(
-      c => c.id === chatId
+      c =>
+        c.id === chatId
     );
 
-  if (!chat) return;
+  if (!chat) {
+    return;
+  }
 
   const name =
     prompt(
@@ -744,19 +1057,26 @@ function renameChat(chatId) {
     Date.now();
 
   saveChats();
+
   renderHistory();
 
-  showToast("Đã đổi tên cuộc trò chuyện");
+  showToast(
+    "Đã đổi tên cuộc trò chuyện"
+  );
 }
 
 
 function deleteChat(chatId) {
+
   const chat =
     state.chats.find(
-      c => c.id === chatId
+      c =>
+        c.id === chatId
     );
 
-  if (!chat) return;
+  if (!chat) {
+    return;
+  }
 
   const confirmed =
     confirm(
@@ -769,20 +1089,26 @@ function deleteChat(chatId) {
 
   state.chats =
     state.chats.filter(
-      c => c.id !== chatId
+      c =>
+        c.id !== chatId
     );
 
   if (
     state.currentChatId ===
     chatId
   ) {
+
     createChat();
+
   }
 
   saveChats();
+
   renderHistory();
 
-  showToast("Đã xóa cuộc trò chuyện");
+  showToast(
+    "Đã xóa cuộc trò chuyện"
+  );
 }
 
 
@@ -791,27 +1117,34 @@ function deleteChat(chatId) {
 ========================================================= */
 
 function openSearch() {
+
   closeAllMenus();
 
-  elements.searchModal.classList.add("open");
+  elements.searchModal
+    .classList.add("open");
 
-  elements.searchInput.value = "";
+  elements.searchInput.value =
+    "";
 
   renderSearchResults("");
 
-  setTimeout(() => {
-    elements.searchInput.focus();
-  }, 100);
+  setTimeout(
+    () =>
+      elements.searchInput.focus(),
+    100
+  );
 }
 
 
 function renderSearchResults(query) {
+
   const clean =
     query
       .trim()
       .toLowerCase();
 
   if (!clean) {
+
     elements.searchResults.innerHTML = `
       <div class="search-empty">
         Nhập từ khóa để tìm kiếm
@@ -823,22 +1156,32 @@ function renderSearchResults(query) {
 
   const results =
     state.chats.filter(chat => {
+
       const titleMatch =
         (chat.title || "")
           .toLowerCase()
           .includes(clean);
 
       const messageMatch =
-        chat.messages?.some(message =>
-          String(message.content || "")
-            .toLowerCase()
-            .includes(clean)
+        chat.messages?.some(
+          message =>
+            String(
+              message.content || ""
+            )
+              .toLowerCase()
+              .includes(clean)
         );
 
-      return titleMatch || messageMatch;
+      return (
+        titleMatch ||
+        messageMatch
+      );
+
     });
 
+
   if (!results.length) {
+
     elements.searchResults.innerHTML = `
       <div class="search-empty">
         Không tìm thấy cuộc trò chuyện
@@ -848,45 +1191,63 @@ function renderSearchResults(query) {
     return;
   }
 
-  elements.searchResults.innerHTML = "";
+
+  elements.searchResults.innerHTML =
+    "";
+
 
   results.forEach(chat => {
+
     const item =
       document.createElement("button");
 
-    item.type = "button";
+    item.type =
+      "button";
 
     item.className =
       "search-result";
 
     item.innerHTML = `
+
       <span>💬</span>
 
       <div>
+
         <strong>
           ${escapeHTML(
-            chat.title || "Cuộc trò chuyện"
+            chat.title ||
+            "Cuộc trò chuyện"
           )}
         </strong>
 
         <small>
-          ${chat.messages?.length || 0} tin nhắn
+          ${chat.messages?.length || 0}
+          tin nhắn
         </small>
+
       </div>
     `;
+
 
     item.addEventListener(
       "click",
       () => {
+
         openChat(chat.id);
 
         elements.searchModal
-          .classList.remove("open");
+          .classList
+          .remove("open");
+
       }
     );
 
-    elements.searchResults.appendChild(item);
+
+    elements.searchResults
+      .appendChild(item);
+
   });
+
 }
 
 
@@ -895,14 +1256,17 @@ function renderSearchResults(query) {
 ========================================================= */
 
 function openSettings() {
+
   closeAllMenus();
 
   elements.settingsModal
     .classList.add("open");
+
 }
 
 
 function changeUsername() {
+
   const settings =
     getSettings();
 
@@ -923,11 +1287,14 @@ function changeUsername() {
 
   updateUserUI();
 
-  showToast("Đã cập nhật tên");
+  showToast(
+    "Đã cập nhật tên"
+  );
 }
 
 
 function toggleTheme() {
+
   const settings =
     getSettings();
 
@@ -939,12 +1306,18 @@ function toggleTheme() {
   saveSettings(settings);
 
   applyTheme();
+
 }
 
 
 function clearAllHistory() {
+
   if (!state.chats.length) {
-    showToast("Lịch sử đang trống");
+
+    showToast(
+      "Lịch sử đang trống"
+    );
+
     return;
   }
 
@@ -958,11 +1331,14 @@ function clearAllHistory() {
   }
 
   state.chats = [];
-  state.currentChatId = null;
+
+  state.currentChatId =
+    null;
 
   saveChats();
 
   createChat();
+
   renderHistory();
 
   showToast(
@@ -972,10 +1348,70 @@ function clearAllHistory() {
 
 
 /* =========================================================
+   SETTINGS NAVIGATION
+========================================================= */
+
+function switchSettingsPage(page) {
+
+  $$(".settings-nav-item")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.settingPage === page
+      );
+
+    });
+
+
+  $$(".settings-page")
+    .forEach(section => {
+
+      section.classList.toggle(
+        "active",
+        section.dataset.page === page
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   SETTINGS SEARCH
+========================================================= */
+
+function searchSettings(query) {
+
+  const clean =
+    query
+      .trim()
+      .toLowerCase();
+
+  $$(".settings-nav-item")
+    .forEach(item => {
+
+      const text =
+        item.textContent
+          .toLowerCase();
+
+      item.style.display =
+        !clean ||
+        text.includes(clean)
+          ? "flex"
+          : "none";
+
+    });
+
+}
+
+
+/* =========================================================
    MODEL
 ========================================================= */
 
 function toggleModelMenu() {
+
   elements.modelMenu
     .classList.toggle("open");
 
@@ -984,31 +1420,17 @@ function toggleModelMenu() {
 }
 
 
-function selectModel(
-  model,
-  provider = null,
-  apiModel = null
-) {
-  state.selectedModel = model;
-
-  if (provider) {
-    state.selectedProvider = provider;
-  }
-
-  if (apiModel) {
-    state.selectedApiModel = apiModel;
-  }
-
-  elements.currentModel.textContent =
-    model;
+function updateModelMenu() {
 
   elements.modelMenu
     .querySelectorAll(
       "button[data-model]"
     )
     .forEach(button => {
+
       const selected =
-        button.dataset.model === model;
+        button.dataset.model ===
+        state.selectedModel;
 
       button.classList.toggle(
         "selected",
@@ -1017,22 +1439,54 @@ function selectModel(
 
       const check =
         button.querySelector(
-          "span:last-child"
+          "b"
         );
 
       if (check) {
         check.textContent =
-          selected ? "✓" : "";
+          selected
+            ? "✓"
+            : "";
       }
+
     });
+
+}
+
+
+function selectModel(
+  model,
+  provider = null,
+  apiModel = null
+) {
+
+  state.selectedModel =
+    model;
+
+  if (provider) {
+    state.selectedProvider =
+      provider;
+  }
+
+  if (apiModel) {
+    state.selectedApiModel =
+      apiModel;
+  }
+
+  elements.currentModel.textContent =
+    model;
+
+  updateModelMenu();
 
   elements.modelMenu
     .classList.remove("open");
+
 
   const chat =
     getCurrentChat();
 
   if (chat) {
+
     chat.model =
       state.selectedModel;
 
@@ -1043,7 +1497,9 @@ function selectModel(
       state.selectedApiModel;
 
     saveChats();
+
   }
+
 }
 
 
@@ -1052,21 +1508,27 @@ function selectModel(
 ========================================================= */
 
 function openFilePicker() {
+
   elements.fileInput.click();
+
 }
 
 
 function handleFiles(files) {
+
   state.attachedFiles =
     Array.from(files);
 
-  if (!state.attachedFiles.length) {
+  if (
+    !state.attachedFiles.length
+  ) {
     return;
   }
 
   showToast(
     `${state.attachedFiles.length} file đã được chọn`
   );
+
 }
 
 
@@ -1075,20 +1537,24 @@ function handleFiles(files) {
 ========================================================= */
 
 function autoResizeTextarea() {
+
   const input =
     elements.messageInput;
 
-  input.style.height = "auto";
+  input.style.height =
+    "auto";
 
   input.style.height =
     Math.min(
       input.scrollHeight,
       180
     ) + "px";
+
 }
 
 
 function updateSendButton() {
+
   const hasText =
     elements.messageInput.value
       .trim()
@@ -1097,6 +1563,7 @@ function updateSendButton() {
   elements.sendBtn.disabled =
     !hasText ||
     state.isGenerating;
+
 }
 
 
@@ -1105,20 +1572,27 @@ function updateSendButton() {
 ========================================================= */
 
 function scrollToBottom() {
+
   requestAnimationFrame(() => {
+
     elements.chatArea.scrollTop =
       elements.chatArea.scrollHeight;
+
   });
+
 }
 
 
 function closeAccountMenu() {
+
   elements.accountMenu
     .classList.remove("open");
+
 }
 
 
 function closeAllMenus() {
+
   elements.modelMenu
     .classList.remove("open");
 
@@ -1128,10 +1602,23 @@ function closeAllMenus() {
     .forEach(menu =>
       menu.classList.remove("open")
     );
+
+}
+
+
+function closeAllModals() {
+
+  elements.searchModal
+    .classList.remove("open");
+
+  elements.settingsModal
+    .classList.remove("open");
+
 }
 
 
 function showToast(message) {
+
   elements.toast.textContent =
     message;
 
@@ -1144,11 +1631,17 @@ function showToast(message) {
   );
 
   showToast.timeout =
-    setTimeout(() => {
-      elements.toast.classList.remove(
-        "show"
-      );
-    }, 2200);
+    setTimeout(
+      () => {
+
+        elements.toast
+          .classList
+          .remove("show");
+
+      },
+      2200
+    );
+
 }
 
 
@@ -1157,11 +1650,13 @@ function showToast(message) {
 ========================================================= */
 
 function toggleAccountMenu() {
+
   elements.accountMenu
     .classList.toggle("open");
 
   elements.modelMenu
     .classList.remove("open");
+
 }
 
 
@@ -1170,25 +1665,39 @@ function toggleAccountMenu() {
 ========================================================= */
 
 function toggleSidebar() {
+
   elements.sidebar
-    .classList.toggle("mobile-open");
+    .classList.toggle(
+      "mobile-open"
+    );
 
   elements.mobileOverlay
     .classList.toggle(
       "open",
-      elements.sidebar.classList.contains(
-        "mobile-open"
-      )
+      elements.sidebar
+        .classList
+        .contains(
+          "mobile-open"
+        )
     );
+
 }
 
 
 function closeMobileSidebar() {
+
   elements.sidebar
-    .classList.remove("mobile-open");
+    .classList
+    .remove(
+      "mobile-open"
+    );
 
   elements.mobileOverlay
-    .classList.remove("open");
+    .classList
+    .remove(
+      "open"
+    );
+
 }
 
 
@@ -1208,15 +1717,15 @@ elements.newChatBtn.addEventListener(
 );
 
 
-elements.menuNewChatBtn.addEventListener(
-  "click",
-  createChat
-);
-
-
 elements.searchBtn.addEventListener(
   "click",
   openSearch
+);
+
+
+elements.settingsBtn.addEventListener(
+  "click",
+  openSettings
 );
 
 
@@ -1227,26 +1736,24 @@ $("#headerSearchBtn")
   );
 
 
-elements.settingsBtn.addEventListener(
-  "click",
-  openSettings
-);
+elements.menuSettingsBtn
+  .addEventListener(
+    "click",
+    openSettings
+  );
 
 
-elements.menuSettingsBtn.addEventListener(
-  "click",
-  openSettings
-);
+elements.modelSelector
+  .addEventListener(
+    "click",
+    event => {
 
+      event.stopPropagation();
 
-elements.modelSelector.addEventListener(
-  "click",
-  event => {
-    event.stopPropagation();
+      toggleModelMenu();
 
-    toggleModelMenu();
-  }
-);
+    }
+  );
 
 
 elements.modelMenu
@@ -1254,168 +1761,256 @@ elements.modelMenu
     "button[data-model]"
   )
   .forEach(button => {
+
     button.addEventListener(
       "click",
       () => {
+
         selectModel(
           button.dataset.model,
           button.dataset.provider,
           button.dataset.apiModel
         );
+
       }
     );
+
   });
 
 
-elements.accountBtn.addEventListener(
-  "click",
-  event => {
-    event.stopPropagation();
+elements.accountBtn
+  .addEventListener(
+    "click",
+    event => {
 
-    toggleAccountMenu();
-  }
-);
+      event.stopPropagation();
 
+      toggleAccountMenu();
 
-elements.headerAccountBtn.addEventListener(
-  "click",
-  event => {
-    event.stopPropagation();
-
-    toggleAccountMenu();
-  }
-);
+    }
+  );
 
 
-elements.mobileMenuBtn.addEventListener(
-  "click",
-  event => {
-    event.stopPropagation();
+elements.headerAccountBtn
+  .addEventListener(
+    "click",
+    event => {
 
-    toggleSidebar();
-  }
-);
+      event.stopPropagation();
 
+      toggleAccountMenu();
 
-elements.mobileOverlay.addEventListener(
-  "click",
-  closeMobileSidebar
-);
+    }
+  );
 
 
-elements.attachBtn.addEventListener(
-  "click",
-  openFilePicker
-);
+elements.mobileMenuBtn
+  .addEventListener(
+    "click",
+    event => {
+
+      event.stopPropagation();
+
+      toggleSidebar();
+
+    }
+  );
 
 
-elements.fileInput.addEventListener(
-  "change",
-  event =>
-    handleFiles(event.target.files)
-);
+elements.mobileOverlay
+  .addEventListener(
+    "click",
+    closeMobileSidebar
+  );
 
 
-elements.messageInput.addEventListener(
-  "input",
-  () => {
-    autoResizeTextarea();
-    updateSendButton();
-  }
-);
+elements.attachBtn
+  .addEventListener(
+    "click",
+    openFilePicker
+  );
 
 
-elements.messageInput.addEventListener(
-  "keydown",
-  event => {
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey
-    ) {
+elements.fileInput
+  .addEventListener(
+    "change",
+    event =>
+      handleFiles(
+        event.target.files
+      )
+  );
+
+
+elements.messageInput
+  .addEventListener(
+    "input",
+    () => {
+
+      autoResizeTextarea();
+
+      updateSendButton();
+
+    }
+  );
+
+
+elements.messageInput
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+  );
+
+
+elements.composer
+  .addEventListener(
+    "submit",
+    event => {
+
       event.preventDefault();
 
       sendMessage();
+
     }
-  }
-);
+  );
 
 
-elements.composer.addEventListener(
-  "submit",
-  event => {
-    event.preventDefault();
-
-    sendMessage();
-  }
-);
-
-
-elements.searchInput.addEventListener(
-  "input",
-  event =>
-    renderSearchResults(
-      event.target.value
-    )
-);
+elements.searchInput
+  .addEventListener(
+    "input",
+    event =>
+      renderSearchResults(
+        event.target.value
+      )
+  );
 
 
-elements.themeToggle.addEventListener(
-  "click",
-  toggleTheme
-);
+elements.themeToggle
+  .addEventListener(
+    "click",
+    toggleTheme
+  );
 
 
-elements.changeNameBtn.addEventListener(
-  "click",
-  changeUsername
-);
+elements.changeNameBtn
+  .addEventListener(
+    "click",
+    changeUsername
+  );
 
 
-elements.clearHistoryBtn.addEventListener(
-  "click",
-  clearAllHistory
-);
+elements.clearHistoryBtn
+  .addEventListener(
+    "click",
+    clearAllHistory
+  );
+
+
+/* =========================================================
+   SETTINGS NAV EVENTS
+========================================================= */
+
+$$(".settings-nav-item")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        switchSettingsPage(
+          button.dataset.settingPage
+        );
+
+      }
+    );
+
+  });
+
+
+if (elements.settingsSearch) {
+
+  elements.settingsSearch
+    .addEventListener(
+      "input",
+      event => {
+
+        searchSettings(
+          event.target.value
+        );
+
+      }
+    );
+
+}
 
 
 /* =========================================================
    SUGGESTIONS
 ========================================================= */
 
-$$(".suggestion").forEach(button => {
-  button.addEventListener(
-    "click",
-    () => {
-      elements.messageInput.value =
-        button.dataset.prompt || "";
+$$(".suggestion")
+  .forEach(button => {
 
-      autoResizeTextarea();
-      updateSendButton();
+    button.addEventListener(
+      "click",
+      () => {
 
-      elements.messageInput.focus();
-    }
-  );
-});
+        elements.messageInput.value =
+          button.dataset.prompt ||
+          "";
+
+        autoResizeTextarea();
+
+        updateSendButton();
+
+        elements.messageInput.focus();
+
+      }
+    );
+
+  });
 
 
 /* =========================================================
    CLOSE BUTTONS
 ========================================================= */
 
-$$("[data-close]").forEach(button => {
-  button.addEventListener(
-    "click",
-    () => {
-      const target =
-        document.getElementById(
-          button.dataset.close
-        );
+$$("[data-close]")
+  .forEach(button => {
 
-      if (target) {
-        target.classList.remove("open");
+    button.addEventListener(
+      "click",
+      () => {
+
+        const target =
+          document.getElementById(
+            button.dataset.close
+          );
+
+        if (target) {
+
+          target.classList.remove(
+            "open"
+          );
+
+        }
+
       }
-    }
-  );
-});
+    );
+
+  });
 
 
 /* =========================================================
@@ -1434,9 +2029,13 @@ document.addEventListener(
         event.target
       )
     ) {
+
       elements.modelMenu
-        .classList.remove("open");
+        .classList
+        .remove("open");
+
     }
+
 
     if (
       !elements.accountMenu.contains(
@@ -1449,10 +2048,57 @@ document.addEventListener(
         event.target
       )
     ) {
+
       closeAccountMenu();
+
     }
+
   }
 );
+
+
+/* =========================================================
+   MODAL BACKDROP CLICK
+========================================================= */
+
+elements.searchModal
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        elements.searchModal
+      ) {
+
+        elements.searchModal
+          .classList
+          .remove("open");
+
+      }
+
+    }
+  );
+
+
+elements.settingsModal
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        elements.settingsModal
+      ) {
+
+        elements.settingsModal
+          .classList
+          .remove("open");
+
+      }
+
+    }
+  );
 
 
 /* =========================================================
@@ -1462,19 +2108,19 @@ document.addEventListener(
 document.addEventListener(
   "keydown",
   event => {
-    if (event.key !== "Escape") {
+
+    if (
+      event.key !== "Escape"
+    ) {
       return;
     }
 
     closeAllMenus();
 
-    elements.searchModal
-      .classList.remove("open");
-
-    elements.settingsModal
-      .classList.remove("open");
+    closeAllModals();
 
     closeMobileSidebar();
+
   }
 );
 
@@ -1484,6 +2130,7 @@ document.addEventListener(
 ========================================================= */
 
 function init() {
+
   loadChats();
 
   updateUserUI();
@@ -1498,7 +2145,8 @@ function init() {
     "gpt-5-mini"
   );
 
-  state.currentChatId = null;
+  state.currentChatId =
+    null;
 
   clearMessages();
 
@@ -1507,7 +2155,6 @@ function init() {
 
   autoResizeTextarea();
 
-  elements.messageInput.focus();
 }
 
 
