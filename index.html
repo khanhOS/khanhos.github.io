@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,56 +6,9 @@
 
   <title>KhanhOS</title>
 
-  <!-- =========================
-       KHANHOS LOGO
-  ========================== -->
-
-  <link
-    rel="icon"
-    href="./logo.jpn"
-  >
-
-  <link
-    rel="apple-touch-icon"
-    href="./logo.jpn"
-  >
-
-  <meta
-    name="theme-color"
-    content="#0b0b0b"
-  >
-
-  <!-- =========================
-       SOCIAL PREVIEW
-  ========================== -->
-
-  <meta
-    property="og:title"
-    content="KhanhOS"
-  >
-
-  <meta
-    property="og:description"
-    content="Your AI. Your OS."
-  >
-
-  <meta
-    property="og:image"
-    content="https://khanhos.github.io/logo.jpn"
-  >
-
-  <meta
-    property="og:url"
-    content="https://khanhos.github.io/"
-  >
-
-  <meta
-    property="og:type"
-    content="website"
-  >
+  <meta name="theme-color" content="#0b0b0b">
 
   <style>
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -70,14 +22,9 @@
     }
 
     body {
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+      font-family: Arial, Helvetica, sans-serif;
       background: #0b0b0b;
-      color: white;
-
+      color: #fff;
       overflow: hidden;
     }
 
@@ -93,9 +40,7 @@
     .app {
       width: 100%;
       height: 100vh;
-
       display: flex;
-
       background: #0b0b0b;
     }
 
@@ -106,7 +51,6 @@
     .sidebar {
       width: 260px;
       height: 100vh;
-
       flex-shrink: 0;
 
       display: flex;
@@ -115,19 +59,16 @@
       padding: 18px;
 
       background: #101010;
-
-      border-right:
-        1px solid #242424;
+      border-right: 1px solid #242424;
     }
 
     /* =========================
-       BRAND
+       KHANHOS BRAND
     ========================== */
 
     .brand {
       display: flex;
       align-items: center;
-
       gap: 11px;
 
       margin-bottom: 25px;
@@ -137,27 +78,36 @@
       width: 44px;
       height: 44px;
 
-      display: block;
-
       flex-shrink: 0;
 
-      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      aspect-ratio: 1 / 1;
+      border-radius: 11px;
 
-      border-radius: 10px;
+      background:
+        linear-gradient(
+          135deg,
+          #181818,
+          #242424
+        );
 
-      background: #181818;
+      border: 1px solid #363636;
 
-      border:
-        1px solid #303030;
+      color: #fff;
+
+      font-size: 22px;
+      font-weight: 800;
+
+      box-shadow:
+        0 0 20px
+        rgba(255,255,255,0.04);
     }
 
     .brand-name {
       font-size: 19px;
-
       font-weight: 700;
-
       letter-spacing: -0.3px;
     }
 
@@ -175,14 +125,11 @@
 
       padding: 12px 13px;
 
-      border:
-        1px solid #303030;
-
+      border: 1px solid #303030;
       border-radius: 12px;
 
       background: #181818;
-
-      color: white;
+      color: #fff;
 
       font-size: 14px;
 
@@ -192,10 +139,8 @@
     }
 
     .new-chat:hover {
-      background: #222222;
-
-      border-color:
-        #3b3b3b;
+      background: #222;
+      border-color: #3b3b3b;
     }
 
     /* =========================
@@ -236,8 +181,7 @@
 
     .chat-item:hover {
       background: #1d1d1d;
-
-      color: white;
+      color: #fff;
     }
 
     /* =========================
@@ -247,8 +191,7 @@
     .sidebar-bottom {
       padding-top: 12px;
 
-      border-top:
-        1px solid #252525;
+      border-top: 1px solid #252525;
     }
 
     .sidebar-button {
@@ -262,7 +205,6 @@
       padding: 11px 12px;
 
       border: 0;
-
       border-radius: 10px;
 
       background: transparent;
@@ -278,8 +220,7 @@
 
     .sidebar-button:hover {
       background: #1d1d1d;
-
-      color: white;
+      color: #fff;
     }
 
     /* =========================
@@ -287,43 +228,35 @@
     ========================== */
 
     .main {
-      width:
-        calc(100% - 260px);
-
+      width: calc(100% - 260px);
       height: 100vh;
 
       display: flex;
-
       flex-direction: column;
 
       position: relative;
     }
 
     /* =========================
-       TOP BAR
+       TOPBAR
     ========================== */
 
     .topbar {
       height: 64px;
-
       flex-shrink: 0;
 
       display: flex;
-
       align-items: center;
 
       padding: 0 24px;
 
-      border-bottom:
-        1px solid #242424;
+      border-bottom: 1px solid #242424;
 
-      background:
-        rgba(11, 11, 11, 0.95);
+      background: rgba(11,11,11,0.95);
     }
 
     .topbar-title {
       font-size: 15px;
-
       font-weight: 600;
     }
 
@@ -348,7 +281,6 @@
 
     .welcome {
       width: 100%;
-
       max-width: 760px;
 
       margin:
@@ -359,31 +291,47 @@
       text-align: center;
     }
 
+    /* =========================
+       KHANHOS BIG LOGO
+    ========================== */
+
     .welcome-logo {
       width: 90px;
       height: 90px;
 
-      display: block;
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
 
       margin:
         0
         auto
         20px;
 
-      object-fit: cover;
-
       aspect-ratio: 1 / 1;
 
-      border-radius: 20px;
+      border-radius: 21px;
 
-      background: #181818;
+      background:
+        linear-gradient(
+          135deg,
+          #151515,
+          #252525
+        );
 
-      border:
-        1px solid #303030;
+      border: 1px solid #363636;
+
+      color: #fff;
+
+      font-size: 43px;
+      font-weight: 800;
+
+      letter-spacing: -3px;
 
       box-shadow:
         0 0 35px
-        rgba(100, 100, 255, 0.08);
+        rgba(255,255,255,0.06);
     }
 
     .welcome h1 {
@@ -398,7 +346,6 @@
 
     .welcome p {
       color: #777;
-
       font-size: 15px;
     }
 
@@ -408,7 +355,6 @@
 
     .message {
       width: 100%;
-
       max-width: 760px;
 
       margin:
@@ -433,14 +379,11 @@
 
     .message.user {
       background: #1c1c1c;
-
-      border:
-        1px solid #282828;
+      border: 1px solid #282828;
     }
 
     .message.ai {
       background: transparent;
-
       color: #eee;
     }
 
@@ -470,7 +413,6 @@
 
     .composer {
       width: 100%;
-
       max-width: 760px;
 
       margin: 0 auto;
@@ -483,12 +425,15 @@
 
       padding: 9px;
 
-      border:
-        1px solid #303030;
+      border: 1px solid #303030;
 
       border-radius: 18px;
 
       background: #151515;
+
+      box-shadow:
+        0 8px 35px
+        rgba(0,0,0,0.25);
     }
 
     .composer textarea {
@@ -497,23 +442,20 @@
       width: 100%;
 
       min-height: 42px;
-
       max-height: 160px;
 
       resize: none;
 
       border: 0;
-
       outline: 0;
 
       padding: 11px;
 
       background: transparent;
 
-      color: white;
+      color: #fff;
 
       font-size: 15px;
-
       line-height: 20px;
     }
 
@@ -522,7 +464,7 @@
     }
 
     /* =========================
-       SEND
+       SEND BUTTON
     ========================== */
 
     .send-button {
@@ -532,15 +474,12 @@
       flex-shrink: 0;
 
       border: 0;
-
       border-radius: 12px;
 
-      background: white;
-
-      color: black;
+      background: #fff;
+      color: #000;
 
       font-size: 18px;
-
       font-weight: 700;
 
       cursor: pointer;
@@ -553,8 +492,7 @@
     }
 
     .send-button:active {
-      transform:
-        scale(0.94);
+      transform: scale(0.94);
     }
 
     /* =========================
@@ -588,11 +526,10 @@
       display: none;
 
       align-items: center;
-
       justify-content: center;
 
       background:
-        rgba(0, 0, 0, 0.65);
+        rgba(0,0,0,0.65);
 
       z-index: 100;
     }
@@ -610,19 +547,21 @@
 
       padding: 22px;
 
-      border:
-        1px solid #303030;
+      border: 1px solid #303030;
 
       border-radius: 18px;
 
       background: #151515;
+
+      box-shadow:
+        0 20px 70px
+        rgba(0,0,0,0.5);
     }
 
     .modal-header {
       display: flex;
 
       align-items: center;
-
       justify-content: space-between;
 
       margin-bottom: 20px;
@@ -637,21 +576,21 @@
       height: 34px;
 
       border: 0;
-
       border-radius: 9px;
 
       background: #222;
 
-      color: white;
+      color: #fff;
 
       cursor: pointer;
+
+      font-size: 18px;
     }
 
     .setting-row {
       padding: 14px 0;
 
-      border-bottom:
-        1px solid #262626;
+      border-bottom: 1px solid #262626;
 
       color: #cfcfcf;
 
@@ -700,6 +639,8 @@
         height: 78px;
 
         border-radius: 18px;
+
+        font-size: 38px;
       }
 
       .welcome h1 {
@@ -717,6 +658,9 @@
         border-radius: 16px;
       }
 
+      .note {
+        font-size: 10px;
+      }
     }
 
   </style>
@@ -726,23 +670,26 @@
 
   <div class="app">
 
-    <!-- SIDEBAR -->
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
     <aside class="sidebar">
 
       <div class="brand">
 
-        <img
-          class="brand-logo"
-          src="./logo.jpn"
-          alt="KhanhOS"
-        >
+        <!-- LOGO KHÔNG CẦN FILE -->
+
+        <div class="brand-logo">
+          K
+        </div>
 
         <div class="brand-name">
           KhanhOS
         </div>
 
       </div>
+
 
       <button
         class="new-chat"
@@ -757,10 +704,12 @@
 
       </button>
 
+
       <div
         class="chat-list"
         id="chatList"
       ></div>
+
 
       <div class="sidebar-bottom">
 
@@ -782,7 +731,9 @@
     </aside>
 
 
-    <!-- MAIN -->
+    <!-- =========================
+         MAIN
+    ========================== -->
 
     <main class="main">
 
@@ -795,7 +746,9 @@
       </header>
 
 
-      <!-- MESSAGES -->
+      <!-- =========================
+           MESSAGES
+      ========================== -->
 
       <section
         class="messages"
@@ -807,15 +760,17 @@
           id="welcome"
         >
 
-          <img
-            class="welcome-logo"
-            src="./logo.jpn"
-            alt="KhanhOS Logo"
-          >
+          <!-- LOGO KHÔNG CẦN FILE -->
+
+          <div class="welcome-logo">
+            K
+          </div>
+
 
           <h1>
             Xin chào 👋
           </h1>
+
 
           <p>
             Tôi là KhanhOS. Cốt muốn làm gì hôm nay?
@@ -826,7 +781,9 @@
       </section>
 
 
-      <!-- COMPOSER -->
+      <!-- =========================
+           INPUT
+      ========================== -->
 
       <div class="composer-area">
 
@@ -838,6 +795,7 @@
             placeholder="Nhắn tin cho KhanhOS..."
           ></textarea>
 
+
           <button
             class="send-button"
             onclick="sendMessage()"
@@ -846,6 +804,7 @@
           </button>
 
         </div>
+
 
         <div class="note">
           KhanhOS có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.
@@ -858,7 +817,9 @@
   </div>
 
 
-  <!-- SETTINGS -->
+  <!-- =========================
+       SETTINGS
+  ========================== -->
 
   <div
     class="modal"
@@ -874,6 +835,7 @@
           Cài đặt KhanhOS
         </h2>
 
+
         <button
           class="close-button"
           onclick="closeSettings()"
@@ -883,17 +845,21 @@
 
       </div>
 
+
       <div class="setting-row">
         🤖 Model: KhanhOS
       </div>
+
 
       <div class="setting-row">
         🌐 Provider: OpenAI
       </div>
 
+
       <div class="setting-row">
         🎨 Giao diện: Dark
       </div>
+
 
       <div class="setting-row">
         🚀 KhanhOS AI
@@ -932,7 +898,7 @@
 
 
     /* =========================
-       STORAGE
+       CHAT STORAGE
     ========================== */
 
     let chats = [];
@@ -962,7 +928,7 @@
 
 
     /* =========================
-       RENDER
+       RENDER CHAT LIST
     ========================== */
 
     function renderChats() {
@@ -1010,12 +976,14 @@
 
       });
 
+
       localStorage.setItem(
         "khanhos_chats",
         JSON.stringify(
           chats
         )
       );
+
 
       renderChats();
 
@@ -1031,20 +999,24 @@
       type
     ) {
 
-      const div =
+      const message =
         document.createElement(
           "div"
         );
 
-      div.className =
+
+      message.className =
         "message " + type;
 
-      div.textContent =
+
+      message.textContent =
         text;
 
+
       messages.appendChild(
-        div
+        message
       );
+
 
       messages.scrollTop =
         messages.scrollHeight;
@@ -1053,7 +1025,7 @@
 
 
     /* =========================
-       SEND
+       SEND MESSAGE
     ========================== */
 
     function sendMessage() {
@@ -1061,14 +1033,17 @@
       const text =
         input.value.trim();
 
+
       if (!text) {
         return;
       }
+
 
       const welcome =
         document.getElementById(
           "welcome"
         );
+
 
       if (welcome) {
 
@@ -1077,24 +1052,35 @@
 
       }
 
+
       addMessage(
         text,
         "user"
       );
 
+
       input.value = "";
+
 
       input.style.height =
         "42px";
 
+
       saveChat(text);
 
+
+      /*
+        DEMO RESPONSE
+
+        Sau này có thể thay bằng
+        API/backend thật.
+      */
 
       setTimeout(
         () => {
 
           addMessage(
-            "KhanhOS đã nhận tin nhắn của cốt 😎\n\nĐây là giao diện demo. Khi kết nối API/backend, KhanhOS sẽ trả lời bằng AI thật.",
+            "KhanhOS đã nhận tin nhắn của cốt 😎",
             "ai"
           );
 
@@ -1106,7 +1092,7 @@
 
 
     /* =========================
-       ENTER
+       ENTER TO SEND
     ========================== */
 
     input.addEventListener(
@@ -1129,7 +1115,7 @@
 
 
     /* =========================
-       TEXTAREA
+       AUTO RESIZE
     ========================== */
 
     input.addEventListener(
@@ -1138,6 +1124,7 @@
 
         this.style.height =
           "42px";
+
 
         this.style.height =
           Math.min(
@@ -1162,11 +1149,9 @@
           id="welcome"
         >
 
-          <img
-            class="welcome-logo"
-            src="./logo.jpn"
-            alt="KhanhOS Logo"
-          >
+          <div class="welcome-logo">
+            K
+          </div>
 
           <h1>
             Cuộc trò chuyện mới 👋
@@ -1180,10 +1165,13 @@
 
       `;
 
+
       input.value = "";
+
 
       input.style.height =
         "42px";
+
 
       input.focus();
 
@@ -1238,4 +1226,3 @@
 
 </body>
 </html>
-```
