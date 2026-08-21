@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>KhanhOS AI</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+      class="sidebar"
+      id="sidebar"
+    >
+
+      <div class="sidebar-top">
+
+        <div class="brand">
+          <div class="brand-icon">
+            K
+          </div>
+
+          <span>
+            KhanhOS
+          </span>
+        </div>
+
+
+        <nav class="main-menu">
+
+          <button
+            class="menu-item"
+            id="newChatBtn"
+            type="button"
+          >
+            <span class="menu-icon">
+              ＋
+            </span>
+
+            <span>
+              Chat mới
+            </span>
+          </button>
+
+        </nav>
+
+      </div>
+
+
+      <!-- RECENT -->
+
+      <div class="recent-section">
+
+        <div class="recent-title">
+          Gần đây
+        </div>
+
+        <div
+          class="chat-list"
+          id="chatList"
+        ></div>
+
+      </div>
+
+
+      <!-- ACCOUNT -->
+
+      <div class="sidebar-bottom">
+
+        <div
+          class="account-menu"
+          id="accountMenu"
+        >
+
+          <button
+            class="account-header"
+            type="button"
+          >
+
+            <div class="account-avatar">
+              U
+            </div>
+
+            <div class="account-header-text">
+
+              <strong>
+                User
+              </strong>
+
+              <span>
+                Tài khoản
+              </span>
+
+            </div>
+
+            <span class="account-arrow">
+              ›
+            </span>
+
+          </button>
+
+
+          <div class="account-divider"></div>
+
+
+          <button
+            class="account-item"
+            type="button"
+            id="settingsBtn"
+          >
+
+            <span>
+              ⚙
+            </span>
+
+            <span>
+              Cài đặt
+            </span>
+
+            <span class="item-arrow">
+              ›
+            </span>
+
+          </button>
+
+
+          <button
+            class="account-item"
+            type="button"
+          >
+
+            <span>
+              ❓
+            </span>
+
+            <span>
+              Trợ giúp
+            </span>
+
+            <span class="item-arrow">
+              ›
+            </span>
+
+          </button>
+
+        </div>
+
+
+        <button
+          class="profile-button"
+          id="profileButton"
+          type="button"
+        >
+
+          <div class="profile-avatar">
+            U
+          </div>
+
+          <div class="profile-info">
+
+            <strong>
+              User
+            </strong>
+
+            <span>
+              KhanhOS
+            </span>
+
+          </div>
+
+          <span class="profile-arrow">
+            ⋯
+          </span>
+
+        </button>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+      <!-- TOPBAR -->
+
+      <header class="topbar">
+
+        <button
+          class="mobile-menu"
+          id="mobileMenu"
+          type="button"
+          aria-label="Mở menu"
+        >
+          ☰
+        </button>
+
+
+        <!-- MODEL SELECTOR -->
+
+        <div
+          class="model-selector-wrapper"
+          id="modelSelectorWrapper"
+        >
+
+          <button
+            class="model-selector"
+            id="modelSelector"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+
+            <span id="modelName">
+              GPT-5 mini
+            </span>
+
+            <span class="online-dot"></span>
+
+            <span class="model-arrow">
+              ⌄
+            </span>
+
+          </button>
+
+
+          <div
+            class="model-menu"
+            id="modelMenu"
+          >
+
+            <div class="model-menu-title">
+              Chọn model
+            </div>
+
+
+            <!-- OPENAI -->
+
+            <button
+              class="model-option active"
+              data-provider="openai"
+              data-model="gpt-5-mini"
+              data-name="GPT-5 mini"
+              type="button"
+            >
+
+              <span class="model-provider">
+                OpenAI
+              </span>
+
+              <span class="model-option-name">
+                GPT-5 mini
+              </span>
+
+            </button>
+
+
+            <button
+              class="model-option"
+              data-provider="openai"
+              data-model="gpt-5"
+              data-name="GPT-5"
+              type="button"
+            >
+
+              <span class="model-provider">
+                OpenAI
+              </span>
+
+              <span class="model-option-name">
+                GPT-5
+              </span>
+
+            </button>
+
+
+            <!-- CLAUDE -->
+
+            <button
+              class="model-option"
+              data-provider="claude"
+              data-model="claude-sonnet-4-5"
+              data-name="Claude Sonnet 4.5"
+              type="button"
+            >
+
+              <span class="model-provider">
+                Anthropic
+              </span>
+
+              <span class="model-option-name">
+                Claude Sonnet 4.5
+              </span>
+
+            </button>
+
+
+            <button
+              class="model-option"
+              data-provider="claude"
+              data-model="claude-haiku-4-5"
+              data-name="Claude Haiku 4.5"
+              type="button"
+            >
+
+              <span class="model-provider">
+                Anthropic
+              </span>
+
+              <span class="model-option-name">
+                Claude Haiku 4.5
+              </span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <button
+          class="top-more"
+          type="button"
+          aria-label="Tùy chọn"
+        >
+          ⋯
+        </button>
+
+      </header>
+
+
+      <!-- ===================================================
+           CHAT AREA
+      ==================================================== -->
+
+      <section
+        class="chat-area"
+        id="chatArea"
+      >
+
+        <!-- WELCOME -->
+
+        <div
+          class="welcome"
+          id="welcome"
+        >
+
+          <div class="welcome-logo">
+            K
+          </div>
+
+          <h1>
+            KhanhOS AI
+          </h1>
+
+          <p>
+            Xin chào! Tôi có thể giúp gì cho bạn?
+          </p>
+
+
+          <div class="suggestions">
+
+            <button
+              class="suggestion"
+              data-text="Giải thích cho tôi một khái niệm khó"
+              type="button"
+            >
+
+              <span>
+                💡
+              </span>
+
+              <span>
+                Giải thích một khái niệm khó
+              </span>
+
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-text="Viết code giúp tôi"
+              type="button"
+            >
+
+              <span>
+                💻
+              </span>
+
+              <span>
+                Viết code giúp tôi
+              </span>
+
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-text="Giúp tôi học một chủ đề mới"
+              type="button"
+            >
+
+              <span>
+                📚
+              </span>
+
+              <span>
+                Giúp tôi học
+              </span>
+
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-text="Cho tôi một ý tưởng thú vị"
+              type="button"
+            >
+
+              <span>
+                ✨
+              </span>
+
+              <span>
+                Cho tôi một ý tưởng
+              </span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+
+        <div
+          class="messages"
+          id="messages"
+        ></div>
+
+      </section>
+
+
+      <!-- ===================================================
+           COMPOSER
+      ==================================================== -->
+
+      <div class="composer-wrapper">
+
+        <div class="composer">
+
+          <button
+            class="composer-button"
+            id="fileButton"
+            type="button"
+            aria-label="Đính kèm file"
+          >
+            ＋
+          </button>
+
+          <input
+            type="file"
+            id="fileInput"
+            hidden
+            multiple
+          >
+
+
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Nhắn tin cho KhanhOS AI..."
+            autocomplete="off"
+          ></textarea>
+
+
+          <button
+            class="send-button"
+            id="sendButton"
+            type="button"
+            disabled
+            aria-label="Gửi"
+          >
+            ↑
+          </button>
+
+        </div>
+
+
+        <div class="composer-note">
+          KhanhOS AI có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       SETTINGS
+  ====================================================== -->
+
+  <div
+    class="settings-overlay"
+    id="settingsOverlay"
+  >
+
+    <div class="settings-modal">
+
+      <!-- SETTINGS SIDEBAR -->
+
+      <aside class="settings-sidebar">
+
+        <button
+          class="settings-close"
+          id="settingsClose"
+          type="button"
+          aria-label="Đóng"
+        >
+          ×
+        </button>
+
+
+        <div class="settings-search">
+
+          <span>
+            🔍
+          </span>
+
+          <input
+            type="text"
+            id="settingsSearch"
+            placeholder="Tìm kiếm cài đặt"
+          >
+
+        </div>
+
+
+        <nav class="settings-nav">
+
+          <button
+            class="settings-nav-item active"
+            data-title="Chung"
+            type="button"
+          >
+
+            <span>
+              ⚙
+            </span>
+
+            <span>
+              Chung
+            </span>
+
+          </button>
+
+
+          <button
+            class="settings-nav-item"
+            data-title="Giao diện"
+            type="button"
+          >
+
+            <span>
+              🎨
+            </span>
+
+            <span>
+              Giao diện
+            </span>
+
+          </button>
+
+
+          <button
+            class="settings-nav-item"
+            data-title="Thông báo"
+            type="button"
+          >
+
+            <span>
+              🔔
+            </span>
+
+            <span>
+              Thông báo
+            </span>
+
+          </button>
+
+
+          <button
+            class="settings-nav-item"
+            data-title="Dữ liệu"
+            type="button"
+          >
+
+            <span>
+              🗄
+            </span>
+
+            <span>
+              Dữ liệu
+            </span>
+
+          </button>
+
+
+          <button
+            class="settings-nav-item"
+            data-title="Bảo mật"
+            type="button"
+          >
+
+            <span>
+              🔒
+            </span>
+
+            <span>
+              Bảo mật
+            </span>
+
+          </button>
+
+        </nav>
+
+      </aside>
+
+
+      <!-- SETTINGS CONTENT -->
+
+      <section class="settings-content">
+
+        <div class="settings-title">
+
+          <h2 id="settingsPageTitle">
+            Chung
+          </h2>
+
+        </div>
+
+
+        <!-- GENERAL -->
+
+        <div id="generalSettings">
+
+          <div class="upgrade-card">
+
+            <div>
+
+              <strong>
+                KhanhOS Free
+              </strong>
+
+              <p>
+                Bạn đang sử dụng KhanhOS AI.
+              </p>
+
+            </div>
+
+            <button
+              type="button"
+            >
+              Nâng cấp
+            </button>
+
+          </div>
+
+
+          <!-- THEME -->
+
+          <div class="setting-row">
+
+            <div class="setting-text">
+
+              <strong>
+                Giao diện
+              </strong>
+
+              <p>
+                Chọn giao diện hiển thị của KhanhOS.
+              </p>
+
+            </div>
+
+
+            <select id="themeSelect">
+
+              <option value="dark">
+                Tối
+              </option>
+
+              <option value="light">
+                Sáng
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- ENTER -->
+
+          <div class="setting-row">
+
+            <div class="setting-text">
+
+              <strong>
+                Gửi bằng Enter
+              </strong>
+
+              <p>
+                Nhấn Enter để gửi tin nhắn.
+                Shift + Enter để xuống dòng.
+              </p>
+
+            </div>
+
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                checked
+                id="enterSendToggle"
+              >
+
+              <span></span>
+
+            </label>
+
+          </div>
+
+
+          <!-- HISTORY -->
+
+          <div class="setting-row">
+
+            <div class="setting-text">
+
+              <strong>
+                Lưu lịch sử trò chuyện
+              </strong>
+
+              <p>
+                Lưu cuộc trò chuyện trên thiết bị này.
+              </p>
+
+            </div>
+
+
+            <label class="switch">
+
+              <input
+                type="checkbox"
+                checked
+                id="historyToggle"
+              >
+
+              <span></span>
+
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- OTHER SETTINGS -->
+
+        <div
+          class="empty-setting-page"
+          id="otherSettings"
+        >
+
+          <div class="empty-icon">
+            ⚙
+          </div>
+
+          <h3 id="otherSettingsTitle">
+            Cài đặt
+          </h3>
+
+          <p>
+            Tùy chọn này sẽ được cập nhật trong phiên bản tiếp theo.
+          </p>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       SCRIPT
+  ====================================================== -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>
