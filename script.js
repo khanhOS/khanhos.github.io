@@ -157,6 +157,126 @@ const elements = {
 
 
 /* =========================================================
+   FRIENDLY TEXT
+   Chuyển các câu giao diện/lịch sử cũ sang
+   cách xưng hô thân thiện: Tôi / Bạn
+========================================================= */
+
+function friendlyText(text) {
+
+  if (!text) {
+    return text;
+  }
+
+  let result = String(text);
+
+  const replacements = [
+
+    /* Câu giao diện cũ */
+    [
+      "Tao có thể giúp gì cho mày hôm nay?",
+      "Tôi có thể giúp gì cho bạn hôm nay?"
+    ],
+
+    [
+      "Tao có thể giúp gì cho bạn hôm nay?",
+      "Tôi có thể giúp gì cho bạn hôm nay?"
+    ],
+
+    /* Gợi ý */
+    [
+      "Giúp tao viết một đoạn code",
+      "Giúp tôi viết một đoạn code"
+    ],
+
+    [
+      "Giúp tao viết code",
+      "Giúp tôi viết code"
+    ],
+
+    [
+      "Giải thích cho tao một vấn đề",
+      "Giải thích cho tôi một vấn đề"
+    ],
+
+    [
+      "Cho tao một ý tưởng hay",
+      "Cho tôi một ý tưởng hay"
+    ],
+
+    [
+      "Cho tao một ý tưởng",
+      "Cho tôi một ý tưởng"
+    ],
+
+    [
+      "Giúp tao tìm lỗi trong code",
+      "Giúp tôi tìm lỗi trong code"
+    ],
+
+    [
+      "Tìm lỗi trong code",
+      "Tìm lỗi trong mã nguồn"
+    ],
+
+    /* Các cách viết phổ biến */
+    [
+      "cho tao",
+      "cho tôi"
+    ],
+
+    [
+      "Cho tao",
+      "Cho tôi"
+    ],
+
+    [
+      "giúp tao",
+      "giúp tôi"
+    ],
+
+    [
+      "Giúp tao",
+      "Giúp tôi"
+    ],
+
+    [
+      "giải thích cho tao",
+      "giải thích cho tôi"
+    ],
+
+    [
+      "Giải thích cho tao",
+      "Giải thích cho tôi"
+    ],
+
+    [
+      "mày",
+      "bạn"
+    ],
+
+    [
+      "Mày",
+      "Bạn"
+    ]
+
+  ];
+
+  replacements.forEach(
+    ([oldText, newText]) => {
+
+      result =
+        result.split(oldText)
+          .join(newText);
+
+    }
+  );
+
+  return result;
+}
+
+
+/* =========================================================
    SETTINGS
 ========================================================= */
 
@@ -170,9 +290,11 @@ function getSettings() {
       );
 
     if (!saved) {
+
       return {
         ...defaultSettings
       };
+
     }
 
     return {
@@ -225,8 +347,10 @@ function updateUserUI() {
     username;
 
   if (elements.settingsAccountName) {
+
     elements.settingsAccountName.textContent =
       username;
+
   }
 
   elements.sidebarAvatar.textContent =
@@ -276,8 +400,41 @@ function loadChats() {
         : [];
 
     if (!Array.isArray(state.chats)) {
+
       state.chats = [];
+
     }
+
+    /*
+      Sửa tiêu đề lịch sử cũ.
+      Ví dụ:
+      "Giúp tao viết code"
+      ->
+      "Giúp tôi viết code"
+    */
+
+    state.chats.forEach(chat => {
+
+      if (chat.title) {
+
+        const newTitle =
+          friendlyText(chat.title);
+
+        if (
+          newTitle !==
+          chat.title
+        ) {
+
+          chat.title =
+            newTitle;
+
+        }
+
+      }
+
+    });
+
+    saveChats();
 
   } catch {
 
@@ -312,7 +469,8 @@ function createChat() {
   elements.welcome.style.display =
     "flex";
 
-  elements.messageInput.value = "";
+  elements.messageInput.value =
+    "";
 
   autoResizeTextarea();
 
@@ -325,7 +483,9 @@ function createChat() {
   closeMobileSidebar();
 
   setTimeout(() => {
+
     elements.messageInput.focus();
+
   }, 50);
 }
 
@@ -376,12 +536,16 @@ function createRealChat(firstMessage) {
 function generateTitle(text) {
 
   const clean =
-    text
-      .replace(/\s+/g, " ")
-      .trim();
+    friendlyText(
+      text
+        .replace(/\s+/g, " ")
+        .trim()
+    );
 
   if (clean.length <= 32) {
+
     return clean;
+
   }
 
   return clean.substring(0, 32) + "...";
@@ -412,25 +576,33 @@ function openChat(chatId) {
     );
 
   if (!chat) {
+
     return;
+
   }
 
   state.currentChatId =
     chat.id;
 
   if (chat.model) {
+
     state.selectedModel =
       chat.model;
+
   }
 
   if (chat.provider) {
+
     state.selectedProvider =
       chat.provider;
+
   }
 
   if (chat.apiModel) {
+
     state.selectedApiModel =
       chat.apiModel;
+
   }
 
   elements.currentModel.textContent =
@@ -478,7 +650,8 @@ function openChat(chatId) {
 
 function clearMessages() {
 
-  elements.messages.innerHTML = "";
+  elements.messages.innerHTML =
+    "";
 
 }
 
@@ -506,6 +679,12 @@ function renderMessage(
 
   if (role === "user") {
 
+    /*
+      Tin nhắn người dùng được giữ nguyên.
+      Chỉ sửa các câu giao diện, không tự ý
+      thay đổi nội dung người dùng đã nhập.
+    */
+
     message.textContent =
       content;
 
@@ -529,7 +708,9 @@ function renderMessage(
 function formatAIMessage(text) {
 
   if (!text) {
+
     return "";
+
   }
 
   let escaped =
@@ -608,15 +789,19 @@ async function sendMessage() {
     !text ||
     state.isGenerating
   ) {
+
     return;
+
   }
 
   let chat =
     getCurrentChat();
 
   if (!chat) {
+
     chat =
       createRealChat(text);
+
   }
 
   elements.welcome.style.display =
@@ -877,10 +1062,18 @@ function renderHistory() {
         chat.id ===
         state.currentChatId
       ) {
+
         item.classList.add(
           "active"
         );
+
       }
+
+      const friendlyTitle =
+        friendlyText(
+          chat.title ||
+          "Cuộc trò chuyện"
+        );
 
       item.innerHTML = `
 
@@ -895,8 +1088,7 @@ function renderHistory() {
 
           <span class="history-title-text">
             ${escapeHTML(
-              chat.title ||
-              "Cuộc trò chuyện"
+              friendlyTitle
             )}
           </span>
 
@@ -1037,21 +1229,27 @@ function renameChat(chatId) {
     );
 
   if (!chat) {
+
     return;
+
   }
 
   const name =
     prompt(
-      "Tên mới của cuộc trò chuyện:",
-      chat.title
+      "Nhập tên mới cho cuộc trò chuyện:",
+      friendlyText(chat.title)
     );
 
   if (!name?.trim()) {
+
     return;
+
   }
 
   chat.title =
-    name.trim();
+    friendlyText(
+      name.trim()
+    );
 
   chat.updatedAt =
     Date.now();
@@ -1075,16 +1273,20 @@ function deleteChat(chatId) {
     );
 
   if (!chat) {
+
     return;
+
   }
 
   const confirmed =
     confirm(
-      `Xóa cuộc trò chuyện "${chat.title}"?`
+      `Xóa cuộc trò chuyện "${friendlyText(chat.title)}"?`
     );
 
   if (!confirmed) {
+
     return;
+
   }
 
   state.chats =
@@ -1158,7 +1360,9 @@ function renderSearchResults(query) {
     state.chats.filter(chat => {
 
       const titleMatch =
-        (chat.title || "")
+        friendlyText(
+          chat.title || ""
+        )
           .toLowerCase()
           .includes(clean);
 
@@ -1215,8 +1419,10 @@ function renderSearchResults(query) {
 
         <strong>
           ${escapeHTML(
-            chat.title ||
-            "Cuộc trò chuyện"
+            friendlyText(
+              chat.title ||
+              "Cuộc trò chuyện"
+            )
           )}
         </strong>
 
@@ -1277,7 +1483,9 @@ function changeUsername() {
     );
 
   if (!name?.trim()) {
+
     return;
+
   }
 
   settings.username =
@@ -1319,15 +1527,18 @@ function clearAllHistory() {
     );
 
     return;
+
   }
 
   const confirmed =
     confirm(
-      "Xóa toàn bộ lịch sử trò chuyện?"
+      "Bạn có chắc muốn xóa toàn bộ lịch sử trò chuyện không?"
     );
 
   if (!confirmed) {
+
     return;
+
   }
 
   state.chats = [];
@@ -1443,10 +1654,12 @@ function updateModelMenu() {
         );
 
       if (check) {
+
         check.textContent =
           selected
             ? "✓"
             : "";
+
       }
 
     });
@@ -1464,13 +1677,17 @@ function selectModel(
     model;
 
   if (provider) {
+
     state.selectedProvider =
       provider;
+
   }
 
   if (apiModel) {
+
     state.selectedApiModel =
       apiModel;
+
   }
 
   elements.currentModel.textContent =
@@ -1522,11 +1739,13 @@ function handleFiles(files) {
   if (
     !state.attachedFiles.length
   ) {
+
     return;
+
   }
 
   showToast(
-    `${state.attachedFiles.length} file đã được chọn`
+    `${state.attachedFiles.length} tệp đã được chọn`
   );
 
 }
@@ -1968,8 +2187,10 @@ $$(".suggestion")
       () => {
 
         elements.messageInput.value =
-          button.dataset.prompt ||
-          "";
+          friendlyText(
+            button.dataset.prompt ||
+            ""
+          );
 
         autoResizeTextarea();
 
@@ -2112,7 +2333,9 @@ document.addEventListener(
     if (
       event.key !== "Escape"
     ) {
+
       return;
+
     }
 
     closeAllMenus();
