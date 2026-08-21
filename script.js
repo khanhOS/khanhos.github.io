@@ -1,10 +1,8 @@
 "use strict";
 
-/*
-|--------------------------------------------------------------------------
-| KhanhOS Frontend
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   KHANHOS FRONTEND
+========================================================= */
 
 const STORAGE_KEY = "khanhos_chats";
 const SETTINGS_KEY = "khanhos_settings";
@@ -12,7 +10,11 @@ const SETTINGS_KEY = "khanhos_settings";
 const state = {
   chats: [],
   currentChatId: null,
+
   selectedModel: "KhanhOS",
+  selectedProvider: "openai",
+  selectedApiModel: "gpt-5-mini",
+
   isGenerating: false,
   attachedFiles: []
 };
@@ -23,17 +25,18 @@ const defaultSettings = {
 };
 
 
-/*
-|--------------------------------------------------------------------------
-| DOM
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   DOM
+========================================================= */
 
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
 
 const elements = {
   sidebar: $("#sidebar"),
+  mobileOverlay: $("#mobileOverlay"),
+
+  brandButton: $("#brandButton"),
 
   newChatBtn: $("#newChatBtn"),
   searchBtn: $("#searchBtn"),
@@ -41,6 +44,7 @@ const elements = {
 
   chatHistory: $("#chatHistory"),
 
+  chatArea: $("#chatArea"),
   messages: $("#messages"),
   welcome: $("#welcome"),
 
@@ -78,15 +82,16 @@ const elements = {
   menuUsername: $("#menuUsername"),
   currentUsername: $("#currentUsername"),
 
+  sidebarAvatar: $("#sidebarAvatar"),
+  bigAvatar: $("#bigAvatar"),
+
   toast: $("#toast")
 };
 
 
-/*
-|--------------------------------------------------------------------------
-| SETTINGS
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 function getSettings() {
   try {
@@ -100,7 +105,6 @@ function getSettings() {
       ...defaultSettings,
       ...JSON.parse(saved)
     };
-
   } catch {
     return { ...defaultSettings };
   }
@@ -118,29 +122,29 @@ function saveSettings(settings) {
 function updateUserUI() {
   const settings = getSettings();
 
-  elements.sidebarUsername.textContent =
-    settings.username;
-
-  elements.menuUsername.textContent =
-    settings.username;
-
-  elements.currentUsername.textContent =
-    settings.username;
+  const username =
+    settings.username?.trim() || "Khanh";
 
   const firstLetter =
-    settings.username.trim().charAt(0).toUpperCase() || "K";
+    username.charAt(0).toUpperCase();
 
-  $("#sidebarAvatar").textContent = firstLetter;
+  elements.sidebarUsername.textContent = username;
+  elements.menuUsername.textContent = username;
+  elements.currentUsername.textContent = username;
+
+  elements.sidebarAvatar.textContent = firstLetter;
   elements.headerAccountBtn.textContent = firstLetter;
-  $(".big-avatar").textContent = firstLetter;
+  elements.bigAvatar.textContent = firstLetter;
 }
 
 
 function applyTheme() {
   const settings = getSettings();
 
-  document.documentElement.dataset.theme =
-    settings.theme;
+  document.body.classList.toggle(
+    "light",
+    settings.theme === "light"
+  );
 
   elements.themeToggle.textContent =
     settings.theme === "dark"
@@ -149,11 +153,9 @@ function applyTheme() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| CHAT STORAGE
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   STORAGE
+========================================================= */
 
 function loadChats() {
   try {
@@ -162,6 +164,10 @@ function loadChats() {
 
     state.chats =
       saved ? JSON.parse(saved) : [];
+
+    if (!Array.isArray(state.chats)) {
+      state.chats = [];
+    }
 
   } catch {
     state.chats = [];
@@ -179,19 +185,11 @@ function saveChats() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| CHAT CREATION
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   CHAT
+========================================================= */
 
 function createChat() {
-
-  /*
-   * Không tạo lịch sử ngay khi bấm "Chat mới".
-   * Chỉ tạo chat thật khi user gửi tin đầu tiên.
-   */
-
   state.currentChatId = null;
 
   clearMessages();
@@ -200,27 +198,31 @@ function createChat() {
 
   elements.messageInput.value = "";
 
+  autoResizeTextarea();
   updateSendButton();
 
   closeAllMenus();
+  closeMobileSidebar();
 
   elements.messageInput.focus();
 }
 
 
 function createRealChat(firstMessage) {
-
   const chat = {
-    id: crypto.randomUUID
-      ? crypto.randomUUID()
-      : Date.now().toString(),
+    id:
+      typeof crypto !== "undefined" &&
+      crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now().toString(),
 
     title: generateTitle(firstMessage),
 
     model: state.selectedModel,
+    provider: state.selectedProvider,
+    apiModel: state.selectedApiModel,
 
     createdAt: Date.now(),
-
     updatedAt: Date.now(),
 
     messages: []
@@ -237,10 +239,10 @@ function createRealChat(firstMessage) {
 
 
 function generateTitle(text) {
-
-  const clean = text
-    .replace(/\s+/g, " ")
-    .trim();
+  const clean =
+    text
+      .replace(/\s+/g, " ")
+      .trim();
 
   if (clean.length <= 32) {
     return clean;
@@ -251,21 +253,17 @@ function generateTitle(text) {
 
 
 function getCurrentChat() {
-
   return state.chats.find(
     chat => chat.id === state.currentChatId
   );
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| LOAD CHAT
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   OPEN CHAT
+========================================================= */
 
 function openChat(chatId) {
-
   const chat =
     state.chats.find(
       chat => chat.id === chatId
@@ -274,6 +272,21 @@ function openChat(chatId) {
   if (!chat) return;
 
   state.currentChatId = chat.id;
+
+  if (chat.model) {
+    state.selectedModel = chat.model;
+  }
+
+  if (chat.provider) {
+    state.selectedProvider = chat.provider;
+  }
+
+  if (chat.apiModel) {
+    state.selectedApiModel = chat.apiModel;
+  }
+
+  elements.currentModel.textContent =
+    state.selectedModel;
 
   clearMessages();
 
@@ -289,16 +302,20 @@ function openChat(chatId) {
   renderHistory();
 
   closeAllMenus();
+  closeMobileSidebar();
+
+  requestAnimationFrame(() => {
+    elements.chatArea.scrollTop =
+      elements.chatArea.scrollHeight;
+  });
 
   elements.messageInput.focus();
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| MESSAGE RENDER
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MESSAGES
+========================================================= */
 
 function clearMessages() {
   elements.messages.innerHTML = "";
@@ -306,12 +323,11 @@ function clearMessages() {
 
 
 function renderMessage(role, content) {
-
   const wrapper =
     document.createElement("div");
 
   wrapper.className =
-    `message-row ${role}`;
+    `message-row ${role === "assistant" ? "assistant" : "user"}`;
 
   const message =
     document.createElement("div");
@@ -319,11 +335,8 @@ function renderMessage(role, content) {
   message.className = "message";
 
   if (role === "user") {
-
     message.textContent = content;
-
   } else {
-
     message.innerHTML =
       formatAIMessage(content);
   }
@@ -339,41 +352,24 @@ function renderMessage(role, content) {
 
 
 function formatAIMessage(text) {
-
   if (!text) return "";
 
   let escaped = escapeHTML(text);
-
-  /*
-   * Code blocks
-   */
 
   escaped = escaped.replace(
     /```([\s\S]*?)```/g,
     "<pre><code>$1</code></pre>"
   );
 
-  /*
-   * Inline code
-   */
-
   escaped = escaped.replace(
     /`([^`]+)`/g,
     "<code>$1</code>"
   );
 
-  /*
-   * Bold
-   */
-
   escaped = escaped.replace(
     /\*\*(.*?)\*\*/g,
     "<strong>$1</strong>"
   );
-
-  /*
-   * Line breaks
-   */
 
   escaped = escaped.replace(
     /\n/g,
@@ -385,8 +381,7 @@ function formatAIMessage(text) {
 
 
 function escapeHTML(text) {
-
-  return text
+  return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -395,24 +390,17 @@ function escapeHTML(text) {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| SEND MESSAGE
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SEND
+========================================================= */
 
 async function sendMessage() {
-
   const text =
     elements.messageInput.value.trim();
 
   if (!text || state.isGenerating) {
     return;
   }
-
-  /*
-   * Nếu chưa có chat thật thì tạo ở đây.
-   */
 
   let chat = getCurrentChat();
 
@@ -421,10 +409,6 @@ async function sendMessage() {
   }
 
   elements.welcome.style.display = "none";
-
-  /*
-   * User message
-   */
 
   chat.messages.push({
     role: "user",
@@ -439,16 +423,10 @@ async function sendMessage() {
   elements.messageInput.value = "";
 
   autoResizeTextarea();
-
   updateSendButton();
 
   renderHistory();
-
   saveChats();
-
-  /*
-   * AI loading
-   */
 
   state.isGenerating = true;
 
@@ -456,11 +434,11 @@ async function sendMessage() {
     createLoadingMessage();
 
   try {
-
     const response =
       await callChatAPI(
         chat.messages,
-        chat.model
+        chat.provider || state.selectedProvider,
+        chat.apiModel || state.selectedApiModel
       );
 
     loading.remove();
@@ -469,6 +447,7 @@ async function sendMessage() {
       response.message ||
       response.content ||
       response.reply ||
+      response.text ||
       "KhanhOS không nhận được phản hồi.";
 
     chat.messages.push({
@@ -485,33 +464,32 @@ async function sendMessage() {
     );
 
     saveChats();
-
     renderHistory();
 
   } catch (error) {
-
     loading.remove();
 
     console.error(error);
 
     const errorText =
-      "Không thể kết nối tới KhanhOS API. Kiểm tra server.js và endpoint `/api/chat`.";
+      error?.message ||
+      "Không thể kết nối tới KhanhOS API.";
 
     chat.messages.push({
       role: "assistant",
-      content: errorText,
+      content:
+        `⚠️ ${errorText}`,
       timestamp: Date.now()
     });
 
     renderMessage(
       "assistant",
-      errorText
+      `⚠️ ${errorText}`
     );
 
     saveChats();
 
   } finally {
-
     state.isGenerating = false;
 
     updateSendButton();
@@ -521,17 +499,17 @@ async function sendMessage() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| API
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   API
+========================================================= */
 
-async function callChatAPI(messages, model) {
-
+async function callChatAPI(
+  messages,
+  provider,
+  model
+) {
   const response =
     await fetch("/api/chat", {
-
       method: "POST",
 
       headers: {
@@ -539,42 +517,39 @@ async function callChatAPI(messages, model) {
       },
 
       body: JSON.stringify({
+        provider,
         model,
         messages
       })
     });
 
-  if (!response.ok) {
+  let data = {};
 
-    let errorMessage =
-      `API error ${response.status}`;
-
-    try {
-
-      const error =
-        await response.json();
-
-      if (error.message) {
-        errorMessage = error.message;
-      }
-
-    } catch {}
-
-    throw new Error(errorMessage);
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+      `API trả về dữ liệu không hợp lệ (${response.status}).`
+    );
   }
 
-  return response.json();
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      data.message ||
+      `API error ${response.status}`
+    );
+  }
+
+  return data;
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| LOADING MESSAGE
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   LOADING
+========================================================= */
 
 function createLoadingMessage() {
-
   const wrapper =
     document.createElement("div");
 
@@ -603,16 +578,12 @@ function createLoadingMessage() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| HISTORY
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   HISTORY
+========================================================= */
 
 function renderHistory() {
-
   if (!state.chats.length) {
-
     elements.chatHistory.innerHTML = `
       <div class="empty-history">
         Chưa có cuộc trò chuyện
@@ -625,52 +596,82 @@ function renderHistory() {
   elements.chatHistory.innerHTML = "";
 
   state.chats
-    .sort((a, b) =>
-      b.updatedAt - a.updatedAt
+    .sort(
+      (a, b) =>
+        (b.updatedAt || 0) -
+        (a.updatedAt || 0)
     )
     .forEach(chat => {
-
       const item =
         document.createElement("div");
 
       item.className =
         "history-item";
 
-      if (chat.id === state.currentChatId) {
+      if (
+        chat.id ===
+        state.currentChatId
+      ) {
         item.classList.add("active");
       }
 
       item.innerHTML = `
-        <button class="history-main">
-          <span class="history-icon">💬</span>
+        <button
+          class="history-main"
+          type="button"
+        >
+          <span class="history-icon">
+            💬
+          </span>
+
           <span class="history-title-text">
-            ${escapeHTML(chat.title)}
+            ${escapeHTML(
+              chat.title || "Cuộc trò chuyện"
+            )}
           </span>
         </button>
 
-        <button class="history-more">
+        <button
+          class="history-more"
+          type="button"
+          title="Tùy chọn"
+        >
           ⋯
         </button>
 
         <div class="history-menu">
-          <button data-action="rename">
+
+          <button
+            type="button"
+            data-action="rename"
+          >
             ✏️ Đổi tên
           </button>
 
-          <button data-action="delete">
+          <button
+            type="button"
+            data-action="delete"
+          >
             🗑️ Xóa
           </button>
+
         </div>
       `;
 
       const mainButton =
-        item.querySelector(".history-main");
+        item.querySelector(
+          ".history-main"
+        );
 
       const moreButton =
-        item.querySelector(".history-more");
+        item.querySelector(
+          ".history-more"
+        );
 
       const menu =
-        item.querySelector(".history-menu");
+        item.querySelector(
+          ".history-menu"
+        );
 
       mainButton.addEventListener(
         "click",
@@ -680,14 +681,12 @@ function renderHistory() {
       moreButton.addEventListener(
         "click",
         event => {
-
           event.stopPropagation();
 
-          document
-            .querySelectorAll(".history-menu.open")
-            .forEach(m => {
-              if (m !== menu) {
-                m.classList.remove("open");
+          $$(".history-menu.open")
+            .forEach(openMenu => {
+              if (openMenu !== menu) {
+                openMenu.classList.remove("open");
               }
             });
 
@@ -698,7 +697,6 @@ function renderHistory() {
       menu.addEventListener(
         "click",
         event => {
-
           const action =
             event.target.dataset.action;
 
@@ -709,7 +707,6 @@ function renderHistory() {
           if (action === "delete") {
             deleteChat(chat.id);
           }
-
         }
       );
 
@@ -718,14 +715,11 @@ function renderHistory() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| RENAME CHAT
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   RENAME / DELETE
+========================================================= */
 
 function renameChat(chatId) {
-
   const chat =
     state.chats.find(
       c => c.id === chatId
@@ -739,7 +733,7 @@ function renameChat(chatId) {
       chat.title
     );
 
-  if (!name || !name.trim()) {
+  if (!name?.trim()) {
     return;
   }
 
@@ -750,19 +744,13 @@ function renameChat(chatId) {
     Date.now();
 
   saveChats();
-
   renderHistory();
+
+  showToast("Đã đổi tên cuộc trò chuyện");
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| DELETE CHAT
-|--------------------------------------------------------------------------
-*/
-
 function deleteChat(chatId) {
-
   const chat =
     state.chats.find(
       c => c.id === chatId
@@ -775,32 +763,35 @@ function deleteChat(chatId) {
       `Xóa cuộc trò chuyện "${chat.title}"?`
     );
 
-  if (!confirmed) return;
+  if (!confirmed) {
+    return;
+  }
 
   state.chats =
     state.chats.filter(
       c => c.id !== chatId
     );
 
-  if (state.currentChatId === chatId) {
+  if (
+    state.currentChatId ===
+    chatId
+  ) {
     createChat();
   }
 
   saveChats();
-
   renderHistory();
 
   showToast("Đã xóa cuộc trò chuyện");
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| SEARCH
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SEARCH
+========================================================= */
 
 function openSearch() {
+  closeAllMenus();
 
   elements.searchModal.classList.add("open");
 
@@ -808,20 +799,19 @@ function openSearch() {
 
   renderSearchResults("");
 
-  setTimeout(
-    () => elements.searchInput.focus(),
-    100
-  );
+  setTimeout(() => {
+    elements.searchInput.focus();
+  }, 100);
 }
 
 
 function renderSearchResults(query) {
-
   const clean =
-    query.trim().toLowerCase();
+    query
+      .trim()
+      .toLowerCase();
 
   if (!clean) {
-
     elements.searchResults.innerHTML = `
       <div class="search-empty">
         Nhập từ khóa để tìm kiếm
@@ -833,15 +823,14 @@ function renderSearchResults(query) {
 
   const results =
     state.chats.filter(chat => {
-
       const titleMatch =
-        chat.title
+        (chat.title || "")
           .toLowerCase()
           .includes(clean);
 
       const messageMatch =
-        chat.messages.some(message =>
-          message.content
+        chat.messages?.some(message =>
+          String(message.content || "")
             .toLowerCase()
             .includes(clean)
         );
@@ -850,7 +839,6 @@ function renderSearchResults(query) {
     });
 
   if (!results.length) {
-
     elements.searchResults.innerHTML = `
       <div class="search-empty">
         Không tìm thấy cuộc trò chuyện
@@ -863,22 +851,26 @@ function renderSearchResults(query) {
   elements.searchResults.innerHTML = "";
 
   results.forEach(chat => {
-
     const item =
       document.createElement("button");
+
+    item.type = "button";
 
     item.className =
       "search-result";
 
     item.innerHTML = `
       <span>💬</span>
+
       <div>
         <strong>
-          ${escapeHTML(chat.title)}
+          ${escapeHTML(
+            chat.title || "Cuộc trò chuyện"
+          )}
         </strong>
 
         <small>
-          ${chat.messages.length} tin nhắn
+          ${chat.messages?.length || 0} tin nhắn
         </small>
       </div>
     `;
@@ -886,7 +878,6 @@ function renderSearchResults(query) {
     item.addEventListener(
       "click",
       () => {
-
         openChat(chat.id);
 
         elements.searchModal
@@ -899,23 +890,19 @@ function renderSearchResults(query) {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| SETTINGS
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 function openSettings() {
+  closeAllMenus();
 
   elements.settingsModal
     .classList.add("open");
-
-  closeAccountMenu();
 }
 
 
 function changeUsername() {
-
   const settings =
     getSettings();
 
@@ -925,7 +912,7 @@ function changeUsername() {
       settings.username
     );
 
-  if (!name || !name.trim()) {
+  if (!name?.trim()) {
     return;
   }
 
@@ -941,7 +928,6 @@ function changeUsername() {
 
 
 function toggleTheme() {
-
   const settings =
     getSettings();
 
@@ -957,7 +943,6 @@ function toggleTheme() {
 
 
 function clearAllHistory() {
-
   if (!state.chats.length) {
     showToast("Lịch sử đang trống");
     return;
@@ -973,81 +958,98 @@ function clearAllHistory() {
   }
 
   state.chats = [];
-
   state.currentChatId = null;
 
   saveChats();
 
   createChat();
-
   renderHistory();
 
-  showToast("Đã xóa toàn bộ lịch sử");
+  showToast(
+    "Đã xóa toàn bộ lịch sử"
+  );
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| MODEL SELECTOR
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MODEL
+========================================================= */
 
 function toggleModelMenu() {
-
   elements.modelMenu
     .classList.toggle("open");
+
+  elements.accountMenu
+    .classList.remove("open");
 }
 
 
-function selectModel(model) {
-
+function selectModel(
+  model,
+  provider = null,
+  apiModel = null
+) {
   state.selectedModel = model;
+
+  if (provider) {
+    state.selectedProvider = provider;
+  }
+
+  if (apiModel) {
+    state.selectedApiModel = apiModel;
+  }
 
   elements.currentModel.textContent =
     model;
 
   elements.modelMenu
+    .querySelectorAll(
+      "button[data-model]"
+    )
+    .forEach(button => {
+      const selected =
+        button.dataset.model === model;
+
+      button.classList.toggle(
+        "selected",
+        selected
+      );
+
+      const check =
+        button.querySelector(
+          "span:last-child"
+        );
+
+      if (check) {
+        check.textContent =
+          selected ? "✓" : "";
+      }
+    });
+
+  elements.modelMenu
     .classList.remove("open");
-
-  const buttons =
-    elements.modelMenu.querySelectorAll(
-      "button"
-    );
-
-  buttons.forEach(button => {
-
-    const selected =
-      button.dataset.model === model;
-
-    button.classList.toggle(
-      "selected",
-      selected
-    );
-
-    const check =
-      button.querySelector("span:last-child");
-
-    if (check) {
-      check.textContent =
-        selected ? "✓" : "";
-    }
-  });
 
   const chat =
     getCurrentChat();
 
   if (chat) {
-    chat.model = model;
+    chat.model =
+      state.selectedModel;
+
+    chat.provider =
+      state.selectedProvider;
+
+    chat.apiModel =
+      state.selectedApiModel;
+
     saveChats();
   }
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| FILE ATTACHMENT
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   FILES
+========================================================= */
 
 function openFilePicker() {
   elements.fileInput.click();
@@ -1055,7 +1057,6 @@ function openFilePicker() {
 
 
 function handleFiles(files) {
-
   state.attachedFiles =
     Array.from(files);
 
@@ -1069,14 +1070,11 @@ function handleFiles(files) {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| TEXTAREA
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   TEXTAREA
+========================================================= */
 
 function autoResizeTextarea() {
-
   const input =
     elements.messageInput;
 
@@ -1091,9 +1089,9 @@ function autoResizeTextarea() {
 
 
 function updateSendButton() {
-
   const hasText =
-    elements.messageInput.value.trim()
+    elements.messageInput.value
+      .trim()
       .length > 0;
 
   elements.sendBtn.disabled =
@@ -1102,39 +1100,31 @@ function updateSendButton() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| UI
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   UI
+========================================================= */
 
 function scrollToBottom() {
-
   requestAnimationFrame(() => {
-
-    elements.messages.scrollTop =
-      elements.messages.scrollHeight;
-
+    elements.chatArea.scrollTop =
+      elements.chatArea.scrollHeight;
   });
 }
 
 
 function closeAccountMenu() {
-
   elements.accountMenu
     .classList.remove("open");
 }
 
 
 function closeAllMenus() {
-
   elements.modelMenu
     .classList.remove("open");
 
   closeAccountMenu();
 
-  document
-    .querySelectorAll(".history-menu.open")
+  $$(".history-menu.open")
     .forEach(menu =>
       menu.classList.remove("open")
     );
@@ -1142,11 +1132,12 @@ function closeAllMenus() {
 
 
 function showToast(message) {
-
   elements.toast.textContent =
     message;
 
-  elements.toast.classList.add("show");
+  elements.toast.classList.add(
+    "show"
+  );
 
   clearTimeout(
     showToast.timeout
@@ -1154,23 +1145,18 @@ function showToast(message) {
 
   showToast.timeout =
     setTimeout(() => {
-
       elements.toast.classList.remove(
         "show"
       );
-
     }, 2200);
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| ACCOUNT
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ACCOUNT
+========================================================= */
 
 function toggleAccountMenu() {
-
   elements.accountMenu
     .classList.toggle("open");
 
@@ -1179,24 +1165,42 @@ function toggleAccountMenu() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| MOBILE SIDEBAR
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
 
 function toggleSidebar() {
-
   elements.sidebar
     .classList.toggle("mobile-open");
+
+  elements.mobileOverlay
+    .classList.toggle(
+      "open",
+      elements.sidebar.classList.contains(
+        "mobile-open"
+      )
+    );
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| EVENTS
-|--------------------------------------------------------------------------
-*/
+function closeMobileSidebar() {
+  elements.sidebar
+    .classList.remove("mobile-open");
+
+  elements.mobileOverlay
+    .classList.remove("open");
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+elements.brandButton.addEventListener(
+  "click",
+  createChat
+);
+
 
 elements.newChatBtn.addEventListener(
   "click",
@@ -1216,10 +1220,11 @@ elements.searchBtn.addEventListener(
 );
 
 
-$("#headerSearchBtn").addEventListener(
-  "click",
-  openSearch
-);
+$("#headerSearchBtn")
+  .addEventListener(
+    "click",
+    openSearch
+  );
 
 
 elements.settingsBtn.addEventListener(
@@ -1237,7 +1242,6 @@ elements.menuSettingsBtn.addEventListener(
 elements.modelSelector.addEventListener(
   "click",
   event => {
-
     event.stopPropagation();
 
     toggleModelMenu();
@@ -1246,24 +1250,26 @@ elements.modelSelector.addEventListener(
 
 
 elements.modelMenu
-  .querySelectorAll("button[data-model]")
+  .querySelectorAll(
+    "button[data-model]"
+  )
   .forEach(button => {
-
     button.addEventListener(
       "click",
-      () =>
+      () => {
         selectModel(
-          button.dataset.model
-        )
+          button.dataset.model,
+          button.dataset.provider,
+          button.dataset.apiModel
+        );
+      }
     );
-
   });
 
 
 elements.accountBtn.addEventListener(
   "click",
   event => {
-
     event.stopPropagation();
 
     toggleAccountMenu();
@@ -1274,7 +1280,6 @@ elements.accountBtn.addEventListener(
 elements.headerAccountBtn.addEventListener(
   "click",
   event => {
-
     event.stopPropagation();
 
     toggleAccountMenu();
@@ -1284,7 +1289,17 @@ elements.headerAccountBtn.addEventListener(
 
 elements.mobileMenuBtn.addEventListener(
   "click",
-  toggleSidebar
+  event => {
+    event.stopPropagation();
+
+    toggleSidebar();
+  }
+);
+
+
+elements.mobileOverlay.addEventListener(
+  "click",
+  closeMobileSidebar
 );
 
 
@@ -1304,9 +1319,7 @@ elements.fileInput.addEventListener(
 elements.messageInput.addEventListener(
   "input",
   () => {
-
     autoResizeTextarea();
-
     updateSendButton();
   }
 );
@@ -1315,17 +1328,10 @@ elements.messageInput.addEventListener(
 elements.messageInput.addEventListener(
   "keydown",
   event => {
-
-    /*
-     * Enter = gửi
-     * Shift + Enter = xuống dòng
-     */
-
     if (
       event.key === "Enter" &&
       !event.shiftKey
     ) {
-
       event.preventDefault();
 
       sendMessage();
@@ -1337,7 +1343,6 @@ elements.messageInput.addEventListener(
 elements.composer.addEventListener(
   "submit",
   event => {
-
     event.preventDefault();
 
     sendMessage();
@@ -1372,18 +1377,34 @@ elements.clearHistoryBtn.addEventListener(
 );
 
 
-/*
-|--------------------------------------------------------------------------
-| CLOSE BUTTONS
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   SUGGESTIONS
+========================================================= */
 
-$$("[data-close]").forEach(button => {
-
+$$(".suggestion").forEach(button => {
   button.addEventListener(
     "click",
     () => {
+      elements.messageInput.value =
+        button.dataset.prompt || "";
 
+      autoResizeTextarea();
+      updateSendButton();
+
+      elements.messageInput.focus();
+    }
+  );
+});
+
+
+/* =========================================================
+   CLOSE BUTTONS
+========================================================= */
+
+$$("[data-close]").forEach(button => {
+  button.addEventListener(
+    "click",
+    () => {
       const target =
         document.getElementById(
           button.dataset.close
@@ -1394,50 +1415,53 @@ $$("[data-close]").forEach(button => {
       }
     }
   );
-
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| OUTSIDE CLICK
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   OUTSIDE CLICK
+========================================================= */
 
 document.addEventListener(
   "click",
   event => {
 
     if (
-      !elements.modelMenu.contains(event.target) &&
-      !elements.modelSelector.contains(event.target)
+      !elements.modelMenu.contains(
+        event.target
+      ) &&
+      !elements.modelSelector.contains(
+        event.target
+      )
     ) {
       elements.modelMenu
         .classList.remove("open");
     }
 
     if (
-      !elements.accountMenu.contains(event.target) &&
-      !elements.accountBtn.contains(event.target) &&
-      !elements.headerAccountBtn.contains(event.target)
+      !elements.accountMenu.contains(
+        event.target
+      ) &&
+      !elements.accountBtn.contains(
+        event.target
+      ) &&
+      !elements.headerAccountBtn.contains(
+        event.target
+      )
     ) {
       closeAccountMenu();
     }
-
   }
 );
 
 
-/*
-|--------------------------------------------------------------------------
-| ESCAPE
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   ESC
+========================================================= */
 
 document.addEventListener(
   "keydown",
   event => {
-
     if (event.key !== "Escape") {
       return;
     }
@@ -1449,18 +1473,17 @@ document.addEventListener(
 
     elements.settingsModal
       .classList.remove("open");
+
+    closeMobileSidebar();
   }
 );
 
 
-/*
-|--------------------------------------------------------------------------
-| INIT
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   INIT
+========================================================= */
 
 function init() {
-
   loadChats();
 
   updateUserUI();
@@ -1470,13 +1493,10 @@ function init() {
   updateSendButton();
 
   selectModel(
-    state.selectedModel
+    "KhanhOS",
+    "openai",
+    "gpt-5-mini"
   );
-
-  /*
-   * Luôn bắt đầu ở trạng thái Chat mới.
-   * Chat cũ chỉ hiện trong sidebar.
-   */
 
   state.currentChatId = null;
 
@@ -1484,6 +1504,8 @@ function init() {
 
   elements.welcome.style.display =
     "flex";
+
+  autoResizeTextarea();
 
   elements.messageInput.focus();
 }
