@@ -1,19 +1,23 @@
 /* =========================================================
-   ELEMENTS
+   KHANHOS AI - FRONTEND
 ========================================================= */
 
 const input = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
-
-const fileButton = document.getElementById("fileButton");
-const fileInput = document.getElementById("fileInput");
 
 const welcome = document.getElementById("welcome");
 const messages = document.getElementById("messages");
 const chatArea = document.getElementById("chatArea");
 
 const newChatBtn = document.getElementById("newChatBtn");
+const searchChatBtn = document.getElementById("searchChatBtn");
+
+const sidebarSearch = document.getElementById("sidebarSearch");
+const chatSearchInput = document.getElementById("chatSearchInput");
+const closeSearchBtn = document.getElementById("closeSearchBtn");
+
 const chatList = document.getElementById("chatList");
+const emptyChats = document.getElementById("emptyChats");
 
 const mobileMenu = document.getElementById("mobileMenu");
 const sidebar = document.getElementById("sidebar");
@@ -22,149 +26,115 @@ const profileButton = document.getElementById("profileButton");
 const accountMenu = document.getElementById("accountMenu");
 
 const settingsBtn = document.getElementById("settingsBtn");
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+const helpBtn = document.getElementById("helpBtn");
+
 const settingsOverlay = document.getElementById("settingsOverlay");
 const settingsClose = document.getElementById("settingsClose");
 
 const settingsPageTitle =
   document.getElementById("settingsPageTitle");
 
-const generalSettings =
-  document.getElementById("generalSettings");
-
-const otherSettings =
-  document.getElementById("otherSettings");
-
-const otherSettingsTitle =
-  document.getElementById("otherSettingsTitle");
+const settingsPage =
+  document.getElementById("settingsPage");
 
 const themeSelect =
   document.getElementById("themeSelect");
 
+const enterSendToggle =
+  document.getElementById("enterSendToggle");
+
+const historyToggle =
+  document.getElementById("historyToggle");
+
+const modelSelector =
+  document.getElementById("modelSelector");
+
+const modelMenu =
+  document.getElementById("modelMenu");
+
+const modelName =
+  document.getElementById("modelName");
+
+const fileButton =
+  document.getElementById("fileButton");
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const contextMenu =
+  document.getElementById("contextMenu");
+
+const renameChatBtn =
+  document.getElementById("renameChatBtn");
+
+const deleteChatBtn =
+  document.getElementById("deleteChatBtn");
+
 
 /* =========================================================
-   AI CONFIG
+   API CONFIG
 ========================================================= */
 
 /*
-  API KEY KHÔNG nằm ở đây.
+  Nếu frontend và backend chạy cùng domain:
 
-  Browser chỉ gọi:
       /api/chat
 
-  Server mới giữ:
-      OPENAI_API_KEY
-      ANTHROPIC_API_KEY
+  Nếu backend nằm ở domain khác, đổi thành:
+
+      https://YOUR-BACKEND-DOMAIN/api/chat
+
+  KHÔNG đặt API KEY ở đây.
 */
 
-/*
-  Đổi provider tại đây:
-
-  "openai"
-  "claude"
-*/
-
-let selectedProvider = "openai";
-
-
-/*
-  Model mặc định.
-
-  Server sẽ kiểm tra model
-  trước khi gửi tới AI.
-*/
-
-let selectedModel = "gpt-5-mini";
-
-
-/*
-  Cho phép đổi AI bằng code sau này:
-
-  OpenAI:
-      selectedProvider = "openai";
-      selectedModel = "gpt-5-mini";
-
-  Claude:
-      selectedProvider = "claude";
-      selectedModel = "claude-sonnet-4-5";
-*/
+const API_URL =
+  localStorage.getItem("khanhos-api-url") ||
+  "/api/chat";
 
 
 /* =========================================================
-   STATE
+   MODEL
 ========================================================= */
 
-const STORAGE_KEY = "khanhos-chats";
+let selectedProvider =
+  localStorage.getItem("khanhos-provider") ||
+  "openai";
 
-let chats = loadChats();
-let currentChatId = null;
-
-let aiGenerating = false;
+let selectedModel =
+  localStorage.getItem("khanhos-model") ||
+  "gpt-5-mini";
 
 
 /* =========================================================
    STORAGE
 ========================================================= */
 
-function loadChats() {
+const STORAGE_KEY =
+  "khanhos-chats-v2";
 
-  try {
+const SETTINGS_KEY =
+  "khanhos-settings";
 
-    const saved =
-      localStorage.getItem(STORAGE_KEY);
+let chats = loadChats();
 
-    if (!saved) {
-      return [];
-    }
+let currentChatId = null;
 
-    const data =
-      JSON.parse(saved);
+let aiGenerating = false;
 
-    return Array.isArray(data)
-      ? data
-      : [];
-
-  } catch (error) {
-
-    console.error(
-      "Không thể đọc lịch sử chat:",
-      error
-    );
-
-    return [];
-  }
-}
-
-
-function saveChats() {
-
-  try {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(chats)
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Không thể lưu lịch sử chat:",
-      error
-    );
-  }
-}
+let contextChatId = null;
 
 
 /* =========================================================
-   CHAT ID
+   HELPERS
 ========================================================= */
 
-function generateChatId() {
+function generateId() {
 
   if (
     window.crypto &&
     typeof window.crypto.randomUUID === "function"
   ) {
-
     return window.crypto.randomUUID();
   }
 
@@ -175,43 +145,122 @@ function generateChatId() {
 }
 
 
-/* =========================================================
-   CHAT TITLE
-========================================================= */
+function loadChats() {
+
+  try {
+
+    const data =
+      JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+      );
+
+    return Array.isArray(data)
+      ? data
+      : [];
+
+  } catch {
+
+    return [];
+  }
+}
+
+
+function saveChats() {
+
+  try {
+
+    const settings =
+      loadSettings();
+
+    if (
+      settings.history === false
+    ) {
+      return;
+    }
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(chats)
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Không thể lưu lịch sử:",
+      error
+    );
+  }
+}
+
+
+function loadSettings() {
+
+  try {
+
+    return {
+      history: true,
+      enterSend: true,
+      theme: "dark",
+      ...JSON.parse(
+        localStorage.getItem(SETTINGS_KEY) || "{}"
+      )
+    };
+
+  } catch {
+
+    return {
+      history: true,
+      enterSend: true,
+      theme: "dark"
+    };
+  }
+}
+
+
+function saveSettings(settings) {
+
+  localStorage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify(settings)
+  );
+}
+
 
 function makeChatTitle(text) {
 
   const clean =
-    text.replace(/\s+/g, " ").trim();
+    text
+      .replace(/\s+/g, " ")
+      .trim();
 
-  if (clean.length <= 35) {
-    return clean;
+  if (!clean) {
+    return "Cuộc chat mới";
   }
 
-  return clean.slice(0, 35) + "...";
+  return clean.length <= 38
+    ? clean
+    : clean.slice(0, 38) + "...";
 }
 
 
 /* =========================================================
-   CREATE CHAT
+   CHAT
 ========================================================= */
 
-function createChat(firstMessage = "") {
+function createChat() {
 
   const chat = {
 
-    id: generateChatId(),
+    id: generateId(),
 
-    title:
-      firstMessage
-        ? makeChatTitle(firstMessage)
-        : "Cuộc chat mới",
+    title: "Cuộc chat mới",
 
     messages: [],
 
     createdAt: Date.now(),
 
     updatedAt: Date.now()
+
   };
 
   chats.unshift(chat);
@@ -227,27 +276,14 @@ function createChat(firstMessage = "") {
 }
 
 
-/* =========================================================
-   GET CURRENT CHAT
-========================================================= */
-
 function getCurrentChat() {
 
-  if (!currentChatId) {
-    return null;
-  }
-
-  return (
-    chats.find(
-      chat => chat.id === currentChatId
-    ) || null
-  );
+  return chats.find(
+    chat =>
+      chat.id === currentChatId
+  ) || null;
 }
 
-
-/* =========================================================
-   START NEW CHAT
-========================================================= */
 
 function startNewChat() {
 
@@ -263,26 +299,25 @@ function startNewChat() {
 
   updateInputState();
 
+  closeContextMenu();
+
   renderChatList();
 
   input.focus();
 
-  if (window.innerWidth <= 800) {
-
+  if (
+    window.innerWidth <= 800
+  ) {
     sidebar.classList.remove("open");
   }
 }
 
 
-/* =========================================================
-   OPEN OLD CHAT
-========================================================= */
-
-function openChat(chatId) {
+function openChat(id) {
 
   const chat =
     chats.find(
-      item => item.id === chatId
+      item => item.id === id
     );
 
   if (!chat) {
@@ -294,79 +329,366 @@ function openChat(chatId) {
 
   messages.innerHTML = "";
 
-  if (chat.messages.length === 0) {
+  if (
+    chat.messages.length === 0
+  ) {
 
-    welcome.style.display = "flex";
+    welcome.style.display =
+      "flex";
 
   } else {
 
-    welcome.style.display = "none";
+    welcome.style.display =
+      "none";
 
-    chat.messages.forEach(message => {
+    chat.messages.forEach(
+      message => {
 
-      renderMessage(
-        message.text,
-        message.role
-      );
+        renderMessage(
+          message.text,
+          message.role
+        );
 
-    });
+      }
+    );
   }
 
   renderChatList();
 
-  requestAnimationFrame(() => {
+  requestAnimationFrame(
+    () => {
 
-    chatArea.scrollTop =
-      chatArea.scrollHeight;
+      chatArea.scrollTop =
+        chatArea.scrollHeight;
 
-  });
+    }
+  );
+
+  if (
+    window.innerWidth <= 800
+  ) {
+    sidebar.classList.remove("open");
+  }
 }
 
 
 /* =========================================================
-   RENDER CHAT LIST
+   DATE GROUP
+========================================================= */
+
+function getDateLabel(timestamp) {
+
+  const date =
+    new Date(timestamp);
+
+  const today =
+    new Date();
+
+  const yesterday =
+    new Date();
+
+  yesterday.setDate(
+    yesterday.getDate() - 1
+  );
+
+  if (
+    date.toDateString() ===
+    today.toDateString()
+  ) {
+    return "Hôm nay";
+  }
+
+  if (
+    date.toDateString() ===
+    yesterday.toDateString()
+  ) {
+    return "Hôm qua";
+  }
+
+  return date.toLocaleDateString(
+    "vi-VN",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }
+  );
+}
+
+
+/* =========================================================
+   RENDER SIDEBAR
 ========================================================= */
 
 function renderChatList() {
 
   chatList.innerHTML = "";
 
-  chats.forEach(chat => {
+  const search =
+    chatSearchInput
+      .value
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    chats.filter(chat => {
+
+      if (!search) {
+        return true;
+      }
+
+      return (
+        chat.title
+          .toLowerCase()
+          .includes(search)
+      );
+
+    });
+
+  emptyChats.style.display =
+    filtered.length === 0
+      ? "block"
+      : "none";
+
+  let lastDate = "";
+
+  filtered.forEach(chat => {
+
+    const dateLabel =
+      getDateLabel(
+        chat.updatedAt
+      );
+
+    if (
+      dateLabel !== lastDate
+    ) {
+
+      const heading =
+        document.createElement("div");
+
+      heading.className =
+        "recent-title";
+
+      heading.textContent =
+        dateLabel;
+
+      chatList.appendChild(
+        heading
+      );
+
+      lastDate =
+        dateLabel;
+    }
+
 
     const item =
-      document.createElement("button");
+      document.createElement("div");
 
     item.className =
       "chat-item";
 
-    if (chat.id === currentChatId) {
-
+    if (
+      chat.id === currentChatId
+    ) {
       item.classList.add("active");
     }
 
-    item.innerHTML = `
-      <span class="chat-icon">💬</span>
-      <span class="chat-name"></span>
-    `;
 
-    item
-      .querySelector(".chat-name")
-      .textContent =
+    const icon =
+      document.createElement("span");
+
+    icon.className =
+      "chat-icon";
+
+    icon.textContent =
+      "💬";
+
+
+    const name =
+      document.createElement("span");
+
+    name.className =
+      "chat-name";
+
+    name.textContent =
       chat.title;
+
+
+    const more =
+      document.createElement("button");
+
+    more.className =
+      "chat-more";
+
+    more.textContent =
+      "⋯";
+
+    more.title =
+      "Tùy chọn";
+
+
+    item.appendChild(icon);
+
+    item.appendChild(name);
+
+    item.appendChild(more);
+
+    chatList.appendChild(item);
+
 
     item.addEventListener(
       "click",
-      () => {
+      event => {
+
+        if (
+          event.target === more
+        ) {
+          return;
+        }
 
         openChat(chat.id);
 
       }
     );
 
-    chatList.appendChild(item);
+
+    more.addEventListener(
+      "click",
+      event => {
+
+        event.stopPropagation();
+
+        openContextMenu(
+          chat.id,
+          more
+        );
+
+      }
+    );
 
   });
 }
+
+
+/* =========================================================
+   CONTEXT MENU
+========================================================= */
+
+function openContextMenu(
+  chatId,
+  element
+) {
+
+  contextChatId =
+    chatId;
+
+  const rect =
+    element.getBoundingClientRect();
+
+  contextMenu.style.left =
+    `${rect.right + 5}px`;
+
+  contextMenu.style.top =
+    `${rect.top}px`;
+
+  contextMenu.classList.add(
+    "open"
+  );
+}
+
+
+function closeContextMenu() {
+
+  contextMenu.classList.remove(
+    "open"
+  );
+
+  contextChatId =
+    null;
+}
+
+
+renameChatBtn.addEventListener(
+  "click",
+  () => {
+
+    if (!contextChatId) {
+      return;
+    }
+
+    const chat =
+      chats.find(
+        item =>
+          item.id === contextChatId
+      );
+
+    if (!chat) {
+      return;
+    }
+
+    const name =
+      prompt(
+        "Tên cuộc trò chuyện:",
+        chat.title
+      );
+
+    if (
+      name &&
+      name.trim()
+    ) {
+
+      chat.title =
+        name
+          .trim()
+          .slice(0, 80);
+
+      chat.updatedAt =
+        Date.now();
+
+      saveChats();
+
+      renderChatList();
+    }
+
+    closeContextMenu();
+
+  }
+);
+
+
+deleteChatBtn.addEventListener(
+  "click",
+  () => {
+
+    if (!contextChatId) {
+      return;
+    }
+
+    const id =
+      contextChatId;
+
+    chats =
+      chats.filter(
+        chat =>
+          chat.id !== id
+      );
+
+    if (
+      currentChatId === id
+    ) {
+
+      startNewChat();
+
+    }
+
+    saveChats();
+
+    renderChatList();
+
+    closeContextMenu();
+
+  }
+);
 
 
 /* =========================================================
@@ -398,124 +720,118 @@ input.addEventListener(
   "input",
   () => {
 
-    updateInputState();
-
     resizeInput();
+
+    updateInputState();
 
   }
 );
 
 
+input.addEventListener(
+  "keydown",
+  event => {
+
+    const settings =
+      loadSettings();
+
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      settings.enterSend
+    ) {
+
+      event.preventDefault();
+
+      sendMessage();
+    }
+
+  }
+);
+
+
+sendButton.addEventListener(
+  "click",
+  sendMessage
+);
+
+
 /* =========================================================
-   AI REQUEST
+   RENDER MESSAGE
 ========================================================= */
 
-async function askKhanhOSAI(chat) {
+function renderMessage(
+  text,
+  role,
+  isError = false
+) {
 
-  /*
-    Lấy lịch sử hiện tại.
+  const message =
+    document.createElement("div");
 
-    role:
-      user
-      ai
-
-    sẽ được đổi thành:
-      user
-      assistant
-  */
-
-  const history =
-    chat.messages
-      .filter(message =>
-        message.role === "user" ||
-        message.role === "ai"
-      )
-      .map(message => ({
-
-        role:
-          message.role === "ai"
-            ? "assistant"
-            : "user",
-
-        content:
-          message.text
-
-      }));
+  message.className =
+    `message ${role}`;
 
 
-  const response =
-    await fetch(
-      "/api/chat",
-      {
+  const avatar =
+    document.createElement("div");
 
-        method: "POST",
+  avatar.className =
+    "message-avatar";
 
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            provider:
-              selectedProvider,
-
-            model:
-              selectedModel,
-
-            messages:
-              history
-
-          })
-
-      }
-    );
+  avatar.textContent =
+    role === "ai"
+      ? "K"
+      : "U";
 
 
-  let data;
+  const content =
+    document.createElement("div");
 
-  try {
+  content.className =
+    "message-content";
 
-    data =
-      await response.json();
-
-  } catch {
-
-    throw new Error(
-      "Server trả về dữ liệu không hợp lệ."
+  if (isError) {
+    content.classList.add(
+      "error"
     );
   }
 
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.error ||
-      "KhanhOS AI không thể xử lý yêu cầu."
-    );
-  }
+  content.textContent =
+    text;
 
 
-  if (
-    typeof data.reply !== "string"
-  ) {
+  message.appendChild(
+    avatar
+  );
 
-    throw new Error(
-      "AI không trả về nội dung."
-    );
-  }
+  message.appendChild(
+    content
+  );
+
+  messages.appendChild(
+    message
+  );
 
 
-  return data.reply;
+  requestAnimationFrame(
+    () => {
+
+      chatArea.scrollTop =
+        chatArea.scrollHeight;
+
+    }
+  );
+
+  return message;
 }
 
 
 /* =========================================================
-   AI LOADING
+   THINKING
 ========================================================= */
 
-function renderThinkingMessage() {
+function showThinking() {
 
   const message =
     document.createElement("div");
@@ -543,41 +859,148 @@ function renderThinkingMessage() {
   content.className =
     "message-content";
 
-  content.textContent =
-    "KhanhOS AI đang suy nghĩ...";
+  content.innerHTML = `
+    KhanhOS AI đang suy nghĩ
+    <span class="thinking-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  `;
 
 
-  message.appendChild(avatar);
+  message.appendChild(
+    avatar
+  );
 
-  message.appendChild(content);
+  message.appendChild(
+    content
+  );
 
-  messages.appendChild(message);
+  messages.appendChild(
+    message
+  );
 
 
-  requestAnimationFrame(() => {
+  requestAnimationFrame(
+    () => {
 
-    chatArea.scrollTop =
-      chatArea.scrollHeight;
+      chatArea.scrollTop =
+        chatArea.scrollHeight;
 
-  });
-
+    }
+  );
 
   return message;
 }
 
 
-function removeThinkingMessage() {
+/* =========================================================
+   AI REQUEST
+========================================================= */
 
-  const thinking =
-    messages.querySelector(
-      '[data-thinking="true"]'
+async function askKhanhOSAI(
+  chat
+) {
+
+  const history =
+    chat.messages
+      .filter(
+        message =>
+          message.role === "user" ||
+          message.role === "ai"
+      )
+      .map(
+        message => ({
+          role:
+            message.role === "ai"
+              ? "assistant"
+              : "user",
+
+          content:
+            message.text
+        })
+      );
+
+
+  const response =
+    await fetch(
+      API_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+
+            provider:
+              selectedProvider,
+
+            model:
+              selectedModel,
+
+            messages:
+              history
+
+          })
+      }
     );
 
-  if (thinking) {
 
-    thinking.remove();
+  let data;
 
+  const contentType =
+    response.headers.get(
+      "content-type"
+    ) || "";
+
+
+  if (
+    contentType.includes(
+      "application/json"
+    )
+  ) {
+
+    data =
+      await response.json();
+
+  } else {
+
+    const text =
+      await response.text();
+
+    throw new Error(
+      text ||
+      `HTTP ${response.status}`
+    );
   }
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      data.error ||
+      `Server lỗi HTTP ${response.status}`
+    );
+  }
+
+
+  if (
+    typeof data.reply !==
+    "string"
+  ) {
+
+    throw new Error(
+      "Server không trả về trường reply hợp lệ."
+    );
+  }
+
+
+  return data.reply;
 }
 
 
@@ -595,16 +1018,10 @@ async function sendMessage() {
   const text =
     input.value.trim();
 
-
   if (!text) {
     return;
   }
 
-
-  /*
-    Nếu chưa có chat,
-    tạo chat ngay khi gửi.
-  */
 
   let chat =
     getCurrentChat();
@@ -613,31 +1030,25 @@ async function sendMessage() {
   if (!chat) {
 
     chat =
-      createChat(text);
+      createChat();
+
   }
 
 
-  /*
-    Tin nhắn đầu tiên
-    trở thành tiêu đề.
-  */
-
-  if (chat.messages.length === 0) {
+  if (
+    chat.messages.length === 0
+  ) {
 
     chat.title =
       makeChatTitle(text);
   }
 
 
-  /*
-    Lưu user message.
-  */
-
   chat.messages.push({
 
     role: "user",
 
-    text: text,
+    text,
 
     createdAt: Date.now()
 
@@ -650,10 +1061,8 @@ async function sendMessage() {
 
   saveChats();
 
+  renderChatList();
 
-  /*
-    Hiện message user.
-  */
 
   welcome.style.display =
     "none";
@@ -664,10 +1073,6 @@ async function sendMessage() {
     "user"
   );
 
-
-  /*
-    Xóa input.
-  */
 
   input.value = "";
 
@@ -680,33 +1085,18 @@ async function sendMessage() {
 
   updateInputState();
 
-  renderChatList();
-
-
-  /*
-    Loading.
-  */
 
   const thinking =
-    renderThinkingMessage();
+    showThinking();
 
 
   try {
 
-    /*
-      Gọi backend.
-
-      API key KHÔNG xuất hiện
-      trong browser.
-    */
-
     const reply =
-      await askKhanhOSAI(chat);
+      await askKhanhOSAI(
+        chat
+      );
 
-
-    /*
-      Kiểm tra chat còn tồn tại.
-    */
 
     const activeChat =
       chats.find(
@@ -716,14 +1106,9 @@ async function sendMessage() {
 
 
     if (!activeChat) {
-
       return;
     }
 
-
-    /*
-      Lưu câu trả lời AI.
-    */
 
     activeChat.messages.push({
 
@@ -743,19 +1128,8 @@ async function sendMessage() {
     saveChats();
 
 
-    /*
-      Xóa loading.
-    */
+    thinking.remove();
 
-    if (thinking) {
-      thinking.remove();
-    }
-
-
-    /*
-      Chỉ render nếu
-      user vẫn đang ở chat đó.
-    */
 
     if (
       currentChatId ===
@@ -777,20 +1151,12 @@ async function sendMessage() {
     );
 
 
-    if (thinking) {
-      thinking.remove();
-    }
+    thinking.remove();
 
 
     const errorText =
-      "❌ Không thể kết nối KhanhOS AI.\n\n" +
-      error.message;
+      `❌ Không thể kết nối KhanhOS AI.\n\n${error.message}`;
 
-
-    /*
-      Lưu lỗi như phản hồi AI
-      để lịch sử vẫn nhất quán.
-    */
 
     const activeChat =
       chats.find(
@@ -820,12 +1186,14 @@ async function sendMessage() {
 
 
     if (
-      currentChatId === chat.id
+      currentChatId ===
+      chat.id
     ) {
 
       renderMessage(
         errorText,
-        "ai"
+        "ai",
+        true
       );
 
     }
@@ -844,87 +1212,114 @@ async function sendMessage() {
 
 
 /* =========================================================
-   RENDER MESSAGE
+   NEW CHAT
 ========================================================= */
 
-function renderMessage(
-  text,
-  role
-) {
-
-  const message =
-    document.createElement("div");
-
-  message.className =
-    `message ${role}`;
-
-
-  const avatar =
-    document.createElement("div");
-
-  avatar.className =
-    "message-avatar";
-
-  avatar.textContent =
-    role === "ai"
-      ? "K"
-      : "U";
-
-
-  const content =
-    document.createElement("div");
-
-  content.className =
-    "message-content";
-
-  content.textContent =
-    text;
-
-
-  message.appendChild(
-    avatar
-  );
-
-  message.appendChild(
-    content
-  );
-
-  messages.appendChild(
-    message
-  );
-
-
-  requestAnimationFrame(() => {
-
-    chatArea.scrollTop =
-      chatArea.scrollHeight;
-
-  });
-}
-
-
-/* =========================================================
-   SEND EVENTS
-========================================================= */
-
-sendButton.addEventListener(
+newChatBtn.addEventListener(
   "click",
-  sendMessage
+  startNewChat
 );
 
 
-input.addEventListener(
-  "keydown",
+/* =========================================================
+   SEARCH
+========================================================= */
+
+searchChatBtn.addEventListener(
+  "click",
+  () => {
+
+    sidebarSearch.classList.add(
+      "open"
+    );
+
+    chatSearchInput.focus();
+
+  }
+);
+
+
+closeSearchBtn.addEventListener(
+  "click",
+  () => {
+
+    sidebarSearch.classList.remove(
+      "open"
+    );
+
+    chatSearchInput.value = "";
+
+    renderChatList();
+
+  }
+);
+
+
+chatSearchInput.addEventListener(
+  "input",
+  renderChatList
+);
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+mobileMenu.addEventListener(
+  "click",
+  () => {
+
+    sidebar.classList.toggle(
+      "open"
+    );
+
+  }
+);
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+profileButton.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    accountMenu.classList.toggle(
+      "open"
+    );
+
+  }
+);
+
+
+document.addEventListener(
+  "click",
   event => {
 
     if (
-      event.key === "Enter" &&
-      !event.shiftKey
+      !accountMenu.contains(
+        event.target
+      ) &&
+      event.target !==
+        profileButton
     ) {
 
-      event.preventDefault();
+      accountMenu.classList.remove(
+        "open"
+      );
 
-      sendMessage();
+    }
+
+    if (
+      !contextMenu.contains(
+        event.target
+      )
+    ) {
+
+      closeContextMenu();
 
     }
 
@@ -933,12 +1328,391 @@ input.addEventListener(
 
 
 /* =========================================================
-   CHAT MỚI
+   SETTINGS
 ========================================================= */
 
-newChatBtn.addEventListener(
+function openSettings() {
+
+  settingsOverlay.classList.add(
+    "open"
+  );
+
+  accountMenu.classList.remove(
+    "open"
+  );
+
+}
+
+
+function closeSettings() {
+
+  settingsOverlay.classList.remove(
+    "open"
+  );
+
+}
+
+
+settingsBtn.addEventListener(
   "click",
-  startNewChat
+  openSettings
+);
+
+
+settingsClose.addEventListener(
+  "click",
+  closeSettings
+);
+
+
+settingsOverlay.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      settingsOverlay
+    ) {
+
+      closeSettings();
+
+    }
+
+  }
+);
+
+
+/* SETTINGS PAGES */
+
+document
+  .querySelectorAll(
+    ".settings-nav-item"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(
+              ".settings-nav-item"
+            )
+            .forEach(
+              item =>
+                item.classList.remove(
+                  "active"
+                )
+            );
+
+          button.classList.add(
+            "active"
+          );
+
+
+          const page =
+            button.dataset.page;
+
+
+          const titles = {
+
+            general:
+              "Chung",
+
+            appearance:
+              "Giao diện",
+
+            notifications:
+              "Thông báo",
+
+            data:
+              "Dữ liệu",
+
+            security:
+              "Bảo mật"
+
+          };
+
+
+          settingsPageTitle.textContent =
+            titles[page] ||
+            "Cài đặt";
+
+
+          if (
+            page === "general"
+          ) {
+
+            settingsPage.innerHTML = `
+              <div class="upgrade-card">
+                <div>
+                  <strong>KhanhOS Free</strong>
+                  <p>Bạn đang sử dụng KhanhOS AI.</p>
+                </div>
+                <span class="free-badge">FREE</span>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-text">
+                  <strong>Giao diện</strong>
+                  <p>Chọn giao diện KhanhOS.</p>
+                </div>
+
+                <select id="themeSelect">
+                  <option value="dark">Tối</option>
+                  <option value="light">Sáng</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-text">
+                  <strong>Gửi bằng Enter</strong>
+                  <p>Enter để gửi, Shift + Enter để xuống dòng.</p>
+                </div>
+
+                <label class="switch">
+                  <input type="checkbox" id="enterSendToggle">
+                  <span></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-text">
+                  <strong>Lưu lịch sử</strong>
+                  <p>Lưu cuộc trò chuyện trên thiết bị.</p>
+                </div>
+
+                <label class="switch">
+                  <input type="checkbox" id="historyToggle">
+                  <span></span>
+                </label>
+              </div>
+            `;
+
+            bindSettings();
+
+          } else {
+
+            settingsPage.innerHTML = `
+              <div class="upgrade-card">
+                <div>
+                  <strong>${titles[page]}</strong>
+                  <p>
+                    Khu vực này đang được KhanhOS phát triển.
+                  </p>
+                </div>
+              </div>
+            `;
+
+          }
+
+        }
+
+      );
+
+    }
+  );
+
+
+function bindSettings() {
+
+  const settings =
+    loadSettings();
+
+
+  const theme =
+    document.getElementById(
+      "themeSelect"
+    );
+
+  const enter =
+    document.getElementById(
+      "enterSendToggle"
+    );
+
+  const history =
+    document.getElementById(
+      "historyToggle"
+    );
+
+
+  if (theme) {
+
+    theme.value =
+      settings.theme;
+
+    theme.addEventListener(
+      "change",
+      () => {
+
+        settings.theme =
+          theme.value;
+
+        saveSettings(
+          settings
+        );
+
+        applyTheme();
+
+      }
+    );
+
+  }
+
+
+  if (enter) {
+
+    enter.checked =
+      settings.enterSend;
+
+    enter.addEventListener(
+      "change",
+      () => {
+
+        settings.enterSend =
+          enter.checked;
+
+        saveSettings(
+          settings
+        );
+
+      }
+    );
+
+  }
+
+
+  if (history) {
+
+    history.checked =
+      settings.history;
+
+    history.addEventListener(
+      "change",
+      () => {
+
+        settings.history =
+          history.checked;
+
+        saveSettings(
+          settings
+        );
+
+      }
+    );
+
+  }
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
+
+function applyTheme() {
+
+  const settings =
+    loadSettings();
+
+  document.body.classList.toggle(
+    "light",
+    settings.theme === "light"
+  );
+
+}
+
+
+applyTheme();
+
+bindSettings();
+
+
+/* =========================================================
+   MODEL SELECTOR
+========================================================= */
+
+modelSelector.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    modelMenu.classList.toggle(
+      "open"
+    );
+
+  }
+);
+
+
+document
+  .querySelectorAll(
+    ".model-option"
+  )
+  .forEach(
+    option => {
+
+      option.addEventListener(
+        "click",
+        () => {
+
+          selectedProvider =
+            option.dataset.provider;
+
+          selectedModel =
+            option.dataset.model;
+
+          modelName.textContent =
+            option.dataset.name;
+
+
+          localStorage.setItem(
+            "khanhos-provider",
+            selectedProvider
+          );
+
+          localStorage.setItem(
+            "khanhos-model",
+            selectedModel
+          );
+
+
+          document
+            .querySelectorAll(
+              ".model-option"
+            )
+            .forEach(
+              item =>
+                item.classList.remove(
+                  "active"
+                )
+            );
+
+          option.classList.add(
+            "active"
+          );
+
+          modelMenu.classList.remove(
+            "open"
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+document.addEventListener(
+  "click",
+  () => {
+
+    modelMenu.classList.remove(
+      "open"
+    );
+
+  }
 );
 
 
@@ -960,154 +1734,25 @@ fileInput.addEventListener(
   "change",
   () => {
 
-    const files =
-      Array.from(
-        fileInput.files
-      );
+    if (
+      fileInput.files.length
+    ) {
 
-
-    if (!files.length) {
-      return;
-    }
-
-
-    let chat =
-      getCurrentChat();
-
-
-    if (!chat) {
-
-      chat =
-        createChat(
-          files[0].name
-        );
-
-    }
-
-
-    const fileNames =
-      files
-        .map(
-          file =>
-            `• ${file.name}`
+      const names =
+        Array.from(
+          fileInput.files
         )
-        .join("\n");
+        .map(
+          file => file.name
+        )
+        .join(", ");
 
+      input.value +=
+        input.value
+          ? `\n[File: ${names}]`
+          : `[File: ${names}]`;
 
-    const text =
-      `Đã chọn file:\n${fileNames}`;
-
-
-    chat.messages.push({
-
-      role: "user",
-
-      text: text,
-
-      createdAt: Date.now()
-
-    });
-
-
-    chat.updatedAt =
-      Date.now();
-
-
-    saveChats();
-
-
-    welcome.style.display =
-      "none";
-
-
-    renderMessage(
-      text,
-      "user"
-    );
-
-
-    renderChatList();
-
-
-    fileInput.value = "";
-
-  }
-);
-
-
-/* =========================================================
-   SUGGESTIONS
-========================================================= */
-
-document
-  .querySelectorAll(".suggestion")
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        input.value =
-          button.dataset.text;
-
-        updateInputState();
-
-        resizeInput();
-
-        input.focus();
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   ACCOUNT MENU
-========================================================= */
-
-profileButton.addEventListener(
-  "click",
-  event => {
-
-    event.preventDefault();
-
-    event.stopPropagation();
-
-    accountMenu.classList.toggle(
-      "open"
-    );
-
-  }
-);
-
-
-accountMenu.addEventListener(
-  "click",
-  event => {
-
-    event.stopPropagation();
-
-  }
-);
-
-
-document.addEventListener(
-  "click",
-  event => {
-
-    if (
-      !profileButton.contains(
-        event.target
-      ) &&
-      !accountMenu.contains(
-        event.target
-      )
-    ) {
-
-      accountMenu.classList.remove(
-        "open"
-      );
+      updateInputState();
 
     }
 
@@ -1116,82 +1761,55 @@ document.addEventListener(
 
 
 /* =========================================================
-   SETTINGS
+   CLEAR HISTORY
 ========================================================= */
 
-settingsBtn.addEventListener(
-  "click",
-  event => {
-
-    event.preventDefault();
-
-    event.stopPropagation();
-
-    accountMenu.classList.remove(
-      "open"
-    );
-
-    settingsOverlay.classList.add(
-      "open"
-    );
-
-  }
-);
-
-
-settingsClose.addEventListener(
+clearHistoryBtn.addEventListener(
   "click",
   () => {
 
-    settingsOverlay.classList.remove(
-      "open"
-    );
-
-  }
-);
-
-
-settingsOverlay.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target ===
-      settingsOverlay
-    ) {
-
-      settingsOverlay.classList.remove(
-        "open"
+    const ok =
+      confirm(
+        "Xóa toàn bộ lịch sử trò chuyện?"
       );
 
-    }
-
-  }
-);
-
-
-/* =========================================================
-   ESC
-========================================================= */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-      event.key !== "Escape"
-    ) {
-
+    if (!ok) {
       return;
     }
 
+    chats = [];
+
+    localStorage.removeItem(
+      STORAGE_KEY
+    );
+
+    startNewChat();
 
     accountMenu.classList.remove(
       "open"
     );
 
+  }
+);
 
-    settingsOverlay.classList.remove(
+
+/* =========================================================
+   HELP
+========================================================= */
+
+helpBtn.addEventListener(
+  "click",
+  () => {
+
+    alert(
+      "KhanhOS AI\n\n" +
+      "• Chat mới: tạo cuộc trò chuyện\n" +
+      "• Tìm kiếm: tìm lịch sử chat\n" +
+      "• Model: chọn AI\n" +
+      "• Cài đặt: thay đổi giao diện và lịch sử"
+    );
+
+    accountMenu.classList.remove(
       "open"
     );
 
@@ -1200,243 +1818,34 @@ document.addEventListener(
 
 
 /* =========================================================
-   SETTINGS NAVIGATION
+   INIT
 ========================================================= */
 
-document
-  .querySelectorAll(
-    ".settings-nav-item"
-  )
-  .forEach(item => {
+function init() {
 
-    item.addEventListener(
-      "click",
-      () => {
+  if (chats.length > 0) {
 
-        document
-          .querySelectorAll(
-            ".settings-nav-item"
-          )
-          .forEach(nav => {
-
-            nav.classList.remove(
-              "active"
-            );
-
-          });
-
-
-        item.classList.add(
-          "active"
-        );
-
-
-        const title =
-          item.dataset.title;
-
-
-        settingsPageTitle.textContent =
-          title;
-
-
-        if (
-          title === "Chung"
-        ) {
-
-          generalSettings.style.display =
-            "block";
-
-          otherSettings.style.display =
-            "none";
-
-        } else {
-
-          generalSettings.style.display =
-            "none";
-
-          otherSettings.style.display =
-            "flex";
-
-          otherSettingsTitle.textContent =
-            title;
-
-        }
-
-      }
-    );
-
-  });
-
-
-/* =========================================================
-   SETTINGS SEARCH
-========================================================= */
-
-const settingsSearch =
-  document.getElementById(
-    "settingsSearch"
-  );
-
-
-settingsSearch.addEventListener(
-  "input",
-  () => {
-
-    const query =
-      settingsSearch.value
-        .trim()
-        .toLowerCase();
-
-
-    document
-      .querySelectorAll(
-        ".settings-nav-item"
-      )
-      .forEach(item => {
-
-        const title =
-          item.dataset.title
-            .toLowerCase();
-
-
-        item.style.display =
-          !query ||
-          title.includes(query)
-            ? "flex"
-            : "none";
-
-      });
-
-  }
-);
-
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function applyTheme(theme) {
-
-  if (
-    theme === "light"
-  ) {
-
-    document.body.classList.add(
-      "light-theme"
+    openChat(
+      chats[0].id
     );
 
   } else {
 
-    document.body.classList.remove(
-      "light-theme"
-    );
+    startNewChat();
 
   }
-}
 
+  renderChatList();
 
-themeSelect.addEventListener(
-  "change",
-  () => {
-
-    const theme =
-      themeSelect.value;
-
-
-    localStorage.setItem(
-      "khanhos-theme",
-      theme
-    );
-
-
-    applyTheme(theme);
-
-  }
-);
-
-
-const savedTheme =
-  localStorage.getItem(
-    "khanhos-theme"
-  );
-
-
-if (savedTheme) {
-
-  themeSelect.value =
-    savedTheme;
-
-  applyTheme(
-    savedTheme
-  );
-
-}
-
-
-/* =========================================================
-   MOBILE SIDEBAR
-========================================================= */
-
-mobileMenu.addEventListener(
-  "click",
-  event => {
-
-    event.stopPropagation();
-
-    sidebar.classList.toggle(
-      "open"
-    );
-
-  }
-);
-
-
-document.addEventListener(
-  "click",
-  event => {
-
-    if (
-      window.innerWidth > 800
-    ) {
-
-      return;
-    }
-
-
-    if (
-      sidebar.contains(
-        event.target
-      ) ||
-      mobileMenu.contains(
-        event.target
+  modelName.textContent =
+    document
+      .querySelector(
+        `.model-option[data-model="${selectedModel}"]`
       )
-    ) {
+      ?.dataset.name ||
+    "GPT-5 mini";
 
-      return;
-    }
-
-
-    sidebar.classList.remove(
-      "open"
-    );
-
-  }
-);
+}
 
 
-/* =========================================================
-   STARTUP
-========================================================= */
-
-currentChatId =
-  null;
-
-messages.innerHTML =
-  "";
-
-welcome.style.display =
-  "flex";
-
-renderChatList();
-
-updateInputState();
+init();
