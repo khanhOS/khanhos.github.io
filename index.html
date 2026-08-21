@@ -1,117 +1,779 @@
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#000000">
+
   <title>KhanhOS</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- =========================
+       KHANHOS LOGO
+  ========================== -->
+
+  <link
+    rel="icon"
+    href="./logo.jpn"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="./logo.jpn"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b0b0b"
+  >
+
+  <!-- =========================
+       SOCIAL PREVIEW
+  ========================== -->
+
+  <meta
+    property="og:title"
+    content="KhanhOS"
+  >
+
+  <meta
+    property="og:description"
+    content="Your AI. Your OS."
+  >
+
+  <meta
+    property="og:image"
+    content="https://khanhos.github.io/logo.jpn"
+  >
+
+  <meta
+    property="og:url"
+    content="https://khanhos.github.io/"
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+      background: #0b0b0b;
+      color: white;
+
+      overflow: hidden;
+    }
+
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    /* =========================
+       APP
+    ========================== */
+
+    .app {
+      width: 100%;
+      height: 100vh;
+
+      display: flex;
+
+      background: #0b0b0b;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================== */
+
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+
+      flex-shrink: 0;
+
+      display: flex;
+      flex-direction: column;
+
+      padding: 18px;
+
+      background: #101010;
+
+      border-right:
+        1px solid #242424;
+    }
+
+    /* =========================
+       BRAND
+    ========================== */
+
+    .brand {
+      display: flex;
+      align-items: center;
+
+      gap: 11px;
+
+      margin-bottom: 25px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+
+      display: block;
+
+      flex-shrink: 0;
+
+      object-fit: cover;
+
+      aspect-ratio: 1 / 1;
+
+      border-radius: 10px;
+
+      background: #181818;
+
+      border:
+        1px solid #303030;
+    }
+
+    .brand-name {
+      font-size: 19px;
+
+      font-weight: 700;
+
+      letter-spacing: -0.3px;
+    }
+
+    /* =========================
+       NEW CHAT
+    ========================== */
+
+    .new-chat {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+
+      gap: 9px;
+
+      padding: 12px 13px;
+
+      border:
+        1px solid #303030;
+
+      border-radius: 12px;
+
+      background: #181818;
+
+      color: white;
+
+      font-size: 14px;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+    .new-chat:hover {
+      background: #222222;
+
+      border-color:
+        #3b3b3b;
+    }
+
+    /* =========================
+       CHAT LIST
+    ========================== */
+
+    .chat-list {
+      flex: 1;
+
+      margin-top: 18px;
+
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      width: 100%;
+
+      padding: 11px 12px;
+
+      margin-bottom: 4px;
+
+      border-radius: 10px;
+
+      color: #bdbdbd;
+
+      font-size: 14px;
+
+      cursor: pointer;
+
+      white-space: nowrap;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+
+      transition: 0.2s;
+    }
+
+    .chat-item:hover {
+      background: #1d1d1d;
+
+      color: white;
+    }
+
+    /* =========================
+       SIDEBAR BOTTOM
+    ========================== */
+
+    .sidebar-bottom {
+      padding-top: 12px;
+
+      border-top:
+        1px solid #252525;
+    }
+
+    .sidebar-button {
+      width: 100%;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 11px 12px;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      background: transparent;
+
+      color: #bdbdbd;
+
+      text-align: left;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+    .sidebar-button:hover {
+      background: #1d1d1d;
+
+      color: white;
+    }
+
+    /* =========================
+       MAIN
+    ========================== */
+
+    .main {
+      width:
+        calc(100% - 260px);
+
+      height: 100vh;
+
+      display: flex;
+
+      flex-direction: column;
+
+      position: relative;
+    }
+
+    /* =========================
+       TOP BAR
+    ========================== */
+
+    .topbar {
+      height: 64px;
+
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      padding: 0 24px;
+
+      border-bottom:
+        1px solid #242424;
+
+      background:
+        rgba(11, 11, 11, 0.95);
+    }
+
+    .topbar-title {
+      font-size: 15px;
+
+      font-weight: 600;
+    }
+
+    /* =========================
+       MESSAGES
+    ========================== */
+
+    .messages {
+      flex: 1;
+
+      overflow-y: auto;
+
+      padding:
+        30px
+        20px
+        170px;
+    }
+
+    /* =========================
+       WELCOME
+    ========================== */
+
+    .welcome {
+      width: 100%;
+
+      max-width: 760px;
+
+      margin:
+        13vh
+        auto
+        0;
+
+      text-align: center;
+    }
+
+    .welcome-logo {
+      width: 90px;
+      height: 90px;
+
+      display: block;
+
+      margin:
+        0
+        auto
+        20px;
+
+      object-fit: cover;
+
+      aspect-ratio: 1 / 1;
+
+      border-radius: 20px;
+
+      background: #181818;
+
+      border:
+        1px solid #303030;
+
+      box-shadow:
+        0 0 35px
+        rgba(100, 100, 255, 0.08);
+    }
+
+    .welcome h1 {
+      font-size: 32px;
+
+      line-height: 1.2;
+
+      margin-bottom: 10px;
+
+      letter-spacing: -0.8px;
+    }
+
+    .welcome p {
+      color: #777;
+
+      font-size: 15px;
+    }
+
+    /* =========================
+       MESSAGE
+    ========================== */
+
+    .message {
+      width: 100%;
+
+      max-width: 760px;
+
+      margin:
+        0
+        auto
+        18px;
+
+      padding:
+        13px
+        16px;
+
+      border-radius: 14px;
+
+      font-size: 15px;
+
+      line-height: 1.65;
+
+      white-space: pre-wrap;
+
+      word-break: break-word;
+    }
+
+    .message.user {
+      background: #1c1c1c;
+
+      border:
+        1px solid #282828;
+    }
+
+    .message.ai {
+      background: transparent;
+
+      color: #eee;
+    }
+
+    /* =========================
+       COMPOSER
+    ========================== */
+
+    .composer-area {
+      position: absolute;
+
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      padding:
+        20px
+        20px
+        15px;
+
+      background:
+        linear-gradient(
+          to bottom,
+          transparent,
+          #0b0b0b 35%
+        );
+    }
+
+    .composer {
+      width: 100%;
+
+      max-width: 760px;
+
+      margin: 0 auto;
+
+      display: flex;
+
+      align-items: flex-end;
+
+      gap: 8px;
+
+      padding: 9px;
+
+      border:
+        1px solid #303030;
+
+      border-radius: 18px;
+
+      background: #151515;
+    }
+
+    .composer textarea {
+      flex: 1;
+
+      width: 100%;
+
+      min-height: 42px;
+
+      max-height: 160px;
+
+      resize: none;
+
+      border: 0;
+
+      outline: 0;
+
+      padding: 11px;
+
+      background: transparent;
+
+      color: white;
+
+      font-size: 15px;
+
+      line-height: 20px;
+    }
+
+    .composer textarea::placeholder {
+      color: #737373;
+    }
+
+    /* =========================
+       SEND
+    ========================== */
+
+    .send-button {
+      width: 42px;
+      height: 42px;
+
+      flex-shrink: 0;
+
+      border: 0;
+
+      border-radius: 12px;
+
+      background: white;
+
+      color: black;
+
+      font-size: 18px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition: 0.15s;
+    }
+
+    .send-button:hover {
+      opacity: 0.85;
+    }
+
+    .send-button:active {
+      transform:
+        scale(0.94);
+    }
+
+    /* =========================
+       NOTE
+    ========================== */
+
+    .note {
+      max-width: 760px;
+
+      margin:
+        8px
+        auto
+        0;
+
+      text-align: center;
+
+      color: #5e5e5e;
+
+      font-size: 11px;
+    }
+
+    /* =========================
+       SETTINGS
+    ========================== */
+
+    .modal {
+      position: fixed;
+
+      inset: 0;
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background:
+        rgba(0, 0, 0, 0.65);
+
+      z-index: 100;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-box {
+      width:
+        min(
+          420px,
+          calc(100% - 30px)
+        );
+
+      padding: 22px;
+
+      border:
+        1px solid #303030;
+
+      border-radius: 18px;
+
+      background: #151515;
+    }
+
+    .modal-header {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+    }
+
+    .close-button {
+      width: 34px;
+      height: 34px;
+
+      border: 0;
+
+      border-radius: 9px;
+
+      background: #222;
+
+      color: white;
+
+      cursor: pointer;
+    }
+
+    .setting-row {
+      padding: 14px 0;
+
+      border-bottom:
+        1px solid #262626;
+
+      color: #cfcfcf;
+
+      font-size: 14px;
+    }
+
+    .setting-row:last-child {
+      border-bottom: 0;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media (max-width: 700px) {
+
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        width: 100%;
+      }
+
+      .topbar {
+        height: 58px;
+
+        padding:
+          0
+          16px;
+      }
+
+      .messages {
+        padding:
+          20px
+          12px
+          160px;
+      }
+
+      .welcome {
+        margin-top: 12vh;
+      }
+
+      .welcome-logo {
+        width: 78px;
+        height: 78px;
+
+        border-radius: 18px;
+      }
+
+      .welcome h1 {
+        font-size: 27px;
+      }
+
+      .composer-area {
+        padding:
+          12px
+          10px
+          12px;
+      }
+
+      .composer {
+        border-radius: 16px;
+      }
+
+    }
+
+  </style>
 </head>
 
 <body>
-  <div id="app">
 
-    <!-- MOBILE OVERLAY -->
-    <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="app">
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
-    <aside class="sidebar" id="sidebar">
+    <!-- SIDEBAR -->
 
-      <div class="sidebar-main">
+    <aside class="sidebar">
 
-        <!-- BRAND -->
-        <div class="sidebar-header">
-          <button class="brand" id="brandButton">
-            <span class="brand-logo">K</span>
-            <span class="brand-name">KhanhOS</span>
-          </button>
+      <div class="brand">
 
-          <button
-            class="sidebar-collapse"
-            id="sidebarCollapseBtn"
-            title="Thu gọn thanh bên"
-          >
-            ◀
-          </button>
-        </div>
+        <img
+          class="brand-logo"
+          src="./logo.jpn"
+          alt="KhanhOS"
+        >
 
-        <!-- NEW CHAT -->
-        <button class="sidebar-action new-chat-btn" id="newChatBtn">
-          <span class="side-icon">＋</span>
-          <span>Đoạn chat mới</span>
-        </button>
-
-        <!-- SEARCH -->
-        <button class="sidebar-action" id="searchBtn">
-          <span class="side-icon">⌕</span>
-          <span>Tìm kiếm</span>
-        </button>
-
-        <!-- NAV -->
-        <div class="sidebar-nav">
-
-          <button class="sidebar-action">
-            <span class="side-icon">▧</span>
-            <span>Khám phá</span>
-          </button>
-
-          <button class="sidebar-action">
-            <span class="side-icon">▤</span>
-            <span>Thư viện</span>
-          </button>
-
-          <button class="sidebar-action">
-            <span class="side-icon">@</span>
-            <span>Plugin</span>
-          </button>
-
-        </div>
-
-        <!-- HISTORY -->
-        <div class="history-section">
-
-          <div class="history-heading">
-            Gần đây
-          </div>
-
-          <div
-            class="chat-history"
-            id="chatHistory"
-          ></div>
-
+        <div class="brand-name">
+          KhanhOS
         </div>
 
       </div>
 
-      <!-- SIDEBAR BOTTOM -->
+      <button
+        class="new-chat"
+        onclick="newChat()"
+      >
+
+        <span>＋</span>
+
+        <span>
+          Cuộc trò chuyện mới
+        </span>
+
+      </button>
+
+      <div
+        class="chat-list"
+        id="chatList"
+      ></div>
+
       <div class="sidebar-bottom">
 
         <button
-          class="sidebar-action settings-sidebar-btn"
-          id="settingsBtn"
-        >
-          <span class="side-icon">⚙</span>
-          <span>Cài đặt</span>
-        </button>
-
-        <button
-          class="account-btn"
-          id="accountBtn"
+          class="sidebar-button"
+          onclick="openSettings()"
         >
 
-          <span
-            class="avatar"
-            id="sidebarAvatar"
-          >K</span>
+          <span>⚙️</span>
 
-          <span class="account-info">
-            <strong id="sidebarUsername">Khanh</strong>
-            <small>Free</small>
+          <span>
+            Cài đặt
           </span>
-
-          <span class="account-arrow">›</span>
 
         </button>
 
@@ -120,819 +782,460 @@
     </aside>
 
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+    <!-- MAIN -->
+
     <main class="main">
 
-      <!-- HEADER -->
-      <header class="header">
+      <header class="topbar">
 
-        <div class="header-left">
-
-          <button
-            class="mobile-menu"
-            id="mobileMenuBtn"
-            aria-label="Mở menu"
-          >
-            ☰
-          </button>
-
-          <button
-            class="model-selector"
-            id="modelSelector"
-          >
-            <span id="currentModel">KhanhOS</span>
-            <span class="chevron">⌄</span>
-          </button>
-
-        </div>
-
-        <div class="header-right">
-
-          <button
-            class="header-search"
-            id="headerSearchBtn"
-            title="Tìm kiếm"
-          >
-            ⌕
-          </button>
-
-          <button
-            class="header-avatar"
-            id="headerAccountBtn"
-          >
-            K
-          </button>
-
+        <div class="topbar-title">
+          KhanhOS
         </div>
 
       </header>
 
 
-      <!-- MODEL MENU -->
-      <div
-        class="model-menu"
-        id="modelMenu"
-      >
+      <!-- MESSAGES -->
 
-        <div class="model-menu-title">
-          Chọn mô hình
-        </div>
-
-        <button
-          data-model="KhanhOS"
-          data-provider="openai"
-          data-api-model="gpt-5-mini"
-          class="selected"
-        >
-          <span>
-            <strong>KhanhOS</strong>
-            <small>Mô hình mặc định</small>
-          </span>
-          <b>✓</b>
-        </button>
-
-        <button
-          data-model="KhanhOS Fast"
-          data-provider="openai"
-          data-api-model="gpt-5-mini"
-        >
-          <span>
-            <strong>KhanhOS Fast</strong>
-            <small>Phản hồi nhanh</small>
-          </span>
-          <b></b>
-        </button>
-
-        <button
-          data-model="KhanhOS Pro"
-          data-provider="openai"
-          data-api-model="gpt-5"
-        >
-          <span>
-            <strong>KhanhOS Pro</strong>
-            <small>Suy luận nâng cao</small>
-          </span>
-          <b></b>
-        </button>
-
-      </div>
-
-
-      <!-- CHAT -->
       <section
-        class="chat-area"
-        id="chatArea"
+        class="messages"
+        id="messages"
       >
 
-        <div class="chat-container">
+        <div
+          class="welcome"
+          id="welcome"
+        >
 
-          <!-- WELCOME -->
-          <div
-            class="welcome"
-            id="welcome"
+          <img
+            class="welcome-logo"
+            src="./logo.jpn"
+            alt="KhanhOS Logo"
           >
 
-            <div class="welcome-logo">
-              K
-            </div>
+          <h1>
+            Xin chào 👋
+          </h1>
 
-            <h1>KhanhOS</h1>
-
-            <p>
-              Tôi có thể giúp gì cho bạn hôm nay?
-            </p>
-
-            <div class="suggestions">
-
-              <button
-                class="suggestion"
-                data-prompt="Giúp tôi viết một đoạn code"
-              >
-                <span class="suggestion-icon">&lt;/&gt;</span>
-                <span>Giúp tôi viết code</span>
-              </button>
-
-              <button
-                class="suggestion"
-                data-prompt="Giải thích cho tôi một vấn đề"
-              >
-                <span class="suggestion-icon">?</span>
-                <span>Giải thích một vấn đề</span>
-              </button>
-
-              <button
-                class="suggestion"
-                data-prompt="Cho tôi một ý tưởng hay"
-              >
-                <span class="suggestion-icon">✦</span>
-                <span>Cho tôi một ý tưởng</span>
-              </button>
-
-              <button
-                class="suggestion"
-                data-prompt="Giúp tôi tìm lỗi trong code"
-              >
-                <span class="suggestion-icon">⌕</span>
-                <span>Tìm lỗi trong code</span>
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <!-- MESSAGES -->
-          <div
-            class="messages"
-            id="messages"
-          ></div>
+          <p>
+            Tôi là KhanhOS. Cốt muốn làm gì hôm nay?
+          </p>
 
         </div>
 
       </section>
 
 
-      <!-- =================================================
-           COMPOSER
-      ================================================== -->
-      <div class="composer-wrapper">
+      <!-- COMPOSER -->
 
-        <form
-          class="composer"
-          id="composer"
-        >
+      <div class="composer-area">
 
-          <button
-            type="button"
-            class="attach-btn"
-            id="attachBtn"
-            title="Đính kèm tệp"
-          >
-            ＋
-          </button>
-
-          <input
-            type="file"
-            id="fileInput"
-            hidden
-            multiple
-          >
+        <div class="composer">
 
           <textarea
-            id="messageInput"
+            id="input"
             rows="1"
-            placeholder="Bạn muốn hỏi điều gì?"
-            autocomplete="off"
+            placeholder="Nhắn tin cho KhanhOS..."
           ></textarea>
 
           <button
-            type="button"
-            class="composer-tool"
-            title="Tính năng"
-          >
-            ✧
-          </button>
-
-          <button
-            type="submit"
-            class="send-btn"
-            id="sendBtn"
-            disabled
-            title="Gửi"
+            class="send-button"
+            onclick="sendMessage()"
           >
             ↑
           </button>
 
-        </form>
+        </div>
 
-        <div class="composer-footer">
-          KhanhOS có thể mắc lỗi. Hãy kiểm tra những thông tin quan trọng.
+        <div class="note">
+          KhanhOS có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.
         </div>
 
       </div>
 
     </main>
 
+  </div>
 
-    <!-- =====================================================
-         SEARCH MODAL
-    ====================================================== -->
-    <div
-      class="modal-overlay"
-      id="searchModal"
-    >
 
-      <div class="search-modal">
+  <!-- SETTINGS -->
 
-        <div class="modal-top">
+  <div
+    class="modal"
+    id="settingsModal"
+    onclick="closeSettingsOutside(event)"
+  >
 
-          <h2>Tìm kiếm</h2>
+    <div class="modal-box">
 
-          <button
-            class="close-btn"
-            data-close="searchModal"
-          >
-            ×
-          </button>
+      <div class="modal-header">
 
-        </div>
+        <h2>
+          Cài đặt KhanhOS
+        </h2>
 
-        <div class="search-box">
-
-          <span>⌕</span>
-
-          <input
-            id="searchInput"
-            placeholder="Tìm trong lịch sử trò chuyện..."
-            autocomplete="off"
-          >
-
-          <kbd>ESC</kbd>
-
-        </div>
-
-        <div
-          class="search-results"
-          id="searchResults"
+        <button
+          class="close-button"
+          onclick="closeSettings()"
         >
-          <div class="search-empty">
-            Nhập từ khóa để tìm kiếm
-          </div>
-        </div>
+          ×
+        </button>
 
       </div>
 
-    </div>
-
-
-    <!-- =====================================================
-         SETTINGS MODAL
-    ====================================================== -->
-    <div
-      class="modal-overlay settings-overlay"
-      id="settingsModal"
-    >
-
-      <div class="settings-modal">
-
-        <!-- SETTINGS LEFT -->
-        <aside class="settings-sidebar">
-
-          <button
-            class="settings-close"
-            data-close="settingsModal"
-          >
-            ×
-          </button>
-
-          <div class="settings-search">
-
-            <span>⌕</span>
-
-            <input
-              placeholder="Tìm kiếm cài đặt"
-              id="settingsSearch"
-            >
-
-          </div>
-
-          <div class="settings-nav">
-
-            <button
-              class="settings-nav-item active"
-              data-setting-page="general"
-            >
-              <span>⚙</span>
-              <span>Chung</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="notifications"
-            >
-              <span>♧</span>
-              <span>Thông báo</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="personalization"
-            >
-              <span>◉</span>
-              <span>Cá nhân hóa</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="plugins"
-            >
-              <span>◎</span>
-              <span>Plugin</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="voice"
-            >
-              <span>▥</span>
-              <span>Giọng nói</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="billing"
-            >
-              <span>▭</span>
-              <span>Thanh toán</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="data"
-            >
-              <span>▱</span>
-              <span>Kiểm soát dữ liệu</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="memory"
-            >
-              <span>▣</span>
-              <span>Bộ nhớ</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="security"
-            >
-              <span>♢</span>
-              <span>An toàn</span>
-            </button>
-
-            <button
-              class="settings-nav-item"
-              data-setting-page="account"
-            >
-              <span>♧</span>
-              <span>Tài khoản</span>
-            </button>
-
-          </div>
-
-        </aside>
-
-
-        <!-- SETTINGS CONTENT -->
-        <section class="settings-content">
-
-          <!-- GENERAL -->
-          <div
-            class="settings-page active"
-            data-page="general"
-          >
-
-            <div class="settings-content-header">
-              <h2>Chung</h2>
-            </div>
-
-            <div class="settings-scroll">
-
-              <div class="settings-card">
-
-                <div class="card-icon">
-                  ◉
-                </div>
-
-                <div class="card-text">
-
-                  <strong>
-                    KhanhOS
-                  </strong>
-
-                  <p>
-                    Trợ lý AI cá nhân của bạn.
-                    Hãy kiểm tra những thông tin quan trọng
-                    trước khi sử dụng.
-                  </p>
-
-                </div>
-
-                <button class="card-close">
-                  ×
-                </button>
-
-              </div>
-
-
-              <div class="setting-row">
-
-                <div>
-                  <strong>Giao diện</strong>
-                  <small>
-                    Chuyển giữa sáng và tối
-                  </small>
-                </div>
-
-                <button
-                  class="setting-select"
-                  id="themeToggle"
-                >
-                  Tối
-                  <span>⌄</span>
-                </button>
-
-              </div>
-
-
-              <div class="setting-row">
-
-                <div>
-                  <strong>Độ tương phản</strong>
-                  <small>
-                    Điều chỉnh độ tương phản giao diện
-                  </small>
-                </div>
-
-                <button class="setting-select">
-                  Hệ thống
-                  <span>⌄</span>
-                </button>
-
-              </div>
-
-
-              <div class="setting-row">
-
-                <div>
-                  <strong>Màu nhấn</strong>
-                  <small>
-                    Màu hiển thị các nút và thành phần
-                  </small>
-                </div>
-
-                <button class="setting-select">
-                  <span class="accent-dot"></span>
-                  Mặc định
-                  <span>⌄</span>
-                </button>
-
-              </div>
-
-
-              <div class="setting-row">
-
-                <div>
-                  <strong>Ngôn ngữ</strong>
-                  <small>
-                    Ngôn ngữ hiển thị của KhanhOS
-                  </small>
-                </div>
-
-                <button class="setting-select">
-                  Tiếng Việt
-                  <span>⌄</span>
-                </button>
-
-              </div>
-
-
-              <div class="setting-row">
-
-                <div>
-                  <strong>Tên tài khoản</strong>
-                  <small id="currentUsername">
-                    Khanh
-                  </small>
-                </div>
-
-                <button
-                  class="setting-button"
-                  id="changeNameBtn"
-                >
-                  Đổi tên
-                </button>
-
-              </div>
-
-
-              <div class="setting-row danger-row">
-
-                <div>
-                  <strong>Xóa lịch sử</strong>
-                  <small>
-                    Xóa toàn bộ cuộc trò chuyện đã lưu
-                  </small>
-                </div>
-
-                <button
-                  class="setting-button danger"
-                  id="clearHistoryBtn"
-                >
-                  Xóa
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <!-- OTHER PAGES -->
-          <div
-            class="settings-page"
-            data-page="notifications"
-          >
-            <div class="settings-content-header">
-              <h2>Thông báo</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>♧</span>
-
-              <h3>Cài đặt thông báo</h3>
-
-              <p>
-                Các tùy chọn thông báo của KhanhOS sẽ được hiển thị tại đây.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="personalization"
-          >
-            <div class="settings-content-header">
-              <h2>Cá nhân hóa</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>◉</span>
-
-              <h3>Cá nhân hóa KhanhOS</h3>
-
-              <p>
-                Tùy chỉnh cách KhanhOS phản hồi và hiển thị.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="plugins"
-          >
-            <div class="settings-content-header">
-              <h2>Plugin</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>◎</span>
-
-              <h3>Plugin</h3>
-
-              <p>
-                Quản lý các tính năng mở rộng của KhanhOS.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="voice"
-          >
-            <div class="settings-content-header">
-              <h2>Giọng nói</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>▥</span>
-
-              <h3>Giọng nói</h3>
-
-              <p>
-                Cài đặt tính năng giọng nói của KhanhOS.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="billing"
-          >
-            <div class="settings-content-header">
-              <h2>Thanh toán</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>▭</span>
-
-              <h3>Tài khoản Free</h3>
-
-              <p>
-                KhanhOS hiện đang sử dụng gói Free.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="data"
-          >
-            <div class="settings-content-header">
-              <h2>Kiểm soát dữ liệu</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>▱</span>
-
-              <h3>Kiểm soát dữ liệu</h3>
-
-              <p>
-                Quản lý dữ liệu được lưu trên trình duyệt.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="memory"
-          >
-            <div class="settings-content-header">
-              <h2>Bộ nhớ</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>▣</span>
-
-              <h3>Bộ nhớ KhanhOS</h3>
-
-              <p>
-                Quản lý dữ liệu mà KhanhOS ghi nhớ.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="security"
-          >
-            <div class="settings-content-header">
-              <h2>An toàn</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>♢</span>
-
-              <h3>An toàn</h3>
-
-              <p>
-                Các tùy chọn bảo mật của tài khoản.
-              </p>
-            </div>
-          </div>
-
-
-          <div
-            class="settings-page"
-            data-page="account"
-          >
-            <div class="settings-content-header">
-              <h2>Tài khoản</h2>
-            </div>
-
-            <div class="settings-placeholder">
-              <span>♧</span>
-
-              <h3 id="settingsAccountName">
-                Khanh
-              </h3>
-
-              <p>
-                Tài khoản KhanhOS Free.
-              </p>
-            </div>
-          </div>
-
-        </section>
-
+      <div class="setting-row">
+        🤖 Model: KhanhOS
+      </div>
+
+      <div class="setting-row">
+        🌐 Provider: OpenAI
+      </div>
+
+      <div class="setting-row">
+        🎨 Giao diện: Dark
+      </div>
+
+      <div class="setting-row">
+        🚀 KhanhOS AI
       </div>
 
     </div>
-
-
-    <!-- =====================================================
-         ACCOUNT MENU
-    ====================================================== -->
-    <div
-      class="account-menu"
-      id="accountMenu"
-    >
-
-      <div class="account-menu-profile">
-
-        <span
-          class="big-avatar"
-          id="bigAvatar"
-        >
-          K
-        </span>
-
-        <div>
-          <strong id="menuUsername">Khanh</strong>
-          <small>Free</small>
-        </div>
-
-      </div>
-
-      <div class="account-separator"></div>
-
-      <button>
-        ✦ &nbsp; Dùng thử Plus miễn phí
-      </button>
-
-      <button>
-        ◷ &nbsp; Cá nhân hóa
-      </button>
-
-      <button>
-        ◎ &nbsp; Hồ sơ
-      </button>
-
-      <button id="menuSettingsBtn">
-        ⚙ &nbsp; Cài đặt
-      </button>
-
-      <div class="account-separator"></div>
-
-      <button>
-        ◉ &nbsp; Trợ giúp
-      </button>
-
-      <button>
-        ⇥ &nbsp; Đăng xuất
-      </button>
-
-    </div>
-
-
-    <!-- TOAST -->
-    <div
-      class="toast"
-      id="toast"
-    ></div>
 
   </div>
 
-  <script src="script.js"></script>
+
+  <script>
+
+    /* =========================
+       ELEMENTS
+    ========================== */
+
+    const messages =
+      document.getElementById(
+        "messages"
+      );
+
+    const input =
+      document.getElementById(
+        "input"
+      );
+
+    const chatList =
+      document.getElementById(
+        "chatList"
+      );
+
+    const settingsModal =
+      document.getElementById(
+        "settingsModal"
+      );
+
+
+    /* =========================
+       STORAGE
+    ========================== */
+
+    let chats = [];
+
+    try {
+
+      const saved =
+        JSON.parse(
+          localStorage.getItem(
+            "khanhos_chats"
+          )
+        );
+
+      if (
+        Array.isArray(saved)
+      ) {
+
+        chats = saved;
+
+      }
+
+    } catch {
+
+      chats = [];
+
+    }
+
+
+    /* =========================
+       RENDER
+    ========================== */
+
+    function renderChats() {
+
+      chatList.innerHTML = "";
+
+      chats
+        .slice()
+        .reverse()
+        .forEach(
+          chat => {
+
+            const item =
+              document.createElement(
+                "div"
+              );
+
+            item.className =
+              "chat-item";
+
+            item.textContent =
+              chat.text;
+
+            chatList.appendChild(
+              item
+            );
+
+          }
+        );
+
+    }
+
+
+    /* =========================
+       SAVE CHAT
+    ========================== */
+
+    function saveChat(text) {
+
+      chats.push({
+
+        text: text,
+
+        time: Date.now()
+
+      });
+
+      localStorage.setItem(
+        "khanhos_chats",
+        JSON.stringify(
+          chats
+        )
+      );
+
+      renderChats();
+
+    }
+
+
+    /* =========================
+       ADD MESSAGE
+    ========================== */
+
+    function addMessage(
+      text,
+      type
+    ) {
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className =
+        "message " + type;
+
+      div.textContent =
+        text;
+
+      messages.appendChild(
+        div
+      );
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+    }
+
+
+    /* =========================
+       SEND
+    ========================== */
+
+    function sendMessage() {
+
+      const text =
+        input.value.trim();
+
+      if (!text) {
+        return;
+      }
+
+      const welcome =
+        document.getElementById(
+          "welcome"
+        );
+
+      if (welcome) {
+
+        welcome.style.display =
+          "none";
+
+      }
+
+      addMessage(
+        text,
+        "user"
+      );
+
+      input.value = "";
+
+      input.style.height =
+        "42px";
+
+      saveChat(text);
+
+
+      setTimeout(
+        () => {
+
+          addMessage(
+            "KhanhOS đã nhận tin nhắn của cốt 😎\n\nĐây là giao diện demo. Khi kết nối API/backend, KhanhOS sẽ trả lời bằng AI thật.",
+            "ai"
+          );
+
+        },
+        500
+      );
+
+    }
+
+
+    /* =========================
+       ENTER
+    ========================== */
+
+    input.addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          sendMessage();
+
+        }
+
+      }
+    );
+
+
+    /* =========================
+       TEXTAREA
+    ========================== */
+
+    input.addEventListener(
+      "input",
+      function() {
+
+        this.style.height =
+          "42px";
+
+        this.style.height =
+          Math.min(
+            this.scrollHeight,
+            160
+          ) + "px";
+
+      }
+    );
+
+
+    /* =========================
+       NEW CHAT
+    ========================== */
+
+    function newChat() {
+
+      messages.innerHTML = `
+
+        <div
+          class="welcome"
+          id="welcome"
+        >
+
+          <img
+            class="welcome-logo"
+            src="./logo.jpn"
+            alt="KhanhOS Logo"
+          >
+
+          <h1>
+            Cuộc trò chuyện mới 👋
+          </h1>
+
+          <p>
+            Nhắn tin cho KhanhOS...
+          </p>
+
+        </div>
+
+      `;
+
+      input.value = "";
+
+      input.style.height =
+        "42px";
+
+      input.focus();
+
+    }
+
+
+    /* =========================
+       SETTINGS
+    ========================== */
+
+    function openSettings() {
+
+      settingsModal.classList.add(
+        "active"
+      );
+
+    }
+
+
+    function closeSettings() {
+
+      settingsModal.classList.remove(
+        "active"
+      );
+
+    }
+
+
+    function closeSettingsOutside(
+      event
+    ) {
+
+      if (
+        event.target ===
+        settingsModal
+      ) {
+
+        closeSettings();
+
+      }
+
+    }
+
+
+    /* =========================
+       START
+    ========================== */
+
+    renderChats();
+
+  </script>
+
 </body>
 </html>
+```
