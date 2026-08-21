@@ -5,29 +5,39 @@
 }
 
 :root {
-  --bg: #212121;
-  --sidebar: #171717;
-  --sidebar-hover: #292929;
+  --bg: #000;
+  --sidebar: #0b0b0b;
+  --sidebar-hover: #202020;
+  --sidebar-active: #2a2a2a;
+
   --input: #2f2f2f;
-  --surface: #282828;
-  --surface-2: #303030;
-  --border: rgba(255,255,255,.10);
-  --text: #ececec;
-  --muted: #999;
+  --surface: #181818;
+  --surface-2: #242424;
+
+  --border: rgba(255,255,255,.08);
+
+  --text: #f5f5f5;
+  --muted: #a0a0a0;
+
   --white: #fff;
-  --black: #111;
+  --black: #000;
 }
 
 body.light {
   --bg: #fff;
   --sidebar: #f7f7f7;
-  --sidebar-hover: #e9e9e9;
-  --input: #f2f2f2;
+  --sidebar-hover: #e8e8e8;
+  --sidebar-active: #dedede;
+
+  --input: #f1f1f1;
   --surface: #fff;
   --surface-2: #eee;
-  --border: rgba(0,0,0,.12);
-  --text: #222;
+
+  --border: rgba(0,0,0,.1);
+
+  --text: #171717;
   --muted: #666;
+
   --white: #111;
   --black: #fff;
 }
@@ -50,6 +60,7 @@ body {
 
   background: var(--bg);
   color: var(--text);
+
   overflow: hidden;
 }
 
@@ -68,20 +79,27 @@ button {
 }
 
 
-/* ================= APP ================= */
+/* =========================================================
+   APP
+========================================================= */
 
 .app {
-  display: flex;
   width: 100%;
   height: 100vh;
+
+  display: flex;
+
+  background: var(--bg);
 }
 
 
-/* ================= SIDEBAR ================= */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 .sidebar {
-  width: 270px;
-  min-width: 270px;
+  width: 260px;
+  min-width: 260px;
   height: 100vh;
 
   display: flex;
@@ -92,61 +110,77 @@ button {
   border-right: 1px solid var(--border);
 
   transition:
-    transform .2s ease,
-    width .2s ease;
+    width .2s ease,
+    transform .2s ease;
 }
+
+
+/* TOP */
 
 .sidebar-top {
-  padding: 14px;
+  padding: 10px 8px 6px;
 }
 
+
+/* BRAND */
+
 .brand {
+  height: 42px;
+
   display: flex;
   align-items: center;
 
   gap: 10px;
 
-  padding: 8px;
+  padding: 5px 10px;
 
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 
   font-size: 17px;
   font-weight: 700;
 }
 
 .brand-icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 9px;
+  border-radius: 8px;
 
   background: var(--white);
   color: var(--black);
 
+  font-size: 15px;
   font-weight: 800;
 }
 
+
+/* MENU */
+
 .menu-item {
   width: 100%;
+  height: 40px;
 
   display: flex;
   align-items: center;
 
-  gap: 11px;
+  gap: 12px;
 
-  padding: 10px;
+  padding: 0 11px;
 
-  border-radius: 9px;
-
-  text-align: left;
+  border-radius: 8px;
 
   color: var(--text);
 
-  transition: background .15s ease;
+  text-align: left;
+
+  font-size: 14px;
+
+  transition:
+    background .12s ease;
 }
 
 .menu-item:hover {
@@ -154,21 +188,26 @@ button {
 }
 
 .menu-icon {
-  width: 22px;
+  width: 20px;
 
   display: flex;
+  align-items: center;
   justify-content: center;
+
+  color: #ddd;
 
   font-size: 19px;
 }
 
 
-/* ================= SEARCH ================= */
+/* =========================================================
+   SEARCH
+========================================================= */
 
 .sidebar-search {
   display: none;
 
-  padding: 0 12px 8px;
+  padding: 4px 10px 8px;
 }
 
 .sidebar-search.open {
@@ -176,7 +215,7 @@ button {
 }
 
 .search-box {
-  height: 40px;
+  height: 38px;
 
   display: flex;
   align-items: center;
@@ -187,9 +226,7 @@ button {
 
   background: var(--input);
 
-  border: 1px solid var(--border);
-
-  border-radius: 9px;
+  border-radius: 8px;
 }
 
 .search-box span {
@@ -201,61 +238,82 @@ button {
 
   min-width: 0;
 
-  outline: none;
   border: 0;
+  outline: 0;
 
   background: transparent;
   color: var(--text);
+
+  font-size: 13px;
 }
 
 .search-box button {
   color: var(--muted);
+
+  font-size: 20px;
 }
 
 
-/* ================= RECENT ================= */
+/* =========================================================
+   RECENT
+========================================================= */
 
 .recent-section {
   flex: 1;
 
   min-height: 0;
 
-  padding: 5px 10px;
+  padding: 3px 8px;
 
   overflow-y: auto;
 }
 
-.recent-title {
-  padding: 12px 10px 8px;
+.recent-section::-webkit-scrollbar {
+  width: 6px;
+}
 
-  color: var(--muted);
+.recent-section::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+.recent-title {
+  padding: 12px 9px 7px;
+
+  color: #999;
 
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .chat-list {
   display: flex;
   flex-direction: column;
 
-  gap: 2px;
+  gap: 1px;
 }
 
 .chat-item {
   width: 100%;
+  min-height: 38px;
 
   display: flex;
   align-items: center;
 
   gap: 8px;
 
-  padding: 9px 10px;
+  padding: 7px 9px;
 
   border-radius: 8px;
 
+  color: var(--text);
+
   text-align: left;
 
-  color: var(--text);
+  font-size: 13px;
+
+  transition:
+    background .12s ease;
 }
 
 .chat-item:hover {
@@ -263,15 +321,18 @@ button {
 }
 
 .chat-item.active {
-  background: var(--surface-2);
+  background: var(--sidebar-active);
 }
 
 .chat-icon {
-  width: 20px;
+  width: 18px;
 
   flex-shrink: 0;
 
-  text-align: center;
+  display: flex;
+  justify-content: center;
+
+  font-size: 13px;
 }
 
 .chat-name {
@@ -282,12 +343,13 @@ button {
   overflow: hidden;
 
   white-space: nowrap;
+
   text-overflow: ellipsis;
 }
 
 .chat-more {
-  width: 25px;
-  height: 25px;
+  width: 27px;
+  height: 27px;
 
   display: none;
 
@@ -297,6 +359,8 @@ button {
   border-radius: 6px;
 
   color: var(--muted);
+
+  font-size: 18px;
 }
 
 .chat-item:hover .chat-more {
@@ -316,17 +380,24 @@ button {
 
   color: var(--muted);
 
-  font-size: 13px;
+  font-size: 12px;
 }
 
 
-/* ================= ACCOUNT ================= */
+/* =========================================================
+   ACCOUNT
+========================================================= */
 
 .sidebar-bottom {
   position: relative;
 
-  padding: 10px;
+  padding: 7px 8px 9px;
+
+  background: var(--sidebar);
 }
+
+
+/* PROFILE */
 
 .profile-button {
   width: 100%;
@@ -334,11 +405,11 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  padding: 9px;
+  padding: 8px;
 
-  border-radius: 10px;
+  border-radius: 9px;
 
   text-align: left;
 }
@@ -349,8 +420,8 @@ button {
 
 .profile-avatar,
 .account-avatar {
-  width: 34px;
-  height: 34px;
+  width: 31px;
+  height: 31px;
 
   flex-shrink: 0;
 
@@ -360,9 +431,11 @@ button {
 
   border-radius: 50%;
 
-  background: #444;
+  background: #d94d4d;
 
-  font-size: 13px;
+  color: white;
+
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -376,42 +449,45 @@ button {
 }
 
 .profile-info strong {
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .profile-info span {
   color: var(--muted);
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .profile-arrow {
   color: var(--muted);
 
-  font-size: 20px;
+  font-size: 17px;
 }
 
 
-/* ACCOUNT MENU */
+/* ACCOUNT POPUP */
 
 .account-menu {
   position: absolute;
 
-  left: 7px;
-  right: 7px;
-  bottom: 64px;
+  left: 8px;
+  right: 8px;
+
+  bottom: 59px;
 
   display: none;
 
-  padding: 8px;
+  padding: 7px;
 
   background: var(--surface-2);
 
   border: 1px solid var(--border);
 
-  border-radius: 14px;
+  border-radius: 13px;
 
-  box-shadow: 0 25px 70px rgba(0,0,0,.45);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.5);
 
   z-index: 500;
 }
@@ -424,7 +500,7 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
   padding: 8px;
 }
@@ -435,19 +511,19 @@ button {
 }
 
 .account-header-text strong {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .account-header-text span {
   color: var(--muted);
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .account-divider {
   height: 1px;
 
-  margin: 7px 4px;
+  margin: 6px 4px;
 
   background: var(--border);
 }
@@ -458,13 +534,15 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
   padding: 9px;
 
   border-radius: 8px;
 
   text-align: left;
+
+  font-size: 13px;
 }
 
 .account-item:hover {
@@ -478,7 +556,9 @@ button {
 }
 
 
-/* ================= MAIN ================= */
+/* =========================================================
+   MAIN
+========================================================= */
 
 .main {
   position: relative;
@@ -496,7 +576,9 @@ button {
 }
 
 
-/* ================= TOPBAR ================= */
+/* =========================================================
+   TOPBAR
+========================================================= */
 
 .topbar {
   height: 58px;
@@ -505,11 +587,12 @@ button {
 
   display: flex;
   align-items: center;
+
   justify-content: space-between;
 
-  padding: 0 17px;
+  padding: 0 15px;
 
-  border-bottom: 1px solid rgba(255,255,255,.025);
+  background: var(--bg);
 }
 
 .model-selector-wrapper {
@@ -520,12 +603,13 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 8px;
+  gap: 7px;
 
-  padding: 8px 11px;
+  padding: 8px 10px;
 
-  border-radius: 9px;
+  border-radius: 8px;
 
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -539,28 +623,29 @@ button {
 
   border-radius: 50%;
 
-  background: #55d67b;
+  background: #54d978;
 }
 
 .model-menu {
   position: absolute;
 
-  top: 47px;
+  top: 45px;
   left: 0;
 
   width: 260px;
 
   display: none;
 
-  padding: 8px;
+  padding: 7px;
 
   background: var(--surface-2);
 
   border: 1px solid var(--border);
 
-  border-radius: 13px;
+  border-radius: 12px;
 
-  box-shadow: 0 25px 70px rgba(0,0,0,.45);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.5);
 
   z-index: 300;
 }
@@ -574,7 +659,7 @@ button {
 
   color: var(--muted);
 
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .model-option {
@@ -583,9 +668,9 @@ button {
   display: flex;
   flex-direction: column;
 
-  gap: 3px;
+  gap: 2px;
 
-  padding: 10px;
+  padding: 9px;
 
   border-radius: 8px;
 
@@ -600,7 +685,7 @@ button {
 .model-provider {
   color: var(--muted);
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .top-more,
@@ -616,7 +701,7 @@ button {
 
   color: var(--muted);
 
-  font-size: 20px;
+  font-size: 21px;
 }
 
 .top-more:hover,
@@ -629,7 +714,9 @@ button {
 }
 
 
-/* ================= CHAT ================= */
+/* =========================================================
+   CHAT AREA
+========================================================= */
 
 .chat-area {
   flex: 1;
@@ -637,102 +724,158 @@ button {
   min-height: 0;
 
   overflow-y: auto;
+
+  scroll-behavior: smooth;
 }
+
+.chat-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+  background: #444;
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
 
 .welcome {
   min-height: 100%;
 
   display: flex;
+
   flex-direction: column;
 
   align-items: center;
+
   justify-content: center;
 
-  padding: 30px 20px 150px;
+  padding:
+    30px
+    20px
+    160px;
 
   text-align: center;
 }
 
 .welcome-logo {
-  width: 62px;
-  height: 62px;
+  width: 55px;
+  height: 55px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 20px;
+  margin-bottom: 17px;
 
-  border-radius: 18px;
+  border-radius: 17px;
 
   background: var(--white);
+
   color: var(--black);
 
-  font-size: 27px;
+  font-size: 24px;
   font-weight: 800;
 }
 
 .welcome h1 {
-  margin-bottom: 8px;
+  margin-bottom: 7px;
 
-  font-size: 30px;
+  font-size: 27px;
+
+  letter-spacing: -.5px;
 }
 
 .welcome p {
   color: var(--muted);
+
+  font-size: 14px;
 }
 
+
+/* SUGGESTIONS */
+
 .suggestions {
-  width: min(700px,100%);
+  width: min(680px, 100%);
 
   display: grid;
-  grid-template-columns: repeat(2,1fr);
 
-  gap: 10px;
+  grid-template-columns:
+    repeat(2, 1fr);
 
-  margin-top: 28px;
+  gap: 9px;
+
+  margin-top: 25px;
 }
 
 .suggestion {
+  min-height: 48px;
+
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 9px;
 
-  padding: 15px;
+  padding: 11px 13px;
 
-  border: 1px solid var(--border);
+  border:
+    1px solid var(--border);
 
-  border-radius: 12px;
+  border-radius: 11px;
+
+  background: transparent;
+
+  color: var(--text);
 
   text-align: left;
+
+  font-size: 13px;
+
+  transition:
+    background .12s ease,
+    border .12s ease;
 }
 
 .suggestion:hover {
   background: var(--input);
+
+  border-color:
+    rgba(255,255,255,.16);
 }
 
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
 .messages {
-  width: min(820px,100%);
+  width: min(850px, 100%);
 
   margin: 0 auto;
 
-  padding: 30px 20px 160px;
+  padding:
+    25px
+    20px
+    170px;
 }
 
 .message {
   display: flex;
 
-  gap: 13px;
+  gap: 12px;
 
   margin-bottom: 27px;
 }
 
 .message-avatar {
-  width: 34px;
-  height: 34px;
+  width: 31px;
+  height: 31px;
 
-  flex: 0 0 34px;
+  flex: 0 0 31px;
 
   display: flex;
   align-items: center;
@@ -740,50 +883,61 @@ button {
 
   border-radius: 50%;
 
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 .message.user .message-avatar {
   background: #444;
+
+  color: white;
 }
 
 .message.ai .message-avatar {
   background: var(--white);
+
   color: var(--black);
 }
 
 .message-content {
   flex: 1;
 
-  padding-top: 4px;
+  padding-top: 3px;
 
   line-height: 1.65;
 
   white-space: pre-wrap;
 
   overflow-wrap: anywhere;
+
+  font-size: 14px;
 }
 
 .message-content.error {
-  color: #ff6b6b;
+  color: #ff6666;
 }
+
+
+/* THINKING */
 
 .thinking-dots {
   display: inline-flex;
 
   gap: 4px;
+
+  margin-left: 5px;
 }
 
 .thinking-dots span {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 
   border-radius: 50%;
 
   background: currentColor;
 
-  animation: thinking 1.2s infinite;
+  animation:
+    thinking 1.2s infinite;
 }
 
 .thinking-dots span:nth-child(2) {
@@ -795,87 +949,113 @@ button {
 }
 
 @keyframes thinking {
-  0%,100% {
+
+  0%,
+  100% {
     opacity: .25;
-    transform: translateY(0);
+
+    transform:
+      translateY(0);
   }
 
   50% {
     opacity: 1;
-    transform: translateY(-3px);
+
+    transform:
+      translateY(-3px);
   }
 }
 
 
-/* ================= COMPOSER ================= */
+/* =========================================================
+   COMPOSER
+========================================================= */
 
 .composer-wrapper {
   position: absolute;
 
   left: 50%;
-  bottom: 16px;
+  bottom: 13px;
 
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%);
 
-  width: min(820px,calc(100% - 32px));
+  width:
+    min(
+      765px,
+      calc(100% - 36px)
+    );
 
   z-index: 20;
 }
 
 .composer {
-  min-height: 58px;
+  min-height: 54px;
 
   display: flex;
+
   align-items: flex-end;
 
-  gap: 8px;
+  gap: 6px;
 
-  padding: 8px;
+  padding: 7px 8px;
 
-  background: var(--input);
+  background:
+    #2b2b2b;
 
-  border: 1px solid rgba(255,255,255,.11);
+  border:
+    1px solid
+    rgba(255,255,255,.10);
 
-  border-radius: 18px;
+  border-radius: 19px;
 
   box-shadow:
-    0 12px 30px rgba(0,0,0,.25);
+    0 8px 30px
+    rgba(0,0,0,.35);
 }
 
 .composer-button,
 .send-button {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
 
-  flex: 0 0 40px;
+  flex:
+    0 0 38px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 11px;
+  border-radius: 10px;
 }
 
 .composer-button {
-  color: var(--text);
+  color: #ddd;
 
-  font-size: 22px;
+  font-size: 24px;
 }
 
 .composer-button:hover {
-  background: var(--surface-2);
+  background: #3a3a3a;
 }
 
 .send-button {
-  background: var(--white);
-  color: var(--black);
+  background: white;
 
-  font-size: 21px;
+  color: black;
+
+  font-size: 20px;
   font-weight: 800;
+
+  border-radius: 50%;
+}
+
+.send-button:hover:not(:disabled) {
+  transform: scale(1.03);
 }
 
 .send-button:disabled {
-  opacity: .3;
+  opacity: .28;
 
   cursor: default;
 }
@@ -885,10 +1065,12 @@ button {
 
   width: 100%;
 
-  min-height: 40px;
+  min-height: 38px;
   max-height: 180px;
 
-  padding: 9px 4px;
+  padding:
+    8px
+    4px;
 
   resize: none;
 
@@ -896,40 +1078,54 @@ button {
   border: none;
 
   background: transparent;
-  color: var(--text);
+
+  color: #eee;
 
   line-height: 1.45;
+
+  font-size: 14px;
+}
+
+#messageInput::placeholder {
+  color: #999;
 }
 
 .composer-note {
-  margin-top: 7px;
+  margin-top: 5px;
 
   text-align: center;
 
-  color: var(--muted);
+  color: #777;
 
-  font-size: 11px;
+  font-size: 10px;
 }
 
 
-/* ================= CONTEXT MENU ================= */
+/* =========================================================
+   CONTEXT MENU
+========================================================= */
 
 .context-menu {
   position: fixed;
 
   display: none;
 
-  width: 160px;
+  width: 155px;
 
   padding: 6px;
 
-  background: var(--surface-2);
+  background:
+    var(--surface-2);
 
-  border: 1px solid var(--border);
+  border:
+    1px solid
+    var(--border);
 
   border-radius: 10px;
 
-  box-shadow: 0 15px 40px rgba(0,0,0,.4);
+  box-shadow:
+    0 15px 40px
+    rgba(0,0,0,.5);
 
   z-index: 2000;
 }
@@ -946,14 +1142,19 @@ button {
   border-radius: 7px;
 
   text-align: left;
+
+  font-size: 13px;
 }
 
 .context-menu button:hover {
-  background: var(--sidebar-hover);
+  background:
+    var(--sidebar-hover);
 }
 
 
-/* ================= SETTINGS ================= */
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 .settings-overlay {
   position: fixed;
@@ -967,9 +1168,11 @@ button {
 
   padding: 20px;
 
-  background: rgba(0,0,0,.63);
+  background:
+    rgba(0,0,0,.68);
 
-  backdrop-filter: blur(5px);
+  backdrop-filter:
+    blur(6px);
 
   z-index: 1000;
 }
@@ -979,21 +1182,34 @@ button {
 }
 
 .settings-modal {
-  width: min(900px,calc(100vw - 40px));
+  width:
+    min(
+      900px,
+      calc(100vw - 40px)
+    );
 
-  height: min(680px,calc(100vh - 40px));
+  height:
+    min(
+      680px,
+      calc(100vh - 40px)
+    );
 
   display: flex;
 
   overflow: hidden;
 
-  background: var(--surface);
+  background:
+    var(--surface);
 
-  border: 1px solid var(--border);
+  border:
+    1px solid
+    var(--border);
 
-  border-radius: 18px;
+  border-radius: 17px;
 
-  box-shadow: 0 35px 90px rgba(0,0,0,.55);
+  box-shadow:
+    0 35px 90px
+    rgba(0,0,0,.6);
 }
 
 .settings-sidebar {
@@ -1003,9 +1219,12 @@ button {
 
   padding: 12px;
 
-  background: var(--sidebar);
+  background:
+    var(--sidebar);
 
-  border-right: 1px solid var(--border);
+  border-right:
+    1px solid
+    var(--border);
 
   overflow-y: auto;
 }
@@ -1024,7 +1243,8 @@ button {
 }
 
 .settings-close:hover {
-  background: var(--sidebar-hover);
+  background:
+    var(--sidebar-hover);
 }
 
 .settings-search {
@@ -1039,7 +1259,8 @@ button {
 
   margin-bottom: 12px;
 
-  background: var(--input);
+  background:
+    var(--input);
 
   border-radius: 8px;
 }
@@ -1048,10 +1269,13 @@ button {
   width: 100%;
 
   border: 0;
-  outline: none;
+  outline: 0;
 
   background: transparent;
+
   color: var(--text);
+
+  font-size: 12px;
 }
 
 .settings-nav-item {
@@ -1069,11 +1293,14 @@ button {
   border-radius: 8px;
 
   text-align: left;
+
+  font-size: 13px;
 }
 
 .settings-nav-item:hover,
 .settings-nav-item.active {
-  background: var(--sidebar-hover);
+  background:
+    var(--sidebar-hover);
 }
 
 .settings-content {
@@ -1088,20 +1315,26 @@ button {
 
 .settings-content h2 {
   margin-bottom: 25px;
+
+  font-size: 22px;
 }
 
 .upgrade-card {
   display: flex;
   align-items: center;
+
   justify-content: space-between;
 
   padding: 18px;
 
   margin-bottom: 12px;
 
-  background: var(--input);
+  background:
+    var(--input);
 
-  border: 1px solid var(--border);
+  border:
+    1px solid
+    var(--border);
 
   border-radius: 13px;
 }
@@ -1119,7 +1352,8 @@ button {
 
   border-radius: 7px;
 
-  background: var(--surface-2);
+  background:
+    var(--surface-2);
 
   color: var(--muted);
 
@@ -1128,14 +1362,18 @@ button {
 
 .setting-row {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 20px;
 
   padding: 18px 0;
 
-  border-bottom: 1px solid var(--border);
+  border-bottom:
+    1px solid
+    var(--border);
 }
 
 .setting-text {
@@ -1151,14 +1389,20 @@ button {
 }
 
 .setting-row select {
-  padding: 8px 12px;
+  padding:
+    8px 12px;
 
-  border: 1px solid var(--border);
+  border:
+    1px solid
+    var(--border);
 
   border-radius: 8px;
 
-  background: var(--input);
-  color: var(--text);
+  background:
+    var(--input);
+
+  color:
+    var(--text);
 
   outline: none;
 }
@@ -1177,6 +1421,7 @@ button {
 
 .switch input {
   opacity: 0;
+
   width: 0;
   height: 0;
 }
@@ -1212,13 +1457,16 @@ button {
 }
 
 .switch input:checked + span::before {
-  transform: translateX(20px);
+  transform:
+    translateX(20px);
 }
 
 
-/* ================= RESPONSIVE ================= */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 
-@media (max-width:800px) {
+@media (max-width: 800px) {
 
   .sidebar {
     position: fixed;
@@ -1229,11 +1477,17 @@ button {
 
     z-index: 900;
 
-    transform: translateX(-100%);
+    transform:
+      translateX(-100%);
+
+    box-shadow:
+      15px 0 40px
+      rgba(0,0,0,.4);
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform:
+      translateX(0);
   }
 
   .mobile-menu {
@@ -1242,6 +1496,18 @@ button {
 
   .suggestions {
     grid-template-columns: 1fr;
+  }
+
+  .composer-wrapper {
+    width:
+      calc(100% - 20px);
+
+    bottom: 9px;
+  }
+
+  .messages {
+    padding-left: 14px;
+    padding-right: 14px;
   }
 
   .settings-modal {
@@ -1254,13 +1520,22 @@ button {
   .settings-sidebar {
     width: 180px;
   }
-
 }
 
-@media (max-width:550px) {
+
+@media (max-width: 550px) {
+
+  .sidebar {
+    width: 280px;
+    min-width: 280px;
+  }
 
   .suggestions {
     display: none;
+  }
+
+  .welcome h1 {
+    font-size: 24px;
   }
 
   .settings-sidebar {
@@ -1269,7 +1544,8 @@ button {
     padding: 8px;
   }
 
-  .settings-sidebar .settings-nav-item span {
+  .settings-sidebar
+  .settings-nav-item span {
     display: none;
   }
 
@@ -1281,4 +1557,7 @@ button {
     padding: 22px;
   }
 
+  .composer {
+    border-radius: 17px;
+  }
 }
