@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>khanhOS — Trợ lý AI Cerebras</title>
+<title>khanhOS — Trợ lý AI </title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{--bg:#0E0D0B;--sf:#15130E;--ln:#2A2720;--ln2:#3A362B;--tx:#EDE8DC;--dm:#97917F;--fa:#5E5949;--ac:#E5A63C;--ak:#171410;--rd:#E06D4D;--ok:#A3C24F}
@@ -121,9 +121,7 @@ h2{font-size:20px;margin-bottom:4px}
 .qr{display:flex;gap:18px;align-items:center;border:1px solid var(--ln);border-radius:12px;padding:14px;margin:14px 0;flex-wrap:wrap}
 .qr .amt{font-size:24px;font-weight:700}
 .qr .inf{font-size:11px;color:var(--fa);margin-top:6px;line-height:1.7}
-.ot{display:flex;gap:6px;justify-content:center;margin:12px 0}
-.ot input{width:40px;height:48px;text-align:center;font-size:20px;background:var(--bg);border:1px solid var(--ln);border-radius:8px;color:var(--tx);outline:none}
-.ot input:focus{border-color:var(--ac)}
+.ot{display:flex;gap:6px;justify-content:center;margin:12px 0;flex-wrap:wrap}
 .ph{background:#12110C;border:1px solid var(--ln2);border-radius:10px;padding:12px;margin:10px 0}
 .ph .t{font-size:11px;color:var(--ac);margin-bottom:6px}
 .ph .m{background:#1D1B13;border-radius:8px;padding:10px;font-size:13px}
@@ -134,6 +132,7 @@ h2{font-size:20px;margin-bottom:4px}
 .tt.ok{color:var(--ok)}.tt.warn{color:var(--rd)}.tt.info{color:var(--ac)}
 #ov{position:fixed;inset:0;background:rgba(10,9,7,.5);z-index:55;display:none}
 body.so #ov{display:block}
+@keyframes shk{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 @media(max-width:800px){
 body{overflow:auto}
 #auth{flex-direction:column}
@@ -152,8 +151,7 @@ body.so #side{transform:none}
 <div id="auth">
  <div class="al">
   <div class="brand">khanh<i>OS</i></div>
-  <h1>Một hệ điều hành<br>cho trí tuệ —<br><span>tốc độ Cerebras.</span></h1>
-  <p>Free 10k · Plus 100k (99k₫) · Max 500k (299k₫) token mỗi ngày. Thanh toán MoMo · ZaloPay · VNPay · ShopeePay.</p>
+  <h1>Một hệ điều hành<br>cho trí tuệ —<br><span>tốc độ Cerebras.</span></h1\>
  </div>
  <div class="ar">
   <div class="box">
@@ -265,7 +263,7 @@ function md(t){
  }
  return o;
 }
-function mO(h){$('#mp').innerHTML='<button class="x" id="mx" type="button">✕</button>'+h;$('#mo').hidden=false;$('#mx').onclick=mC}
+function mO(h){$('#mp').innerHTML='<button class="x" id="mx" type="button">✕</button>'+h;$('#mp').onclick=null;$('#mo').hidden=false;$('#mx').onclick=mC}
 function mC(){$('#mo').hidden=true;$('#mp').innerHTML=''}
  $('#mo').addEventListener('click',function(e){if(e.target.id==='mo')mC()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(!$('#mo').hidden)mC();else document.body.classList.remove('so')}});
@@ -290,15 +288,18 @@ function bO(row,cb){
  return{v:function(){return is.map(function(x){return x.value}).join('')},c:function(){is.forEach(function(x){x.value=''});is[0].focus()},sh:function(){row.style.animation='none';setTimeout(function(){row.style.animation='shk .4s'},10)}};
 }
 function cd(btn,fn){
- var s=60;btn.disabled=true;btn.textContent='Gửi lại sau 60s';
- var iv=setInterval(function(){if(!btn.isConnected){clearInterval(iv);return}s--;
-  if(s<=0){clearInterval(iv);btn.disabled=false;btn.textContent='Gửi lại mã';return}
-  btn.textContent='Gửi lại sau '+s+'s'},1000);
- btn.onclick=function(){if(btn.disabled)return;s=60;fn();btn.textContent='Gửi lại sau 60s'};
+ var s=0,iv=null;
+ function start(){s=60;btn.disabled=true;btn.textContent='Gửi lại sau 60s';
+  if(iv)clearInterval(iv);
+  iv=setInterval(function(){if(!btn.isConnected){clearInterval(iv);iv=null;return}
+   s--;if(s<=0){clearInterval(iv);iv=null;btn.disabled=false;btn.textContent='Gửi lại mã'}
+   else btn.textContent='Gửi lại sau '+s+'s'},1000)}
+ btn.onclick=function(){if(btn.disabled)return;fn();start()};
+ start();
 }
 
 /* ===== state ===== */
-var users={},ses=null,dat=null,cid=null,gen=false,ctl=null,otpX=null,pay=null;
+var users={},ses=null,dat=null,cid=null,gen=false,ctl=null,otpX=null;
 function loadU(){try{users=JSON.parse(store.g(KU)||'{}')}catch(e){users={}}}
 function saveU(){store.s(KU,JSON.stringify(users))}
 function rdD(e){try{return JSON.parse(store.g(KD(e))||'null')}catch(x){return null}}
@@ -310,7 +311,7 @@ function pl(){return PLANS[pk()]}
 function resetU(){if(!dat.u||dat.u.d!==today()){dat.u={d:today(),t:0};save()}}
 function cby(id){var r=null;(dat.cs||[]).forEach(function(c){if(c.id===id)r=c});return r}
 function cv(){return cby(cid)}
-function eC(){if(!cv()){var c={id:'c'+Date.now().toString(36),t:'',cr:Date.now(),up:Date.now(),m:[]};dat.cs.push(c);cid=c.id}return cv()}
+function eC(){var c=cv();if(c&&!c.m.length)return c;c={id:'c'+Date.now().toString(36)+Math.floor(Math.random()*1e3),t:'',cr:Date.now(),up:Date.now(),m:[]};dat.cs.push(c);cid=c.id;return c}
 
 /* ===== AUTH ===== */
-function tab(t){$('#tL').classList.toggle('on',t==='l');$('#tR').classList.toggle('on',t==='
+function tab(t){$('#tL').classList.toggle('on',t==='l');$('#tR')
