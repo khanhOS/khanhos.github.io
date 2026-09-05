@@ -1,0 +1,5 @@
+text
+flask
+cerebras_cloud_sdk
+python-dotenv
+flask-cors
