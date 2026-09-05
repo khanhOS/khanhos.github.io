@@ -1,70 +1,53 @@
-js
-// -----------------------------------------------------
-// api/chat.js  (Vercel Serverless Function)
-// -----------------------------------------------------
-import fetch from 'node-fetch';
+// api/chat.js — Vercel Function (web standard)
+// Đặt CEREBRAS_API_KEY trong Vercel → Settings → Environment Variables
 
-// Vercel sẽ tự inject biến môi trường này
-const CEREBRAS_API_KEY = process.env.CEREBRAS_API_KEY;
+const UPSTREAM = 'https://api.cerebras.ai/v1/chat/completions';
+const H = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
 
-// -----------------------------------------------------
-// Helper: trả về JSON + status code
-// -----------------------------------------------------
-function jsonResponse(status, data) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+function json(status, data) {
+  return new Response(JSON.stringify(data), { status, headers: { ...H, 'Content-Type': 'application/json' } });
 }
 
-// -----------------------------------------------------
-// POST handler (được Vercel gọi khi client thực hiện fetch)
-// -----------------------------------------------------
+export function OPTIONS() {
+  return new Response(null, { status: 204, headers: H });
+}
+
 export async function POST(req) {
-  // ---- 1️⃣ Kiểm tra key đã được cấu hình chưa
-  if (!CEREBRAS_API_KEY) {
-    return jsonResponse(500, { error: "Cerebras API key not set" });
-  }
+  const envKey = process.env.CEREBRAS_API_KEY;
+  let body;
+  try { body = await req.json(); }
+  catch { return json(400, { error: 'JSON body không hợp lệ' }); }
 
-  // ---- 2️⃣ Đọc body JSON { message: "..." }
-  let payload;
+  const { model = 'llama3.1-8b', messages, max_tokens = 2048, stream = false, key } = body || {};
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return json(400, { error: 'Thiếu mảng messages' });
+  }
+  const apiKey = key || envKey;
+  if (!apiKey) return json(500, { error: 'Chưa cấu hình CEREBRAS_API_KEY trên Vercel' });
+
   try {
-    payload = await req.json();
-  } catch (e) {
-    return jsonResponse(400, { error: "Invalid JSON body" });
-  }
-
-  const userMessage = payload?.message?.trim();
-  if (!userMessage) {
-    return jsonResponse(400, { error: "Missing message" });
-  }
-
-  // ---- 3️⃣ Gọi Cerebras
-  try {
-    const resp = await fetch("https://api.cerebras.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${CEREBRAS_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama3.1-8b",          // hoặc model phù hợp với gói của bạn
-        messages: [{ role: "user", content: userMessage }],
-      }),
+    const r = await fetch(UPSTREAM, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model, messages, max_tokens, stream }),
     });
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      return jsonResponse(resp.status, {
-        error: `Cerebras error: ${errText}`,
+    if (!r.ok) {
+      const t = await r.text();
+      return json(r.status, { error: t });
+    }
+    if (stream && r.body) {
+      return new Response(r.body, {
+        status: 200,
+        headers: { ...H, 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
       });
     }
-
-    const data = await resp.json();
-    const answer = data?.choices?.[0]?.message?.content ?? "";
-    return jsonResponse(200, { reply: answer });
+    const d = await r.json();
+    return new Response(JSON.stringify(d), { status: 200, headers: { ...H, 'Content-Type': 'application/json' } });
   } catch (e) {
-    console.error("Cerebras request failed:", e);
-    return jsonResponse(500, { error: e.message });
+    return json(500, { error: String((e && e.message) || e) });
   }
 }
