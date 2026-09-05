@@ -1,2 +1,0 @@
-text
-cerebras_cloud_sdk
