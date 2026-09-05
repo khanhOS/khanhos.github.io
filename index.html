@@ -2,72 +2,111 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="KhanhOS AI - Trợ lý AI cho học tập, lập trình và sáng tạo."
+  >
+
+  <meta name="theme-color" content="#111111">
+
   <title>KhanhOS AI</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
-<div id="app">
+<div class="app">
 
   <!-- ================= SIDEBAR ================= -->
+
   <aside class="sidebar" id="sidebar">
 
-    <div class="sidebar-header">
-      <button class="brand-button" id="brandButton">
-        <span class="brand-logo">K</span>
-        <span class="brand-name">KhanhOS</span>
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div class="brand-name">KhanhOS</div>
+      <div class="brand-version">AI</div>
+    </div>
+
+    <div class="sidebar-top">
+
+      <button
+        class="sidebar-button primary"
+        id="newChatButton"
+        type="button"
+      >
+        <span class="icon">＋</span>
+        <span>Cuộc trò chuyện mới</span>
       </button>
 
-      <button class="close-sidebar" id="closeSidebar">×</button>
-    </div>
-
-    <button class="new-chat" id="newChat">
-      <span class="new-chat-icon">＋</span>
-      <span>Cuộc trò chuyện mới</span>
-    </button>
-
-    <div class="sidebar-search">
-      <span>⌕</span>
-      <input id="searchChats" type="text" placeholder="Tìm kiếm">
-      <kbd>Ctrl K</kbd>
-    </div>
-
-    <div class="history-section">
-
-      <div class="history-label">Hôm nay</div>
-
-      <div id="chatHistory"></div>
-
-      <div class="empty-history" id="emptyHistory">
-        Chưa có cuộc trò chuyện nào
-      </div>
+      <button
+        class="sidebar-button"
+        id="searchButton"
+        type="button"
+      >
+        <span class="icon">⌕</span>
+        <span>Tìm kiếm</span>
+        <span style="margin-left:auto;color:#999;font-size:11px">
+          Ctrl K
+        </span>
+      </button>
 
     </div>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-divider"></div>
 
-      <button class="sidebar-item" id="settingsButton">
-        <span>⚙</span>
+    <div class="history-header">
+      <div class="history-title">Hôm nay</div>
+    </div>
+
+    <div
+      class="history-list"
+      id="historyList"
+    ></div>
+
+    <div class="sidebar-bottom">
+
+      <button
+        class="sidebar-button"
+        id="settingsButton"
+        type="button"
+      >
+        <span class="icon">⚙</span>
         <span>Cài đặt</span>
       </button>
 
-      <button class="sidebar-item" id="helpButton">
-        <span>?</span>
+      <button
+        class="sidebar-button"
+        id="helpButton"
+        type="button"
+      >
+        <span class="icon">?</span>
         <span>Trợ giúp</span>
       </button>
 
-      <button class="profile-card" id="profileButton">
-        <span class="profile-avatar" id="sidebarAvatar">K</span>
+      <button
+        class="profile-button"
+        id="profileButton"
+        type="button"
+      >
+        <div class="avatar">K</div>
 
-        <span class="profile-info">
-          <strong id="sidebarName">Khách</strong>
-          <small id="sidebarTier">Chưa đăng nhập</small>
-        </span>
+        <div class="profile-info">
+          <div class="profile-name">
+            Khách
+          </div>
 
-        <span class="profile-more">•••</span>
+          <div class="profile-tier">
+            Chưa đăng nhập
+          </div>
+        </div>
+
+        <span>•••</span>
       </button>
 
     </div>
@@ -79,29 +118,94 @@
 
   <main class="main">
 
+    <!-- TOPBAR -->
+
     <header class="topbar">
 
       <div class="topbar-left">
 
-        <button class="mobile-menu" id="mobileMenu">
+        <button
+          class="icon-button mobile-menu"
+          id="mobileMenuButton"
+          type="button"
+          aria-label="Menu"
+        >
           ☰
         </button>
 
-        <button class="model-selector" id="modelSelector">
-          <span>KhanhOS AI</span>
-          <span class="model-arrow">⌄</span>
-        </button>
+        <div class="model-selector">
+
+          <button
+            class="model-button"
+            id="modelButton"
+            type="button"
+          >
+            <span class="model-name">
+              KhanhOS AI
+            </span>
+
+            <span>⌄</span>
+          </button>
+
+          <div
+            class="popover model-popover hidden"
+            id="modelPopover"
+          >
+
+            <button
+              class="popover-item active"
+              data-model="gpt-oss-120b"
+              data-label="KhanhOS AI"
+              type="button"
+            >
+              <span>✦</span>
+              <span>
+                <strong>KhanhOS AI</strong><br>
+                <small style="color:#888">
+                  Cerebras
+                </small>
+              </span>
+            </button>
+
+            <button
+              class="popover-item"
+              data-model="llama-3.3-70b"
+              data-label="Llama 3.3"
+              type="button"
+            >
+              <span>◈</span>
+              <span>
+                <strong>Llama 3.3</strong><br>
+                <small style="color:#888">
+                  Cerebras
+                </small>
+              </span>
+            </button>
+
+          </div>
+
+        </div>
 
       </div>
 
+
       <div class="topbar-right">
 
-        <button class="icon-button" id="shareButton" title="Chia sẻ">
-          ↗
+        <button
+          class="share-button"
+          id="shareButton"
+          type="button"
+        >
+          ↗ Chia sẻ
         </button>
 
-        <button class="icon-button" id="topProfileButton">
-          <span id="topAvatar">K</span>
+        <button
+          class="icon-button"
+          id="topProfileButton"
+          type="button"
+          aria-label="Tài khoản"
+        >
+          K
         </button>
 
       </div>
@@ -111,66 +215,107 @@
 
     <!-- ================= CHAT ================= -->
 
-    <section class="chat-container" id="chatContainer">
+    <section
+      class="chat-area"
+      id="chatArea"
+    >
 
-      <div class="welcome-screen" id="welcomeScreen">
+      <div class="chat-container">
 
-        <div class="welcome-logo">
-          K
+        <!-- WELCOME -->
+
+        <div
+          class="welcome"
+          id="welcome"
+        >
+
+          <div class="welcome-logo">
+            K
+          </div>
+
+          <h1>
+            Bạn muốn làm gì?
+          </h1>
+
+          <p>
+            KhanhOS AI có thể giúp bạn viết,
+            học tập, lập trình và khám phá ý tưởng.
+          </p>
+
+
+          <div class="suggestions">
+
+            <button
+              class="suggestion"
+              data-prompt="Giải thích cho tôi một chủ đề bất kỳ theo cách thật dễ hiểu."
+              type="button"
+            >
+              <div class="suggestion-title">
+                💡 Giải thích một chủ đề bất kỳ
+              </div>
+
+              <div class="suggestion-text">
+                Học nhanh một khái niệm khó
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Viết giúp tôi một đoạn code và giải thích cách hoạt động."
+              type="button"
+            >
+              <div class="suggestion-title">
+                💻 Viết code giúp tôi lập trình
+              </div>
+
+              <div class="suggestion-text">
+                Tạo và sửa code
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Cho tôi một số ý tưởng cho một dự án mới."
+              type="button"
+            >
+              <div class="suggestion-title">
+                🚀 Ý tưởng cho dự án mới
+              </div>
+
+              <div class="suggestion-text">
+                Khám phá ý tưởng sáng tạo
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Hãy giúp tôi học tập hiệu quả hơn."
+              type="button"
+            >
+              <div class="suggestion-title">
+                📚 Học tập hiệu quả hơn
+              </div>
+
+              <div class="suggestion-text">
+                Lập kế hoạch và giải bài
+              </div>
+            </button>
+
+          </div>
+
         </div>
 
-        <h1>Bạn muốn làm gì?</h1>
 
-        <p class="welcome-subtitle">
-          KhanhOS AI có thể giúp bạn viết, học tập, lập trình và khám phá ý tưởng.
-        </p>
+        <!-- MESSAGES -->
 
-        <div class="suggestion-grid">
+        <div
+          class="messages"
+          id="messages"
+        ></div>
 
-          <button class="suggestion" data-prompt="Giải thích một chủ đề cho tôi thật dễ hiểu">
-            <span class="suggestion-icon">💡</span>
-            <span>
-              <strong>Giải thích</strong>
-              <small>một chủ đề bất kỳ</small>
-            </span>
-          </button>
-
-          <button class="suggestion" data-prompt="Viết cho tôi một chương trình Python đơn giản">
-            <span class="suggestion-icon">💻</span>
-            <span>
-              <strong>Viết code</strong>
-              <small>giúp tôi lập trình</small>
-            </span>
-          </button>
-
-          <button class="suggestion" data-prompt="Cho tôi một ý tưởng website thú vị">
-            <span class="suggestion-icon">🚀</span>
-            <span>
-              <strong>Ý tưởng</strong>
-              <small>cho dự án mới</small>
-            </span>
-          </button>
-
-          <button class="suggestion" data-prompt="Giúp tôi lập một kế hoạch học tập">
-            <span class="suggestion-icon">📚</span>
-            <span>
-              <strong>Học tập</strong>
-              <small>hiệu quả hơn</small>
-            </span>
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="messages" id="messages"></div>
-
-      <div class="typing-indicator" id="typingIndicator">
-        <span class="typing-avatar">K</span>
-        <span class="typing-dots">
-          <i></i><i></i><i></i>
-        </span>
       </div>
 
     </section>
@@ -178,36 +323,77 @@
 
     <!-- ================= COMPOSER ================= -->
 
-    <div class="composer-area">
+    <div class="composer-wrap">
 
-      <form class="composer" id="chatForm">
+      <div class="composer">
 
-        <button type="button" class="composer-tool" id="attachButton" title="Đính kèm">
-          ＋
-        </button>
+        <div class="composer-top">
 
-        <textarea
-          id="messageInput"
-          rows="1"
-          maxlength="20000"
-          placeholder="Nhắn tin cho KhanhOS AI..."
-          autocomplete="off"
-        ></textarea>
+          <button
+            class="composer-button"
+            id="attachButton"
+            type="button"
+            title="Đính kèm file"
+          >
+            ＋
+          </button>
 
-        <button type="button" class="composer-tool voice-button" id="voiceButton" title="Nhập bằng giọng nói">
-          ♫
-        </button>
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Nhắn tin cho KhanhOS..."
+            autocomplete="off"
+          ></textarea>
 
-        <button type="submit" class="send-button" id="sendButton" disabled>
-          ↑
-        </button>
+          <div class="composer-actions">
 
-      </form>
+            <button
+              class="composer-button"
+              id="voiceButton"
+              type="button"
+              title="Nhập bằng giọng nói"
+            >
+              ♪
+            </button>
 
-      <div class="composer-info">
-        <span>KhanhOS AI có thể mắc lỗi. Hãy kiểm tra thông tin quan trọng.</span>
-        <span id="tokenStatus"></span>
+            <button
+              class="composer-button send-button"
+              id="sendButton"
+              type="button"
+              disabled
+              title="Gửi"
+            >
+              ↑
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="composer-bottom">
+
+          <span class="composer-hint">
+            KhanhOS AI có thể mắc lỗi.
+            Hãy kiểm tra thông tin quan trọng.
+          </span>
+
+          <span
+            class="token-info"
+            id="tokenInfo"
+          >
+            Mô hình
+          </span>
+
+        </div>
+
       </div>
+
+      <input
+        type="file"
+        id="fileInput"
+        hidden
+        multiple
+      >
 
     </div>
 
@@ -216,184 +402,246 @@
 </div>
 
 
-<!-- ================= MODEL MENU ================= -->
+<!-- ================= PROFILE POPOVER ================= -->
 
-<div class="popover model-menu" id="modelMenu">
+<div
+  class="popover profile-popover hidden"
+  id="profilePopover"
+>
 
-  <div class="popover-title">Mô hình</div>
+  <div
+    style="
+      padding:10px;
+      border-bottom:1px solid var(--border);
+      margin-bottom:5px;
+    "
+  >
+    <strong class="profile-name">
+      Khách
+    </strong>
 
-  <button class="model-option active">
-    <span class="model-option-icon">✦</span>
-    <span>
-      <strong>KhanhOS AI</strong>
-      <small>Cerebras</small>
-    </span>
-    <span>✓</span>
-  </button>
-
-</div>
-
-
-<!-- ================= PROFILE MENU ================= -->
-
-<div class="popover profile-menu" id="profileMenu">
-
-  <div class="profile-menu-user">
-    <span class="large-avatar" id="menuAvatar">K</span>
-    <span>
-      <strong id="menuName">Khách</strong>
-      <small id="menuEmail">Chưa đăng nhập</small>
-    </span>
+    <div
+      class="profile-tier"
+      style="margin-top:3px"
+    >
+      Chưa đăng nhập
+    </div>
   </div>
 
-  <div class="menu-divider"></div>
+  <button
+    class="popover-item"
+    id="loginButton"
+    type="button"
+  >
+    👤 Tài khoản
+  </button>
 
-  <button id="menuAccount">👤 Tài khoản</button>
-  <button id="menuSettings">⚙ Cài đặt</button>
-  <button id="menuLogout" class="danger">↪ Đăng xuất</button>
+  <button
+    class="popover-item"
+    id="profileSettingsButton"
+    type="button"
+  >
+    ⚙ Cài đặt
+  </button>
+
+  <div class="popover-divider"></div>
+
+  <button
+    class="popover-item"
+    id="logoutButton"
+    type="button"
+  >
+    ↪ Đăng xuất
+  </button>
 
 </div>
 
 
 <!-- ================= AUTH MODAL ================= -->
 
-<div class="modal-overlay hidden" id="authOverlay">
+<div
+  class="modal-overlay hidden"
+  id="authModal"
+>
 
-  <div class="auth-modal">
+  <div class="modal">
 
-    <button class="modal-close" id="authClose">×</button>
+    <div class="modal-header">
 
-    <div class="auth-logo">K</div>
-
-    <h2 id="authTitle">Đăng nhập KhanhOS</h2>
-
-    <p id="authSubtitle">
-      Đăng nhập để tiếp tục sử dụng KhanhOS AI.
-    </p>
-
-    <!-- LOGIN -->
-
-    <form id="loginForm" class="auth-form">
-
-      <label>Email</label>
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="you@example.com"
-        required
-      >
-
-      <label>Mật khẩu</label>
-
-      <div class="password-field">
-
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Mật khẩu"
-          required
-        >
-
-        <button type="button" data-password="loginPassword">◉</button>
-
+      <div class="modal-title">
+        KhanhOS
       </div>
 
-      <div class="auth-row">
-        <label class="checkbox-label">
-          <input type="checkbox" id="rememberLogin">
-          <span>Ghi nhớ tôi</span>
-        </label>
+      <button
+        class="modal-close"
+        data-close-modal="authModal"
+        type="button"
+      >
+        ×
+      </button>
 
-        <button type="button" class="link-button" id="forgotPassword">
-          Quên mật khẩu?
+    </div>
+
+
+    <div class="modal-body">
+
+      <div class="auth-tabs">
+
+        <button
+          class="auth-tab active"
+          id="loginTab"
+          type="button"
+        >
+          Đăng nhập
         </button>
+
+        <button
+          class="auth-tab"
+          id="signupTab"
+          type="button"
+        >
+          Đăng ký
+        </button>
+
       </div>
 
-      <button class="auth-submit" type="submit">
-        Đăng nhập
-      </button>
 
-      <p class="auth-error" id="loginError"></p>
+      <!-- LOGIN -->
 
-      <p class="switch-auth">
-        Chưa có tài khoản?
-        <button type="button" id="showSignup">Đăng ký</button>
-      </p>
-
-    </form>
-
-
-    <!-- SIGNUP -->
-
-    <form id="signupForm" class="auth-form hidden">
-
-      <label>Tên hiển thị</label>
-
-      <input
-        id="signupName"
-        type="text"
-        placeholder="Tên của bạn"
-        maxlength="100"
-        required
+      <form
+        class="auth-form"
+        id="loginForm"
       >
 
-      <label>Email</label>
+        <div class="form-group">
 
-      <input
-        id="signupEmail"
-        type="email"
-        placeholder="you@example.com"
-        required
+          <label class="form-label">
+            Email
+          </label>
+
+          <input
+            class="form-input"
+            id="loginEmail"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Mật khẩu
+          </label>
+
+          <input
+            class="form-input"
+            id="loginPassword"
+            type="password"
+            placeholder="Mật khẩu"
+            autocomplete="current-password"
+            required
+          >
+
+        </div>
+
+
+        <div
+          class="form-error"
+          id="loginError"
+        ></div>
+
+
+        <button
+          class="form-submit"
+          type="submit"
+        >
+          Đăng nhập
+        </button>
+
+      </form>
+
+
+      <!-- SIGNUP -->
+
+      <form
+        class="auth-form hidden"
+        id="signupForm"
       >
 
-      <label>Mật khẩu</label>
+        <div class="form-group">
 
-      <div class="password-field">
+          <label class="form-label">
+            Tên
+          </label>
 
-        <input
-          id="signupPassword"
-          type="password"
-          placeholder="Ít nhất 6 ký tự"
-          required
+          <input
+            class="form-input"
+            id="signupName"
+            type="text"
+            placeholder="Tên của bạn"
+            autocomplete="name"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Email
+          </label>
+
+          <input
+            class="form-input"
+            id="signupEmail"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Mật khẩu
+          </label>
+
+          <input
+            class="form-input"
+            id="signupPassword"
+            type="password"
+            placeholder="Ít nhất 6 ký tự"
+            autocomplete="new-password"
+            required
+          >
+
+        </div>
+
+
+        <div
+          class="form-error"
+          id="signupError"
+        ></div>
+
+
+        <button
+          class="form-submit"
+          type="submit"
         >
+          Tạo tài khoản
+        </button>
 
-        <button type="button" data-password="signupPassword">◉</button>
+      </form>
 
-      </div>
-
-      <label>Xác nhận mật khẩu</label>
-
-      <div class="password-field">
-
-        <input
-          id="signupConfirm"
-          type="password"
-          placeholder="Nhập lại mật khẩu"
-          required
-        >
-
-        <button type="button" data-password="signupConfirm">◉</button>
-
-      </div>
-
-      <label class="checkbox-label terms">
-        <input type="checkbox" id="acceptTerms" required>
-        <span>Tôi đồng ý với điều khoản sử dụng của KhanhOS.</span>
-      </label>
-
-      <button class="auth-submit" type="submit">
-        Tạo tài khoản
-      </button>
-
-      <p class="auth-error" id="signupError"></p>
-
-      <p class="switch-auth">
-        Đã có tài khoản?
-        <button type="button" id="showLogin">Đăng nhập</button>
-      </p>
-
-    </form>
+    </div>
 
   </div>
 
@@ -402,41 +650,80 @@
 
 <!-- ================= SETTINGS ================= -->
 
-<div class="modal-overlay hidden" id="settingsOverlay">
+<div
+  class="modal-overlay hidden"
+  id="settingsModal"
+>
 
-  <div class="settings-modal">
+  <div class="modal settings-modal">
 
-    <div class="settings-header">
-      <h2>Cài đặt</h2>
-      <button class="modal-close" id="settingsClose">×</button>
+    <div class="modal-header">
+
+      <div class="modal-title">
+        Cài đặt
+      </div>
+
+      <button
+        class="modal-close"
+        data-close-modal="settingsModal"
+        type="button"
+      >
+        ×
+      </button>
+
     </div>
 
-    <div class="settings-body">
+
+    <div class="settings-layout">
 
       <nav class="settings-nav">
 
-        <button class="settings-tab active" data-settings="general">
-          ⚙️ Chung
+        <button
+          class="settings-nav-button active"
+          data-section="general"
+          type="button"
+        >
+          ⚙ Chung
         </button>
 
-        <button class="settings-tab" data-settings="appearance">
-          🎨 Giao diện
+        <button
+          class="settings-nav-button"
+          data-section="appearance"
+          type="button"
+        >
+          ◐ Giao diện
         </button>
 
-        <button class="settings-tab" data-settings="personalization">
-          ✨ Cá nhân hóa
+        <button
+          class="settings-nav-button"
+          data-section="personalization"
+          type="button"
+        >
+          ✦ Cá nhân hóa
         </button>
 
-        <button class="settings-tab" data-settings="data">
-          🔒 Dữ liệu
+        <button
+          class="settings-nav-button"
+          data-section="data"
+          type="button"
+        >
+          ◫ Dữ liệu
         </button>
 
-        <button class="settings-tab" data-settings="account">
+        <button
+          class="settings-nav-button"
+          data-section="account"
+          type="button"
+        >
           👤 Tài khoản
         </button>
 
-        <button class="settings-tab" data-settings="about">
-          ℹ️ Giới thiệu
+        <button
+          class="settings-nav-button"
+          data-section="about"
+          type="button"
+        >
+          ⓘ Giới thiệu
         </button>
 
       </nav>
@@ -446,32 +733,58 @@
 
         <!-- GENERAL -->
 
-        <section class="settings-page active" data-page="general">
+        <section
+          class="settings-section active"
+          data-section="general"
+        >
 
           <h3>Chung</h3>
 
+          <p class="settings-description">
+            Điều chỉnh cách KhanhOS AI hoạt động.
+          </p>
+
+
           <div class="setting-row">
+
             <div>
-              <strong>Ngôn ngữ</strong>
-              <small>Ngôn ngữ hiển thị của KhanhOS.</small>
+              <div class="setting-name">
+                Enter để gửi
+              </div>
+
+              <div class="setting-sub">
+                Enter gửi tin nhắn,
+                Shift + Enter xuống dòng.
+              </div>
             </div>
 
-            <select id="languageSetting">
-              <option value="vi">Tiếng Việt</option>
-              <option value="en">English</option>
-            </select>
+            <button
+              class="toggle active"
+              id="enterToggle"
+              type="button"
+            ></button>
+
           </div>
 
+
           <div class="setting-row">
+
             <div>
-              <strong>Âm thanh</strong>
-              <small>Âm thanh giao diện.</small>
+              <div class="setting-name">
+                Chế độ thu gọn
+              </div>
+
+              <div class="setting-sub">
+                Giảm khoảng cách giao diện.
+              </div>
             </div>
 
-            <label class="switch">
-              <input type="checkbox" id="soundSetting" checked>
-              <span></span>
-            </label>
+            <button
+              class="toggle"
+              id="compactToggle"
+              type="button"
+            ></button>
+
           </div>
 
         </section>
@@ -479,26 +792,46 @@
 
         <!-- APPEARANCE -->
 
-        <section class="settings-page" data-page="appearance">
+        <section
+          class="settings-section"
+          data-section="appearance"
+        >
 
           <h3>Giao diện</h3>
 
-          <div class="theme-grid">
+          <p class="settings-description">
+            Chọn giao diện hiển thị.
+          </p>
 
-            <button class="theme-card active" data-theme="light">
-              <div class="theme-preview light-preview"></div>
-              <strong>Sáng</strong>
-            </button>
 
-            <button class="theme-card" data-theme="dark">
-              <div class="theme-preview dark-preview"></div>
-              <strong>Tối</strong>
-            </button>
+          <div class="setting-row">
 
-            <button class="theme-card" data-theme="system">
-              <div class="theme-preview system-preview"></div>
-              <strong>Hệ thống</strong>
-            </button>
+            <div>
+              <div class="setting-name">
+                Chủ đề
+              </div>
+
+              <div class="setting-sub">
+                Sáng, tối hoặc theo hệ thống.
+              </div>
+            </div>
+
+            <select
+              class="setting-select"
+              id="themeSelect"
+            >
+              <option value="system">
+                Hệ thống
+              </option>
+
+              <option value="light">
+                Sáng
+              </option>
+
+              <option value="dark">
+                Tối
+              </option>
+            </select>
 
           </div>
 
@@ -507,22 +840,33 @@
 
         <!-- PERSONALIZATION -->
 
-        <section class="settings-page" data-page="personalization">
+        <section
+          class="settings-section"
+          data-section="personalization"
+        >
 
           <h3>Cá nhân hóa</h3>
 
-          <div class="setting-block">
+          <p class="settings-description">
+            Tùy chỉnh trải nghiệm KhanhOS AI.
+          </p>
 
-            <label>Hướng dẫn tùy chỉnh</label>
 
-            <textarea
-              id="customInstructions"
-              placeholder="Bạn muốn KhanhOS AI biết điều gì về bạn?"
-            ></textarea>
+          <div class="setting-row">
 
-            <small>
-              Các hướng dẫn này sẽ được lưu trên thiết bị của bạn.
-            </small>
+            <div>
+              <div class="setting-name">
+                Mô hình hiện tại
+              </div>
+
+              <div class="setting-sub">
+                Cerebras
+              </div>
+            </div>
+
+            <span style="font-size:12px">
+              KhanhOS AI
+            </span>
 
           </div>
 
@@ -531,83 +875,159 @@
 
         <!-- DATA -->
 
-        <section class="settings-page" data-page="data">
+        <section
+          class="settings-section"
+          data-section="data"
+        >
 
-          <h3>Dữ liệu & quyền riêng tư</h3>
+          <h3>Dữ liệu</h3>
+
+          <p class="settings-description">
+            Quản lý lịch sử trò chuyện được lưu trên
+            thiết bị.
+          </p>
+
 
           <div class="setting-row">
+
             <div>
-              <strong>Lưu lịch sử trò chuyện</strong>
-              <small>Cho phép lưu lịch sử trên trình duyệt.</small>
+              <div class="setting-name">
+                Lưu lịch sử
+              </div>
+
+              <div class="setting-sub">
+                Lưu cuộc trò chuyện trong trình duyệt.
+              </div>
             </div>
 
-            <label class="switch">
-              <input type="checkbox" id="historySetting" checked>
-              <span></span>
-            </label>
+            <button
+              class="toggle active"
+              id="historyToggle"
+              type="button"
+            ></button>
+
           </div>
 
-          <button class="danger-button" id="deleteLocalData">
-            Xóa dữ liệu trên thiết bị
-          </button>
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Xóa lịch sử
+              </div>
+
+              <div class="setting-sub">
+                Xóa các cuộc trò chuyện đã lưu.
+              </div>
+            </div>
+
+            <button
+              class="danger-button"
+              id="clearHistoryButton"
+              type="button"
+              style="
+                padding:8px 12px;
+                border-radius:8px;
+                font-size:12px;
+              "
+            >
+              Xóa
+            </button>
+
+          </div>
 
         </section>
 
 
         <!-- ACCOUNT -->
 
-        <section class="settings-page" data-page="account">
+        <section
+          class="settings-section"
+          data-section="account"
+        >
 
           <h3>Tài khoản</h3>
 
-          <div class="account-settings">
+          <p class="settings-description">
+            Thông tin tài khoản KhanhOS của bạn.
+          </p>
 
-            <div class="large-profile-avatar" id="settingsAvatar">
-              K
-            </div>
+
+          <div class="setting-row">
 
             <div>
-              <strong id="settingsName">Khách</strong>
-              <p id="settingsEmail">Chưa đăng nhập</p>
-              <span class="tier-badge" id="settingsTier">Free</span>
+              <div class="setting-name">
+                Người dùng
+              </div>
+
+              <div class="setting-sub">
+                Tài khoản hiện tại
+              </div>
             </div>
+
+            <span
+              id="accountName"
+              style="font-size:12px"
+            >
+              Khách
+            </span>
 
           </div>
 
-          <button class="auth-submit settings-login" id="settingsLoginButton">
-            Đăng nhập
-          </button>
 
-          <button class="danger-button hidden" id="settingsLogout">
-            Đăng xuất
-          </button>
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Gói
+              </div>
+
+              <div class="setting-sub">
+                Gói sử dụng AI
+              </div>
+            </div>
+
+            <span
+              id="accountTier"
+              style="font-size:12px"
+            >
+              FREE
+            </span>
+
+          </div>
 
         </section>
 
 
         <!-- ABOUT -->
 
-        <section class="settings-page" data-page="about">
+        <section
+          class="settings-section"
+          data-section="about"
+        >
 
-          <h3>Về KhanhOS AI</h3>
+          <h3>KhanhOS AI</h3>
 
-          <div class="about-box">
+          <p class="settings-description">
+            Trợ lý AI được xây dựng cho KhanhOS.
+          </p>
 
-            <div class="about-logo">K</div>
 
-            <h2>KhanhOS AI</h2>
+          <div class="setting-row">
 
-            <p>
-              Trợ lý AI được xây dựng cho hệ sinh thái KhanhOS.
-            </p>
+            <div>
+              <div class="setting-name">
+                Phiên bản
+              </div>
 
-            <small>
-              Powered by Cerebras
-            </small>
-
-            <div class="version">
-              Phiên bản 1.0.0
+              <div class="setting-sub">
+                Web Edition
+              </div>
             </div>
+
+            <span style="font-size:12px">
+              1.0.0
+            </span>
 
           </div>
 
@@ -622,21 +1042,680 @@
 </div>
 
 
-<!-- ================= CONFIRM MODAL ================= -->
+<!-- ================= CONFIRM ================= -->
 
-<div class="modal-overlay hidden" id="confirmOverlay">
+<div
+  class="modal-overlay hidden"
+  id="confirmModal"
+>
 
-  <div class="confirm-modal">
+  <div class="modal confirm-modal">
 
-    <h3 id="confirmTitle">Xác nhận</h3>
+    <div class="confirm-content">
 
-    <p id="confirmMessage">
-      Bạn có chắc chắn không?
-    </p>
+      <div class="confirm-icon">
+        ⚠
+      </div>
 
-    <div class="confirm-actions">
-      <button id="confirmCancel">Hủy</button>
-      <button class="danger-button" id="confirmOK">Xác nhận</button>
+      <h3>
+        Xóa lịch sử?
+      </h3>
+
+      <p>
+        Toàn bộ lịch sử trò chuyện được lưu trên
+        thiết bị này sẽ bị xóa.
+      </p>
+
+      <div class="confirm-actions">
+
+        <button
+          class="cancel-button"
+          id="confirmCancel"
+          type="button"
+        >
+  <!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="KhanhOS AI - Trợ lý AI cho học tập, lập trình và sáng tạo."
+  >
+
+  <meta name="theme-color" content="#111111">
+
+  <title>KhanhOS AI</title>
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- ================= SIDEBAR ================= -->
+
+  <aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div class="brand-name">KhanhOS</div>
+      <div class="brand-version">AI</div>
+    </div>
+
+    <div class="sidebar-top">
+
+      <button
+        class="sidebar-button primary"
+        id="newChatButton"
+        type="button"
+      >
+        <span class="icon">＋</span>
+        <span>Cuộc trò chuyện mới</span>
+      </button>
+
+      <button
+        class="sidebar-button"
+        id="searchButton"
+        type="button"
+      >
+        <span class="icon">⌕</span>
+        <span>Tìm kiếm</span>
+        <span style="margin-left:auto;color:#999;font-size:11px">
+          Ctrl K
+        </span>
+      </button>
+
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="history-header">
+      <div class="history-title">Hôm nay</div>
+    </div>
+
+    <div
+      class="history-list"
+      id="historyList"
+    ></div>
+
+    <div class="sidebar-bottom">
+
+      <button
+        class="sidebar-button"
+        id="settingsButton"
+        type="button"
+      >
+        <span class="icon">⚙</span>
+        <span>Cài đặt</span>
+      </button>
+
+      <button
+        class="sidebar-button"
+        id="helpButton"
+        type="button"
+      >
+        <span class="icon">?</span>
+        <span>Trợ giúp</span>
+      </button>
+
+      <button
+        class="profile-button"
+        id="profileButton"
+        type="button"
+      >
+        <div class="avatar">K</div>
+
+        <div class="profile-info">
+          <div class="profile-name">
+            Khách
+          </div>
+
+          <div class="profile-tier">
+            Chưa đăng nhập
+          </div>
+        </div>
+
+        <span>•••</span>
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div class="topbar-left">
+
+        <button
+          class="icon-button mobile-menu"
+          id="mobileMenuButton"
+          type="button"
+          aria-label="Menu"
+        >
+          ☰
+        </button>
+
+        <div class="model-selector">
+
+          <button
+            class="model-button"
+            id="modelButton"
+            type="button"
+          >
+            <span class="model-name">
+              KhanhOS AI
+            </span>
+
+            <span>⌄</span>
+          </button>
+
+          <div
+            class="popover model-popover hidden"
+            id="modelPopover"
+          >
+
+            <button
+              class="popover-item active"
+              data-model="gpt-oss-120b"
+              data-label="KhanhOS AI"
+              type="button"
+            >
+              <span>✦</span>
+              <span>
+                <strong>KhanhOS AI</strong><br>
+                <small style="color:#888">
+                  Cerebras
+                </small>
+              </span>
+            </button>
+
+            <button
+              class="popover-item"
+              data-model="llama-3.3-70b"
+              data-label="Llama 3.3"
+              type="button"
+            >
+              <span>◈</span>
+              <span>
+                <strong>Llama 3.3</strong><br>
+                <small style="color:#888">
+                  Cerebras
+                </small>
+              </span>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="topbar-right">
+
+        <button
+          class="share-button"
+          id="shareButton"
+          type="button"
+        >
+          ↗ Chia sẻ
+        </button>
+
+        <button
+          class="icon-button"
+          id="topProfileButton"
+          type="button"
+          aria-label="Tài khoản"
+        >
+          K
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- ================= CHAT ================= -->
+
+    <section
+      class="chat-area"
+      id="chatArea"
+    >
+
+      <div class="chat-container">
+
+        <!-- WELCOME -->
+
+        <div
+          class="welcome"
+          id="welcome"
+        >
+
+          <div class="welcome-logo">
+            K
+          </div>
+
+          <h1>
+            Bạn muốn làm gì?
+          </h1>
+
+          <p>
+            KhanhOS AI có thể giúp bạn viết,
+            học tập, lập trình và khám phá ý tưởng.
+          </p>
+
+
+          <div class="suggestions">
+
+            <button
+              class="suggestion"
+              data-prompt="Giải thích cho tôi một chủ đề bất kỳ theo cách thật dễ hiểu."
+              type="button"
+            >
+              <div class="suggestion-title">
+                💡 Giải thích một chủ đề bất kỳ
+              </div>
+
+              <div class="suggestion-text">
+                Học nhanh một khái niệm khó
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Viết giúp tôi một đoạn code và giải thích cách hoạt động."
+              type="button"
+            >
+              <div class="suggestion-title">
+                💻 Viết code giúp tôi lập trình
+              </div>
+
+              <div class="suggestion-text">
+                Tạo và sửa code
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Cho tôi một số ý tưởng cho một dự án mới."
+              type="button"
+            >
+              <div class="suggestion-title">
+                🚀 Ý tưởng cho dự án mới
+              </div>
+
+              <div class="suggestion-text">
+                Khám phá ý tưởng sáng tạo
+              </div>
+            </button>
+
+
+            <button
+              class="suggestion"
+              data-prompt="Hãy giúp tôi học tập hiệu quả hơn."
+              type="button"
+            >
+              <div class="suggestion-title">
+                📚 Học tập hiệu quả hơn
+              </div>
+
+              <div class="suggestion-text">
+                Lập kế hoạch và giải bài
+              </div>
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+
+        <div
+          class="messages"
+          id="messages"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= COMPOSER ================= -->
+
+    <div class="composer-wrap">
+
+      <div class="composer">
+
+        <div class="composer-top">
+
+          <button
+            class="composer-button"
+            id="attachButton"
+            type="button"
+            title="Đính kèm file"
+          >
+            ＋
+          </button>
+
+          <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Nhắn tin cho KhanhOS..."
+            autocomplete="off"
+          ></textarea>
+
+          <div class="composer-actions">
+
+            <button
+              class="composer-button"
+              id="voiceButton"
+              type="button"
+              title="Nhập bằng giọng nói"
+            >
+              ♪
+            </button>
+
+            <button
+              class="composer-button send-button"
+              id="sendButton"
+              type="button"
+              disabled
+              title="Gửi"
+            >
+              ↑
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="composer-bottom">
+
+          <span class="composer-hint">
+            KhanhOS AI có thể mắc lỗi.
+            Hãy kiểm tra thông tin quan trọng.
+          </span>
+
+          <span
+            class="token-info"
+            id="tokenInfo"
+          >
+            Mô hình
+          </span>
+
+        </div>
+
+      </div>
+
+      <input
+        type="file"
+        id="fileInput"
+        hidden
+        multiple
+      >
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- ================= PROFILE POPOVER ================= -->
+
+<div
+  class="popover profile-popover hidden"
+  id="profilePopover"
+>
+
+  <div
+    style="
+      padding:10px;
+      border-bottom:1px solid var(--border);
+      margin-bottom:5px;
+    "
+  >
+    <strong class="profile-name">
+      Khách
+    </strong>
+
+    <div
+      class="profile-tier"
+      style="margin-top:3px"
+    >
+      Chưa đăng nhập
+    </div>
+  </div>
+
+  <button
+    class="popover-item"
+    id="loginButton"
+    type="button"
+  >
+    👤 Tài khoản
+  </button>
+
+  <button
+    class="popover-item"
+    id="profileSettingsButton"
+    type="button"
+  >
+    ⚙ Cài đặt
+  </button>
+
+  <div class="popover-divider"></div>
+
+  <button
+    class="popover-item"
+    id="logoutButton"
+    type="button"
+  >
+    ↪ Đăng xuất
+  </button>
+
+</div>
+
+
+<!-- ================= AUTH MODAL ================= -->
+
+<div
+  class="modal-overlay hidden"
+  id="authModal"
+>
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <div class="modal-title">
+        KhanhOS
+      </div>
+
+      <button
+        class="modal-close"
+        data-close-modal="authModal"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <div class="auth-tabs">
+
+        <button
+          class="auth-tab active"
+          id="loginTab"
+          type="button"
+        >
+          Đăng nhập
+        </button>
+
+        <button
+          class="auth-tab"
+          id="signupTab"
+          type="button"
+        >
+          Đăng ký
+        </button>
+
+      </div>
+
+
+      <!-- LOGIN -->
+
+      <form
+        class="auth-form"
+        id="loginForm"
+      >
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Email
+          </label>
+
+          <input
+            class="form-input"
+            id="loginEmail"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Mật khẩu
+          </label>
+
+          <input
+            class="form-input"
+            id="loginPassword"
+            type="password"
+            placeholder="Mật khẩu"
+            autocomplete="current-password"
+            required
+          >
+
+        </div>
+
+
+        <div
+          class="form-error"
+          id="loginError"
+        ></div>
+
+
+        <button
+          class="form-submit"
+          type="submit"
+        >
+          Đăng nhập
+        </button>
+
+      </form>
+
+
+      <!-- SIGNUP -->
+
+      <form
+        class="auth-form hidden"
+        id="signupForm"
+      >
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Tên
+          </label>
+
+          <input
+            class="form-input"
+            id="signupName"
+            type="text"
+            placeholder="Tên của bạn"
+            autocomplete="name"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Email
+          </label>
+
+          <input
+            class="form-input"
+            id="signupEmail"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="form-label">
+            Mật khẩu
+          </label>
+
+          <input
+            class="form-input"
+            id="signupPassword"
+            type="password"
+            placeholder="Ít nhất 6 ký tự"
+            autocomplete="new-password"
+            required
+          >
+
+        </div>
+
+
+        <div
+          class="form-error"
+          id="signupError"
+        ></div>
+
+
+        <button
+          class="form-submit"
+          type="submit"
+        >
+          Tạo tài khoản
+        </button>
+
+      </form>
+
     </div>
 
   </div>
@@ -644,12 +1723,429 @@
 </div>
 
 
-<!-- ================= TOAST ================= -->
+<!-- ================= SETTINGS ================= -->
 
-<div class="toast" id="toast"></div>
+<div
+  class="modal-overlay hidden"
+  id="settingsModal"
+>
+
+  <div class="modal settings-modal">
+
+    <div class="modal-header">
+
+      <div class="modal-title">
+        Cài đặt
+      </div>
+
+      <button
+        class="modal-close"
+        data-close-modal="settingsModal"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
 
 
-<script src="script.js"></script>
+    <div class="settings-layout">
 
-</body>
-       </html>
+      <nav class="settings-nav">
+
+        <button
+          class="settings-nav-button active"
+          data-section="general"
+          type="button"
+        >
+          ⚙ Chung
+        </button>
+
+        <button
+          class="settings-nav-button"
+          data-section="appearance"
+          type="button"
+        >
+          ◐ Giao diện
+        </button>
+
+        <button
+          class="settings-nav-button"
+          data-section="personalization"
+          type="button"
+        >
+          ✦ Cá nhân hóa
+        </button>
+
+        <button
+          class="settings-nav-button"
+          data-section="data"
+          type="button"
+        >
+          ◫ Dữ liệu
+        </button>
+
+        <button
+          class="settings-nav-button"
+          data-section="account"
+          type="button"
+        >
+          👤 Tài khoản
+        </button>
+
+        <button
+          class="settings-nav-button"
+          data-section="about"
+          type="button"
+        >
+          ⓘ Giới thiệu
+        </button>
+
+      </nav>
+
+
+      <div class="settings-content">
+
+        <!-- GENERAL -->
+
+        <section
+          class="settings-section active"
+          data-section="general"
+        >
+
+          <h3>Chung</h3>
+
+          <p class="settings-description">
+            Điều chỉnh cách KhanhOS AI hoạt động.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Enter để gửi
+              </div>
+
+              <div class="setting-sub">
+                Enter gửi tin nhắn,
+                Shift + Enter xuống dòng.
+              </div>
+            </div>
+
+            <button
+              class="toggle active"
+              id="enterToggle"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Chế độ thu gọn
+              </div>
+
+              <div class="setting-sub">
+                Giảm khoảng cách giao diện.
+              </div>
+            </div>
+
+            <button
+              class="toggle"
+              id="compactToggle"
+              type="button"
+            ></button>
+
+          </div>
+
+        </section>
+
+
+        <!-- APPEARANCE -->
+
+        <section
+          class="settings-section"
+          data-section="appearance"
+        >
+
+          <h3>Giao diện</h3>
+
+          <p class="settings-description">
+            Chọn giao diện hiển thị.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Chủ đề
+              </div>
+
+              <div class="setting-sub">
+                Sáng, tối hoặc theo hệ thống.
+              </div>
+            </div>
+
+            <select
+              class="setting-select"
+              id="themeSelect"
+            >
+              <option value="system">
+                Hệ thống
+              </option>
+
+              <option value="light">
+                Sáng
+              </option>
+
+              <option value="dark">
+                Tối
+              </option>
+            </select>
+
+          </div>
+
+        </section>
+
+
+        <!-- PERSONALIZATION -->
+
+        <section
+          class="settings-section"
+          data-section="personalization"
+        >
+
+          <h3>Cá nhân hóa</h3>
+
+          <p class="settings-description">
+            Tùy chỉnh trải nghiệm KhanhOS AI.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Mô hình hiện tại
+              </div>
+
+              <div class="setting-sub">
+                Cerebras
+              </div>
+            </div>
+
+            <span style="font-size:12px">
+              KhanhOS AI
+            </span>
+
+          </div>
+
+        </section>
+
+
+        <!-- DATA -->
+
+        <section
+          class="settings-section"
+          data-section="data"
+        >
+
+          <h3>Dữ liệu</h3>
+
+          <p class="settings-description">
+            Quản lý lịch sử trò chuyện được lưu trên
+            thiết bị.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Lưu lịch sử
+              </div>
+
+              <div class="setting-sub">
+                Lưu cuộc trò chuyện trong trình duyệt.
+              </div>
+            </div>
+
+            <button
+              class="toggle active"
+              id="historyToggle"
+              type="button"
+            ></button>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Xóa lịch sử
+              </div>
+
+              <div class="setting-sub">
+                Xóa các cuộc trò chuyện đã lưu.
+              </div>
+            </div>
+
+            <button
+              class="danger-button"
+              id="clearHistoryButton"
+              type="button"
+              style="
+                padding:8px 12px;
+                border-radius:8px;
+                font-size:12px;
+              "
+            >
+              Xóa
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <!-- ACCOUNT -->
+
+        <section
+          class="settings-section"
+          data-section="account"
+        >
+
+          <h3>Tài khoản</h3>
+
+          <p class="settings-description">
+            Thông tin tài khoản KhanhOS của bạn.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Người dùng
+              </div>
+
+              <div class="setting-sub">
+                Tài khoản hiện tại
+              </div>
+            </div>
+
+            <span
+              id="accountName"
+              style="font-size:12px"
+            >
+              Khách
+            </span>
+
+          </div>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Gói
+              </div>
+
+              <div class="setting-sub">
+                Gói sử dụng AI
+              </div>
+            </div>
+
+            <span
+              id="accountTier"
+              style="font-size:12px"
+            >
+              FREE
+            </span>
+
+          </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+
+        <section
+          class="settings-section"
+          data-section="about"
+        >
+
+          <h3>KhanhOS AI</h3>
+
+          <p class="settings-description">
+            Trợ lý AI được xây dựng cho KhanhOS.
+          </p>
+
+
+          <div class="setting-row">
+
+            <div>
+              <div class="setting-name">
+                Phiên bản
+              </div>
+
+              <div class="setting-sub">
+                Web Edition
+              </div>
+            </div>
+
+            <span style="font-size:12px">
+              1.0.0
+            </span>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= CONFIRM ================= -->
+
+<div
+  class="modal-overlay hidden"
+  id="confirmModal"
+>
+
+  <div class="modal confirm-modal">
+
+    <div class="confirm-content">
+
+      <div class="confirm-icon">
+        ⚠
+      </div>
+
+      <h3>
+        Xóa lịch sử?
+      </h3>
+
+      <p>
+        Toàn bộ lịch sử trò chuyện được lưu trên
+        thiết bị này sẽ bị xóa.
+      </p>
+
+      <div class="confirm-actions">
+
+        <button
+          class="cancel-button"
+          id="confirmCancel"
+          type="button"
+        >
+  
