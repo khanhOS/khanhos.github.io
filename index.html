@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KhanhOS - Trợ lý lập trình thông minh</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"></div>
+
+  <!-- ===================== AUTH SCREEN ===================== -->
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-box">
+      <h1 class="auth-logo">KhanhOS</h1>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" id="tabLogin">Đăng nhập</button>
+        <button class="auth-tab" data-tab="register" id="tabRegister">Đăng ký</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="loginUsername" autocomplete="username" required />
+        <label>Mật khẩu</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required />
+        <p class="auth-error hidden" id="loginError"></p>
+        <button type="submit" class="btn-primary auth-submit">Đăng nhập</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="registerUsername" autocomplete="username" required />
+        <label>Mật khẩu</label>
+        <input type="password" id="registerPassword" autocomplete="new-password" required />
+        <label>Nhập lại mật khẩu</label>
+        <input type="password" id="registerPassword2" autocomplete="new-password" required />
+        <p class="auth-error hidden" id="registerError"></p>
+        <button type="submit" class="btn-primary auth-submit">Tạo tài khoản</button>
+      </form>
+
+      <p class="auth-hint">
+        Tài khoản chỉ lưu trong trình duyệt này (localStorage) để tách lịch sử chat từng người —
+        không phải hệ thống đăng nhập bảo mật cấp server.
+      </p>
+    </div>
+  </div>
+
+  <!-- ===================== MAIN APP ===================== -->
+  <div class="app hidden" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <button class="btn-new-chat" id="btnNewChat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Đoạn chat mới
+        </button>
+        <button class="btn-icon" id="btnCollapseSidebar" title="Thu gọn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+      </div>
+      <div class="sidebar-list" id="chatList"></div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="user-avatar" id="userAvatar">?</div>
+          <span class="user-name" id="userName">—</span>
+          <button class="btn-icon" id="btnLogout" title="Đăng xuất">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+        <button class="btn-settings" id="btnSettings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Cài đặt API
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main chat area -->
+    <main class="main">
+      <header class="chat-header">
+        <button class="btn-icon mobile-only" id="btnOpenSidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="chat-title" id="chatTitle">KhanhOS</span>
+        <select id="modelSelect" class="model-select">
+          <option value="llama-3.3-70b">Llama 3.3 70B</option>
+          <option value="llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B</option>
+          <option value="llama3.1-8b">Llama 3.1 8B</option>
+          <option value="qwen-3-32b">Qwen 3 32B</option>
+        </select>
+      </header>
+
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <h1>KhanhOS</h1>
+          <p>Trợ lý AI chuyên về lập trình — viết code, gỡ lỗi, thiết kế kiến trúc.</p>
+        </div>
+      </div>
+
+      <form class="chat-input-bar" id="chatForm">
+        <textarea id="chatInput" placeholder="Nhắn tin cho KhanhOS..." rows="1"></textarea>
+        <button type="submit" class="btn-send" id="btnSend" title="Gửi">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+        <button type="button" class="btn-stop hidden" id="btnStop" title="Dừng">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="modal-overlay hidden" id="settingsModal">
+    <div class="modal">
+      <h2>Cài đặt API</h2>
+      <label>Endpoint API</label>
+      <input type="text" id="apiEndpoint" placeholder="https://api.cerebras.ai/v1/chat/completions" />
+
+      <label>API Key (Cerebras)</label>
+      <input type="password" id="apiKey" placeholder="csk-..." />
+      <p class="hint">
+        Key được lưu trong <code>localStorage</code>, gắn riêng theo tài khoản đang đăng nhập —
+        không gửi đi đâu ngoài thẳng tới API bạn khai báo.
+      </p>
+
+      <label>System prompt</label>
+      <textarea id="systemPrompt" rows="4"></textarea>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="btnCloseSettings">Đóng</button>
+        <button class="btn-primary" id="btnSaveSettings">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+      </html>
+                             
